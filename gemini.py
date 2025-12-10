@@ -3,7 +3,7 @@ import time
 from pathlib import Path
 import os
 
-genai.configure(api_key="AIzaSyAhmzibnhgFJcvzrU9KSlgY5T7tHLCHQoY")
+genai.configure(api_key="")
 
 # for m in genai.list_models():
 #     print(m.name)

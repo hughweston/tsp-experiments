@@ -24,7 +24,7 @@ for num in [10, 15, 20, 25, 30]:
         try:
           client = Client(
               host='https://ollama.com',
-              headers={'Authorization': 'Bearer 3ecdf1db492e46fe81b755a60be633d5.mWPh0KP3Nl748YnSGLFiioOh'}
+              headers={'Authorization': 'Bearer '}
           )
 
           response = client.chat(
