@@ -5,6 +5,7 @@ Creates labeled SVG plots for each file.
 """
 
 import os
+import json
 from pathlib import Path
 from plot_tsp_png_labels import plot_tsp_with_random_labels
 
@@ -26,6 +27,10 @@ def batch_plot_all_tsps(input_dir='optimal-tsps', output_dir='labeled_plots',
     # Create output directory
     output_path = Path(output_dir)
     output_path.mkdir(exist_ok=True)
+    for i in [10, 15, 20, 25, 30]:
+        path = Path(output_dir + f"/{str(i)}")
+        path.mkdir(exist_ok=True)
+
 
     # Get all files in input directory
     input_path = Path(input_dir)
@@ -35,7 +40,11 @@ def batch_plot_all_tsps(input_dir='optimal-tsps', output_dir='labeled_plots',
     print(f"Output directory: {output_path.absolute()}\n")
 
     for i, tsp_file in enumerate(tsp_files, 1):
-        output_file = output_path / f"{tsp_file.name}"
+        with open(tsp_file, 'r') as f:
+            points = json.load(f)
+
+        n_points = len(points)
+        output_file = output_path / str(n_points) / f"{tsp_file.name}"
 
         print(f"[{i}/{len(tsp_files)}] Processing {tsp_file.name}...")
 

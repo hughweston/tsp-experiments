@@ -1,0 +1,6 @@
+prompt_token_count: 439
+candidates_token_count: 817
+total_token_count: 9190
+cached_content_token_count: 220
+
+
