@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Plot TSP points with random integer labels in SVG format.
+Plot TSP points with random integer labels in SVG or PNG format.
 Matches the exact style of the original TSP visualizations.
 """
 
@@ -143,20 +143,21 @@ def plot_tsp_with_random_labels(file_path, output_path=None,
                                 width=800, height=500, seed=None,
                                 point_radius=5, label_offset=20,
                                 label_font_size=14,
-                                show_tour=False):
+                                show_tour=False, format='png'):
     """
-    Plot TSP points with random integer labels in SVG format.
+    Plot TSP points with random integer labels in SVG or PNG format.
 
     Args:
         file_path: Path to the TSP file containing JSON point data
-        output_path: Path to save the SVG file
-        width: SVG width (default: 800)
-        height: SVG height (default: 500)
+        output_path: Path to save the output file
+        width: Image width (default: 800)
+        height: Image height (default: 500)
         seed: Random seed for reproducibility
         point_radius: Radius of point circles (default: 5)
         label_offset: Distance of label from point (default: 20)
         label_font_size: Font size for labels (default: 14)
         show_tour: Whether to show the tour line (default: False)
+        format: Output format - 'svg' or 'png' (default: 'png')
     """
     # Set random seed if provided
     if seed is not None:
@@ -183,11 +184,21 @@ def plot_tsp_with_random_labels(file_path, output_path=None,
         show_tour, tour_order
     )
 
-    # Save SVG and mapping
+    # Save output and mapping
     if output_path:
-        with open(output_path, 'w') as f:
-            f.write(svg_content)
-        print(f"Saved SVG to: {output_path}")
+        if format == 'png':
+            # Convert SVG to PNG
+            try:
+                import cairosvg
+                cairosvg.svg2png(bytestring=svg_content.encode('utf-8'), write_to=output_path)
+                print(f"Saved PNG to: {output_path}")
+            except ImportError:
+                print("Error: cairosvg not installed. Install with: uv add cairosvg")
+                return None
+        else:  # svg
+            with open(output_path, 'w') as f:
+                f.write(svg_content)
+            print(f"Saved SVG to: {output_path}")
 
         # Save label mapping as JSON (for verification later)
         mapping_path = output_path.rsplit('.', 1)[0] + '_mapping.json'
@@ -218,18 +229,20 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Plot TSP points with random integer labels (SVG format)'
+        description='Plot TSP points with random integer labels (SVG or PNG format)'
     )
     parser.add_argument('input_file',
                        help='Path to TSP file (JSON format)')
     parser.add_argument('-o', '--output',
-                       help='Output file path for the SVG (e.g., plot.svg)')
+                       help='Output file path (e.g., plot.svg or plot.png)')
+    parser.add_argument('-f', '--format', choices=['svg', 'png'], default='png',
+                       help='Output format: svg or png (default: png)')
     parser.add_argument('-s', '--seed', type=int,
                        help='Random seed for reproducibility')
     parser.add_argument('--width', type=int, default=800,
-                       help='SVG width (default: 800)')
+                       help='Image width (default: 800)')
     parser.add_argument('--height', type=int, default=500,
-                       help='SVG height (default: 500)')
+                       help='Image height (default: 500)')
     parser.add_argument('--point-radius', type=int, default=5,
                        help='Radius of point circles (default: 5)')
     parser.add_argument('--label-offset', type=int, default=20,
@@ -240,6 +253,12 @@ def main():
                        help='Show the tour line connecting points')
 
     args = parser.parse_args()
+
+    # Auto-detect format from output extension if not specified
+    if args.output:
+        ext = args.output.rsplit('.', 1)[-1].lower()
+        if ext in ['png', 'svg']:
+            args.format = ext
 
     # Check if file exists
     if not os.path.exists(args.input_file):
@@ -256,7 +275,8 @@ def main():
         point_radius=args.point_radius,
         label_offset=args.label_offset,
         label_font_size=args.label_font_size,
-        show_tour=args.show_tour
+        show_tour=args.show_tour,
+        format=args.format
     )
 
 
