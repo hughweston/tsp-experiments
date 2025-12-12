@@ -4,12 +4,12 @@ Testing Vision-Language Models on Traveling Salesman Problems with randomized po
 
 ## Overview
 
-Generate labeled TSP visualizations in SVG format and verify VLM solutions against optimal tours. Point labels are **randomized** so VLMs cannot rely on sequential patterns and must actually solve the spatial optimization problem.
+Generate labeled TSP visualizations in PNG or SVG format and verify VLM solutions against optimal tours. Point labels are **randomized** so VLMs cannot rely on sequential patterns and must actually solve the spatial optimization problem.
 
 ## Project Files
 
-- `plot_tsp_svg_labels.py` - Generates a single labeled SVG
-- `batch_plot_all.py` - Generates labeled SVGs for all files in a directory
+**Generation & Verification:**
+- `create_labeled_tsps.py` - Generate labeled images for all TSP files in a directory
 - `verify_tsp_solution.py` - Verify VLM solutions against optimal tours
 
 ## Quick Start
@@ -30,24 +30,18 @@ uv run python verify_tsp_solution.py \
 
 ## Usage
 
-### Generate Labeled SVGs
+### Generate Labeled Images
 
-**Single file:**
 ```bash
-uv run python plot_tsp_svg_labels.py optimal-tsps/[filename] -o output.svg --seed 42
+# Generate PNGs (default: optimal-tsps/ → vlm-inputs/)
+uv run python create_labeled_tsps.py --seed 42
 
-# Customize appearance
-uv run python plot_tsp_svg_labels.py optimal-tsps/[filename] -o output.svg \
-    --label-offset 25 --label-font-size 16 --show-tour
-```
-
-**Batch process:**
-```bash
-uv run python batch_plot_all.py -i optimal-tsps -o vlm-inputs --seed 42
+# Custom directories or SVG format
+uv run python create_labeled_tsps.py -i optimal-tsps -o vlm-inputs -f svg
 ```
 
 **Output:** For each TSP file, generates:
-- `[filename].svg` - Labeled visualization for VLM
+- `[filename].png` (or `.svg`) - Labeled visualization for VLM
 - `[filename]_mapping.json` - Label-to-index mapping for verification
 
 ### Verify VLM Solutions
@@ -84,25 +78,21 @@ You can start from any point - the tour is a cycle so starting position doesn't 
 
 ## Options
 
-**plot_tsp_svg_labels.py:**
-- `-o, --output` - Output file path
-- `-s, --seed` - Random seed for reproducibility
-- `--show-tour` - Show tour line connecting points
-- `--label-offset` - Distance of label from point (default: 20)
-- `--label-font-size` - Font size for labels (default: 14)
-
-**batch_plot_all.py:**
+**create_labeled_tsps.py:**
 - `-i, --input-dir` - Input directory (default: optimal-tsps)
-- `-o, --output-dir` - Output directory (default: labeled_plots)
+- `-o, --output-dir` - Output directory (default: vlm-inputs)
+- `-f, --format` - Output format: png or svg (default: png)
 - `-s, --seed` - Base random seed (each file gets seed+index)
 - `--show-tour` - Show tour lines in all plots
+- `--label-offset` - Distance of label from point (default: 20)
+- `--label-font-size` - Font size for labels (default: 14)
 
 **verify_tsp_solution.py:**
 - `-q, --quiet` - Suppress detailed output (only return exit code)
 
 ## Design Notes
 
-**SVG Output:** 800×500px, black circles (radius 5), white background, plain black text labels (no backgrounds).
+**Image Output:** 800×500px, black circles (radius 5), white background, plain black text labels (no backgrounds). Supports PNG and SVG formats.
 
 **Label Positioning:** Fixed 20px distance with smart direction selection (tests 8 positions, avoids occlusion, ensures bounds).
 
