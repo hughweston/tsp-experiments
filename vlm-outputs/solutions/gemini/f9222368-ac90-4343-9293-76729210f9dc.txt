@@ -1,0 +1,14 @@
+Based on the visual layout of the points, the shortest tour is found by connecting nearest neighbors in a logical loop. Here is the step-by-step path:
+
+1.  Starting at the bottom-left cluster: **2 -> 8 -> 11**
+2.  Moving towards the right: **11 -> 5**
+3.  Continuing up and right: **5 -> 3 -> 12**
+4.  Moving down the right edge: **12 -> 14 -> 9**
+5.  Going to the far bottom point: **9 -> 4**
+6.  Looping back up and left: **4 -> 15 -> 13 -> 10**
+7.  Connecting to the middle: **10 -> 7**
+8.  Heading back to the start cluster: **7 -> 6 -> 1 -> 2** (completing the loop)
+
+Ordering this as a single sequence starting from point 2 (you can start anywhere):
+
+**2, 8, 11, 5, 3, 12, 14, 9, 4, 15, 13, 10, 7, 6, 1**

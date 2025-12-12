@@ -1,0 +1,25 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1 (Top / Upper Region):**
+This group forms a loose band across the top of the image.
+*   2, 4, 6, 8, 20
+
+**Cluster 2 (Left / Middle-Left Region):**
+These points are clustered together on the left side of the plot.
+*   5, 11, 15, 22, 23
+
+**Cluster 3 (Bottom-Left Region):**
+This is a distinct group in the lower-left corner.
+*   7, 19, 24
+
+**Cluster 4 (Center / Middle Region):**
+These points occupy the central area of the plot.
+*   3, 9, 13, 12, 18
+
+**Cluster 5 (Bottom-Right Region):**
+These points form a line or group at the bottom right.
+*   1, 16, 21
+
+**Cluster 6 (Right / Far-Right Region):**
+These points are grouped on the far right side.
+*   10, 14, 17, 25

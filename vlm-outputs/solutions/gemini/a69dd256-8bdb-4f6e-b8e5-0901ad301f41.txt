@@ -1,0 +1,25 @@
+Based on a visual analysis of the point distribution to determine the shortest path, here is the optimal tour. I will start from the top-leftmost cluster and work my way around the loop.
+
+1.  Start with point **1** in the upper left.
+2.  Move to the nearby point **10**.
+3.  Then go down to **19**.
+4.  Travel down towards the bottom left cluster, hitting **5**.
+5.  Move right to **4**.
+6.  Very close to 4 is **20**.
+7.  Move slightly up and right to **8**.
+8.  Immediately next to 8 is **13**.
+9.  Go up to point **3**.
+10. Then drop down to the lowest point in this area, **14**.
+11. Traverse the long gap to the right to reach **16**.
+12. Continue right to **9**.
+13. Move slightly up and right to **11**.
+14. Go to the far right point **17**.
+15. Loop back left and upwards to **12**.
+16. Continue up and left to **2**.
+17. Move left to **18**.
+18. Go slightly down and left to **7**.
+19. Move up and left to **15**.
+20. Finally, go to point **6**, which closes the loop back to point 1.
+
+**Tour:**
+1, 10, 19, 5, 4, 20, 8, 13, 3, 14, 16, 9, 11, 17, 12, 2, 18, 7, 15, 6

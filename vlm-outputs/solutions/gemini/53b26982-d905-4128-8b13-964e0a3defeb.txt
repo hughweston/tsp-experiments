@@ -1,0 +1,49 @@
+Based on visual inspection of the spatial arrangement of the points, the shortest tour that visits all cities and returns to the start follows the perimeter of the shape formed by the points.
+
+Here is the step-by-step path:
+1.  Start at the leftmost point, which is **13**.
+2.  Move downwards and right to **7**.
+3.  Continue right to **4**.
+4.  Further right and down to **2**.
+5.  Continue right to **15**.
+6.  Move up and right to **14**.
+7.  Move significantly right and down to the cluster of **5** and **3**. Go to **5** then **3** (or vice versa, but this is the far end of the loop).
+8.  From that far right end, the path must return towards the top left. The nearest neighbor logic would suggest a jump from the 5-3 cluster towards the top points. The most logical jump is from **3** (or the cluster) to the isolated top-right point **12**.
+9.  From **12**, move left and slightly down to **8**.
+10. From **8**, move left and up to **9**.
+11. Continue left to the close pair **11** and **10**. Visit **11** then **10**.
+12. Continue left to **1**.
+13. Move down and left to **6**.
+14. From **6**, return to **13** to close the loop.
+
+So the sequence is roughly a counter-clockwise traversal. Let's verify the order:
+13 -> 7 -> 4 -> 2 -> 15 -> 14 -> 5 -> 3 -> 12 -> 8 -> 9 -> 11 -> 10 -> 1 -> 6 -> (back to 13)
+
+Let's refine the bottom right section. Moving from 14, the closest point is 15? No, 15 is to the left of 14. Let's re-evaluate the bottom arc.
+Order from left to right on bottom: 13 -> 7 -> 4 -> 2 -> 15 -> 14 -> 5 -> 3.
+Order from right to left on top: 12 -> 8 -> 9 -> 11 -> 10 -> 1 -> 6.
+
+Let's check the transition from bottom-right to top-right. From point 3 (far right bottom), the next nearest point to continue the loop is point 12 (top right). This is a long edge, but necessary to connect the two "ends" of the C-shape or loop.
+Let's check the transition from top-left to bottom-left. From point 6 to point 13 is a short, logical hop.
+
+Let's try tracing it again to be sure:
+Start at 13.
+Go to 7.
+Go to 4.
+Go to 2.
+Go to 15.
+Go to 14.
+Go to 5.
+Go to 3.
+Go to 12.
+Go to 8.
+Go to 9.
+Go to 11.
+Go to 10.
+Go to 1.
+Go to 6.
+Return to 13.
+
+This creates a clean, non-intersecting polygon, which is the hallmark of an optimal TSP solution in 2D Euclidean space.
+
+**13, 7, 4, 2, 15, 14, 5, 3, 12, 8, 9, 11, 10, 1, 6**

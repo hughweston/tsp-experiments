@@ -1,0 +1,16 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1:** 15, 14, 25
+*(These points form a loose group on the far left side of the image.)*
+
+**Cluster 2:** 6, 16, 12, 2, 24, 8, 13
+*(This group is in the bottom-left to bottom-middle region. Points 6 and 16 are a pair, and they naturally flow into the denser group of 12, 2, 24, 8, with 13 being nearby.)*
+
+**Cluster 3:** 4, 18, 22, 10
+*(These points form a cluster in the upper-middle area.)*
+
+**Cluster 4:** 19, 3, 21, 7, 5, 9
+*(This is the top-right group. 19 and 3 are at the very top, and the rest cascade down the right side.)*
+
+**Cluster 5:** 23, 11, 20, 1, 17
+*(This group occupies the bottom-right quadrant. 23 and 11 are a tight pair, and 20, 1, and 17 are nearby in that same lower-right region.)*

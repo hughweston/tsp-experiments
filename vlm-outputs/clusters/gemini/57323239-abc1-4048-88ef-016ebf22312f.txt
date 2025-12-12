@@ -1,0 +1,25 @@
+Based on the spatial proximity of the points in the image, here is a logical grouping into clusters:
+
+**Cluster 1 (Top Left area)**
+This group forms a loose cluster in the upper left quadrant.
+*   26, 12, 17, 20
+
+**Cluster 2 (Central/Upper Left dense group)**
+This group is quite tight in the middle-left area.
+*   23, 14, 15, 8, 5, 1
+
+**Cluster 3 (Top Right area)**
+These points are scattered across the top right.
+*   30, 9, 10
+
+**Cluster 4 (Right side dense group)**
+This is a distinct cluster on the right-hand side.
+*   16, 22, 3, 13, 25, 24
+
+**Cluster 5 (Bottom Left corner)**
+These points are isolated in the bottom left.
+*   27, 29, 6, 18
+
+**Cluster 6 (Bottom Right area)**
+This is a spread-out group covering the bottom right section.
+*   4, 2, 21, 11, 19, 28, 7

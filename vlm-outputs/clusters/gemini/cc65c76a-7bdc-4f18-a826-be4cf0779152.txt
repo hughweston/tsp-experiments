@@ -1,0 +1,5 @@
+Based on the spatial proximity of the points in the image, here are the clusters:
+
+Cluster 1: 1, 6, 7
+Cluster 2: 2, 3, 4, 8, 9
+Cluster 3: 5, 10

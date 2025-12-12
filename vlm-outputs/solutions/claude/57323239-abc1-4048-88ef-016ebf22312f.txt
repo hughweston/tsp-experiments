@@ -1,0 +1,56 @@
+I need to find the shortest tour that visits all 30 points exactly once and returns to the starting point.
+
+Let me first identify the approximate coordinates of each point from the image:
+
+1. (207, 270)
+2. (515, 410)
+3. (702, 248)
+4. (450, 400)
+5. (290, 265)
+6. (298, 430)
+7. (700, 460)
+8. (323, 190)
+9. (730, 70)
+10. (770, 45)
+11. (362, 480)
+12. (95, 80)
+13. (758, 240)
+14. (268, 115)
+15. (310, 125)
+16. (620, 210)
+17. (75, 130)
+18. (298, 475)
+19. (560, 460)
+20. (195, 75)
+21. (608, 390)
+22. (700, 195)
+23. (238, 120)
+24. (740, 295)
+25. (680, 330)
+26. (55, 35)
+27. (25, 310)
+28. (658, 460)
+29. (248, 425)
+30. (410, 25)
+
+Now I'll construct a tour by finding nearby points and creating a logical path that minimizes backtracking.
+
+Starting from the top and working around:
+- Top left area: 26, 12, 20, 17
+- Upper middle: 30, 14, 23, 15, 8
+- Top right: 9, 10
+- Right side going down: 13, 22, 16, 24, 3, 25, 21
+- Bottom right: 7, 28, 19
+- Bottom middle: 2, 4, 11, 18
+- Left side: 6, 29, 1, 5, 27
+
+Let me trace a more optimized path:
+
+26 → 12 → 20 → 17 → 27 → 1 → 5 → 8 → 14 → 23 → 15 → 30 → 10 → 9 → 22 → 16 → 13 → 24 → 3 → 25 → 21 → 7 → 28 → 19 → 2 → 4 → 11 → 18 → 6 → 29 → back to 26
+
+Let me refine this by checking the path visually:
+
+Starting at 26 (top left), go to nearby 12, then 20, then 17, then down to 27, then to 1, 5, 8, up to 14, 23, 15, across to 30, then to 10, 9, down to 22, 16, 13, 24, 3, 25, 21, 7, 28, 19, 2, 4, 11, 18, 6, 29, back to 26.
+
+**Answer:**
+26, 12, 20, 23, 14, 15, 8, 30, 10, 9, 22, 16, 13, 24, 3, 25, 21, 7, 28, 19, 2, 4, 11, 18, 6, 29, 1, 5, 27, 17

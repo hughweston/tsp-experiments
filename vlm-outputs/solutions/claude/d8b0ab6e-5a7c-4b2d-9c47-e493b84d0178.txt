@@ -1,0 +1,54 @@
+I need to find the shortest tour that visits all 25 points exactly once and returns to the starting point.
+
+Let me first estimate the coordinates of each point from the image:
+
+1. (213, 340)
+2. (180, 248)
+3. (603, 320)
+4. (430, 328)
+5. (205, 47)
+6. (95, 213)
+7. (678, 368)
+8. (168, 42)
+9. (28, 305)
+10. (448, 248)
+11. (602, 400)
+12. (350, 75)
+13. (753, 433)
+14. (648, 388)
+15. (270, 175)
+16. (570, 320)
+17. (108, 68)
+18. (365, 345)
+19. (618, 178)
+20. (185, 82)
+21. (530, 248)
+22. (540, 390)
+23. (665, 318)
+24. (115, 388)
+25. (398, 418)
+
+Let me find a good tour by identifying clusters and connecting them efficiently:
+
+Top cluster: 17, 8, 5, 20, 12
+Right side: 19, 21, 10, 16, 3, 23, 7, 14, 13, 11, 22
+Middle-left: 6, 2, 15, 1, 18, 4, 25
+Left edge: 9, 24
+
+Let me trace a logical path:
+
+Starting from 17 (top-left): 17 → 8 → 5 → 20 → 12 → 19 → 21 → 10 → 16 → 3 → 23 → 7 → 13 → 14 → 11 → 22 → 25 → 18 → 4 → 1 → 24 → 9 → 6 → 2 → 15 → back to 17
+
+Let me refine this by checking nearby connections:
+
+9 → 24 → 6 → 2 → 1 → 18 → 25 → 22 → 11 → 14 → 13 → 7 → 23 → 3 → 16 → 21 → 10 → 19 → 12 → 15 → 20 → 5 → 8 → 17 → 6... 
+
+Let me try another approach:
+17 → 8 → 5 → 20 → 12 → 15 → 2 → 6 → 9 → 24 → 1 → 18 → 25 → 22 → 11 → 14 → 13 → 7 → 23 → 3 → 16 → 21 → 10 → 4 → 19 → back
+
+Refined tour:
+9 → 24 → 1 → 18 → 25 → 22 → 11 → 13 → 7 → 14 → 23 → 3 → 16 → 21 → 19 → 10 → 4 → 12 → 15 → 20 → 5 → 8 → 17 → 6 → 2 → 9
+
+**Final answer:**
+
+9, 24, 1, 18, 25, 22, 11, 13, 7, 14, 23, 3, 16, 21, 19, 12, 10, 4, 15, 20, 5, 8, 17, 6, 2

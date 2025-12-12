@@ -1,0 +1,59 @@
+I need to find the shortest tour that visits all 30 points exactly once and returns to the starting point.
+
+Let me first identify the approximate coordinates of each point from the image:
+
+1. (723, 127)
+2. (621, 206)
+3. (217, 491)
+4. (197, 157)
+5. (453, 181)
+6. (95, 471)
+7. (391, 267)
+8. (273, 371)
+9. (673, 206)
+10. (430, 431)
+11. (640, 286)
+12. (620, 411)
+13. (468, 107)
+14. (453, 251)
+15. (390, 371)
+16. (400, 316)
+17. (667, 381)
+18. (328, 37)
+19. (145, 361)
+20. (573, 301)
+21. (723, 321)
+22. (507, 461)
+23. (363, 267)
+24. (213, 77)
+25. (473, 341)
+26. (507, 301)
+27. (620, 261)
+28. (573, 381)
+29. (723, 57)
+30. (63, 251)
+
+Now I need to find a short tour. I'll use a nearest neighbor heuristic and then try to improve it by looking for a logical geographic path.
+
+Looking at the layout, I'll try to create a tour that follows the outer boundary and then handles interior points efficiently:
+
+Starting from the top and going around:
+- Top right area: 29, 1, 9, 21
+- Right side down: 17, 12, 28, 22
+- Bottom: 10, 3, 6
+- Left side up: 30, 19, 8
+- Back through middle: 15, 16, 23, 7
+- Upper left: 4, 24, 18, 13
+- Middle right: 5, 14, 26, 25, 20, 27, 11, 2
+
+Let me trace a more coherent path:
+
+Starting at 29 (top right): 29 → 1 → 9 → 2 → 27 → 11 → 21 → 17 → 12 → 28 → 22 → 10 → 3 → 6 → 30 → 19 → 8 → 15 → 16 → 23 → 7 → 14 → 5 → 13 → 18 → 24 → 4 → 25 → 26 → 20 → back to 29
+
+Let me reconsider for a better path:
+
+18 → 24 → 4 → 30 → 19 → 6 → 3 → 8 → 15 → 10 → 22 → 12 → 28 → 17 → 21 → 9 → 1 → 29 → 2 → 27 → 11 → 20 → 26 → 25 → 16 → 23 → 7 → 14 → 5 → 13 → 18
+
+Refined tour:
+
+18, 24, 4, 30, 19, 6, 3, 8, 15, 10, 22, 12, 28, 17, 21, 9, 1, 29, 2, 27, 11, 20, 26, 25, 16, 23, 7, 14, 5, 13

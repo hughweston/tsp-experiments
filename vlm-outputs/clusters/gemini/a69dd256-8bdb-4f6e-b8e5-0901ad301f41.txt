@@ -1,0 +1,17 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1: Top-Left Group**
+This group is located in the upper left quadrant of the image.
+*   1, 6, 10, 15, 19
+
+**Cluster 2: Top-Right Group**
+These points are clustered in the upper right section.
+*   2, 7, 12, 18
+
+**Cluster 3: Bottom-Left Group**
+This cluster is in the lower left corner and extends slightly towards the center bottom.
+*   3, 4, 5, 8, 13, 14, 20
+
+**Cluster 4: Bottom-Right Group**
+These points form a line or group in the lower right area.
+*   9, 11, 16, 17

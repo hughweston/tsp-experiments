@@ -1,0 +1,1802 @@
+To determine the shortest path, I will visually trace the most logical route connecting the nearest neighbors. The goal is to create a closed loop that visits every point exactly once without crossing itself (as crossings generally indicate a sub-optimal path in Euclidean TSP).
+
+Here is the step-by-step visual trace:
+
+1.  Let's start at the top left with point **7**.
+2.  Moving downwards and slightly right, the next closest is **1**.
+3.  Continuing that downward/leftward arc, we hit **29**, **27**, then **28**.
+4.  Further down is **10**, then **6**.
+5.  Moving rightward along the bottom, we encounter **18**, then **20**.
+6.  Continuing right, the cluster below includes **5**. From 5, it makes sense to dip down to **9**, then **3**.
+7.  Moving up slightly to catch the line, we go to **11**, then **4**, then **12**.
+8.  There is a point hanging low: **16**. It's best visited from 12 before moving on.
+9.  After 16, we move up and right to **23**, then **22**, and furthest right is **17**.
+10. Now we need to loop back towards the top. Moving left and up from 17, we hit **24**.
+11. Continuing leftward/upward into the central area, we find **14**.
+12. Above 14 is **2**.
+13. Above/left of 2 is **30**.
+14. Up and slightly left again is **13**.
+15. Moving right to the top edge, we hit **26**, then **15**, and the furthest top-right point is **19**.
+16. Now we need to close the loop back to the start (7). From 19, the path sweeps all the way left. We missed a few points in the upper middle. Let's backtrack mentally.
+    *   *Wait, looking at the center:* I skipped **8** and **25** and **21**. Let's re-evaluate the middle section.
+
+**Refined Path Trace:**
+
+Let's try a counter-clockwise sweep starting from the far right to make sure the central points are integrated smoothly.
+
+1.  Start at **17** (far right).
+2.  Go left to **22**, then **23**.
+3.  Go down to **16**.
+4.  Go up/left to **12**, then **4**, then **11**, then **3**, then **9**, then **5**. (This handles the bottom cluster).
+5.  Move left to **20**, then **18**.
+6.  Move left/down to **6**, then up to **10**.
+7.  Move up to **28**, then **27**, then **29**.
+8.  Move right to **1**.
+9.  Move up to **7**.
+10. Move right/down to **21**.
+11. From 21, go down to **25**, then down to **8**.
+12. From 8, go up/right to **13**.
+13. From 13, go up to **26**.
+14. Go right to **15**, then right to **19**.
+15. From 19, come back down/left to **30**, then **2**, then **14**.
+16. From 14, go down to **24**.
+17. From 24, go right to close the loop at **17**.
+
+Let's check the links on this second attempt.
+- 17 -> 24? Yes, close.
+- 24 -> 14? Yes.
+- 14 -> 2 -> 30? Yes, linear path.
+- 30 -> 13? Yes.
+- 13 -> 26 -> 15 -> 19? Yes, traces the top edge nicely.
+- *Correction:* From 19 to get back to the left side requires crossing the whole map. This indicates the loop structure is wrong. The path should generally follow the convex hull with indentations.
+
+**Third Attempt (following the perimeter and sweeping inward):**
+
+Let's start at **7** and go clockwise.
+1.  **7** -> **21**
+2.  **21** -> **26** -> **15** -> **19** (Top edge)
+3.  **19** -> **14** (Dropping down)
+4.  **14** -> **30** -> **2** (This little cluster)
+5.  **2** -> **24**
+6.  **24** -> **17** (Far right edge)
+7.  **17** -> **22** -> **23**
+8.  **23** -> **16** (Bottom right dip)
+9.  **16** -> **12** -> **4** -> **11** -> **3** -> **9** -> **5** (Bottom edge sweep)
+10. **5** -> **8** (Moving inward) -> **25** (Moving up) -> **13** (Moving up/right).
+    *   *Problem:* Now I'm at 13 and need to get to the left side. The neighbors of 13 are 26 (visited), 30 (visited), 25 (visited). I am stuck.
+
+Let's rethink the "neck" of the graph. The graph is roughly C-shaped or O-shaped with a hole in the middle-left.
+
+**Fourth Attempt (Left side, bottom, right side, top, middle):**
+
+1.  Start Top-Left: **7**.
+2.  Go down: **1**.
+3.  Go left/down: **29**, **27**, **28**.
+4.  Go down: **10**, **6**.
+5.  Go right: **18**, **20**.
+6.  Go right: **5**.
+    *   *Detour:* There's a cluster below (9, 3, 11...).
+    *   From 5, go to **8**? No, 8 is quite central. Let's stick to the edge.
+    *   From 5, go to **9**, **3**, **11**, **4**, **12**.
+7.  Go down/right: **16**.
+8.  Go up/right: **23**, **22**, **17**.
+9.  Go left/up: **24**.
+10. Go left: **14**.
+11. Go up/left: **2**, **30**.
+    *   *Bridge:* How to connect the top right (19, 15, 26) and the middle (13, 25, 8)?
+12. From 30, go to **13**.
+13. From 13, go to **26**, **15**, **19**.
+    *   *Dead end.* 19 is an endpoint. It needs to connect to two nodes.
+
+Let's look at **19**. Its only logical neighbors are 15 and maybe 14 or 24 (but those are far). It must be 15 and... likely 14 is too far. Let's look closer. 19 is very isolated. It basically has to link to 15. Where does it go from there? Maybe it loops all the way around? No, that's inefficient.
+Actually, **14** is the closest neighbor "below" 15/19. So a sequence like ...26-15-19-something doesn't work well unless it turns back.
+What about ...15-19-14...? That's a long jump.
+Maybe ...26-15-19... and ...30-2-14-24...?
+Let's look at **13**. It sits between 26 and 25.
+Let's look at **25**. It sits between 21 and 8 (or 13).
+Let's look at **8**. It sits between 25 and 5.
+
+**Let's try the "S" curve or Spiral approach:**
+
+Start **29** -> **27** -> **28** -> **10** -> **6** -> **18** -> **20** -> **5** -> **9** -> **3** -> **11** -> **4** -> **12** -> **16** -> **23** -> **22** -> **17** -> **24** -> **14** -> **2** -> **30** -> **13** -> **25** -> **8** -> *Wait, 8 is close to 5, which is already used*.
+Let's backtrack.
+If I go 25 -> 8, where can I go? 8 is near 5 and 20. But 5 and 20 are "bottom" track.
+Maybe the track splits?
+Let's reconsider the 8-25-21 axis.
+...7-21-25-8... This cuts down the middle.
+Then 8 connects to 5?
+Then 5 goes left to 20...18...6...10...28...27...29...1...7 (Closing the loop).
+This looks solid for the left half.
+Now the right half.
+From 8, instead of 5, what if we go right? No points there.
+So 8 must connect to 5 or 20 or 25.
+If the sequence is ...21-25-8-5..., then the left loop is: 5-20-18-6-10-28-27-29-1-7-21. This is a valid closed loop for the left side.
+Now, how do we insert the right side?
+The connection points would likely be around 5/9, or 13/30.
+Let's look at the top connection. 21 connects to 26? Distance is moderate. 13 is closer to 26.
+Let's try linking the two halves at the top and bottom.
+Top: 21 -> 26? Or 21 -> 13? Or 1 -> 13?
+Bottom: 5 -> 9?
+
+**Hypothesis Path:**
+Start Top-Left: **7**
+Down to **1**
+Left to **29**, **27**, **28**
+Down to **10**, **6**
+Right to **18**, **20**
+Right to **8** (Skipping 5 for a moment? No, 8 is higher).
+Let's go **20** -> **5**.
+From **5**, go down to **9**, **3**, **11**, **4**, **12**, **16**.
+From **16**, up to **23**, **22**, **17**.
+From **17**, left to **24**.
+From **24**, left to **14**.
+From **14**, up to **2**, then **30**.
+From **30**, right to **19**? No, too far. Up to **15**? No, 13, 26 are in the way.
+From **30**, left to **13**.
+From **13**, up to **26**, right to **15**, right to **19**.
+From **19**, long jump back? No.
+The 19-15-26 sequence is a dead end unless 26 connects to something else. 26 connects to 21 or 13.
+If 30 connects to 2, 14...
+Let's try: **30** -> **2** -> **14** -> **24** -> **17** -> **22** -> **23** -> **16** -> **12** -> **4** -> **11** -> **3** -> **9** -> **5** -> **8** -> **25** -> **13** -> **26** -> **15** -> **19**.
+From 19, where to? We need to close back to the left. The only way is a long edge, likely **19 -> 14** (crossed path) or **19 -> 21** (very long).
+This suggests **19** should be in the middle of a sequence, not an end, or 19 connects to 15 and something else.
+Actually, visually, **19** is an extremity. In TSP, extremities are usually "u-turns".
+So: ... -> **15** -> **19** -> **?**
+Maybe **19** connects to **14**? Let's check the distance 19-14 vs 15-14. 15 is closer to 14.
+So maybe **26** -> **19** -> **15**? No.
+Maybe **26** -> **15** -> **19** -> **14**? That's a huge jump.
+Wait, look at **30** and **26**. They are close.
+Look at **13**.
+Maybe: **25** -> **13** -> **30** -> **2** -> **14** -> **24** ... (right side loop) ... -> **?** -> **19** -> **15** -> **26** -> **21**.
+If we end with 26 -> 21, we can close the left loop.
+How do we get to 19? The closest points to 19 are 15 and 14.
+If we go **14** -> **19** -> **15** -> **26**, we bridge the gap.
+Is 14-19 reasonable? It's a long stretch, but it closes the corner.
+Let's trace that:
+... **24** -> **14** -> **19** -> **15** -> **26** -> **21** -> **7** ...
+Let's refine the right side with this assumption.
+Start **7** -> **1** -> **29** -> **27** -> **28** -> **10** -> **6** -> **18** -> **20** -> **5** -> **9** -> **3** -> **11** -> **4** -> **12** -> **16** -> **23** -> **22** -> **17** -> **24** -> **14** -> **2** -> **30** -> **13** -> **25** -> **8**.
+Now I am at 8. I need to connect to the top sequence (19, 15, 26, 21).
+8 is near 25 (visited). 8 is near 5 (visited).
+Maybe the order in the middle is different.
+Let's look at **8**, **25**, **13**, **30**, **2**.
+These form a zig-zag spine.
+8 -> 25 -> 13 -> 30 -> 2. This looks like a solid line.
+If we use that line:
+Left side connects to 8 (from 5 or 20?).
+Right side connects to 2.
+Let's try:
+...**20** -> **5** -> **8** -> **25** -> **13** -> **30** -> **2** -> **14**...
+From 14, go to **24** -> **17** -> **22** -> **23** -> **16** -> **12** -> **4** -> **11** -> **3** -> **9**.
+Uh oh. 9 needs to connect back to 5? But 5 went to 8.
+So 9 connects to 5, and 5 connects to 20?
+Let's try:
+...**20** -> **8** -> **25** -> **13** -> **30** -> **2** -> **14** -> **19** -> **15** -> **26** -> **21** -> **7**...
+This leaves the bottom right cluster (5, 9, 3...) isolated.
+The key must be the connection between the bottom-left (20, 18) and bottom-right (5, 9).
+**18** -> **20** -> **8** -> **5**?
+If we do 20 -> 8 -> 5, that's a tight triangle.
+Then 5 -> 9 -> 3 -> 11 -> 4 -> 12 -> 16 -> 23 -> 22 -> 17 -> 24 -> 14 -> 2 -> 30 -> 13 -> 25 -> 21?
+Then 21 -> 26 -> 15 -> 19?
+Then 19 back to top left?
+19 to 7 is HUGE.
+The cycle must circle the whole group.
+
+**Let's try the full perimeter trace again:**
+
+1.  **7** (Top Left)
+2.  **21** (Moving Right)
+3.  **25** (Dip down) - *Wait, 21-26 is better for perimeter.*
+    Let's stick to strict perimeter first to see the shape.
+    7-21-26-15-19-14-24-17-22-23-16-12-4-3-9-5-20-18-6-10-28-27-29-1-7.
+    *Leftover internal points:* 25, 13, 30, 2, 8, 11.
+    Let's integrate them.
+
+    *   **25**: Between 21 and 8? Or 21 and 13?
+    *   **13**: Near 26, 30, 25.
+    *   **30**: Near 13, 2.
+    *   **2**: Near 30, 14.
+    *   **8**: Near 25, 5, 20.
+    *   **11**: Near 3, 4, 5.
+
+    **Integration Strategy:**
+    *   At **21**: instead of going to 26, go inwards? **21 -> 25 -> 13 -> 26**. (Good path).
+    *   At **26**: go **26 -> 15 -> 19**.
+    *   From **19**: we need to go down. **19 -> 14** is the only real option to keep going CW.
+    *   From **14**: Integrate 2 and 30. **14 -> 2 -> 30**. Now at 30, need to go to 24? That's crossing back.
+        *Alternative:* **19 -> ?** 14 is far. Maybe **15 -> 14**? No, 15-19-14 is a sharp V.
+        Maybe **30** connects to **26**?
+        Let's try path: **...25 -> 13 -> 30 -> 26 -> 15 -> 19 -> 14...**? No, 30-26 is backtracking. 13-26 is better.
+        Let's try: **...21 -> 25 -> 8 -> 5 -> ...** (going bottom)
+        This splits the graph.
+
+    **Let's try a counter-clockwise spiral starting from 7.**
+    1.  **7** -> **1**
+    2.  **1** -> **29**
+    3.  **29** -> **27**
+    4.  **27** -> **28**
+    5.  **28** -> **10**
+    6.  **10** -> **6**
+    7.  **6** -> **18**
+    8.  **18** -> **20**
+    9.  **20** -> **8**
+    10. **8** -> **5**
+    11. **5** -> **9**
+    12. **9** -> **3**
+    13. **3** -> **11**
+    14. **11** -> **4**
+    15. **4** -> **12**
+    16. **12** -> **16**
+    17. **16** -> **23**
+    18. **23** -> **22**
+    19. **22** -> **17**
+    20. **17** -> **24**
+    21. **24** -> **14**
+    22. **14** -> **2**
+    23. **2** -> **30**
+    24. **30** -> **13**
+    25. **13** -> **25**
+    26. **25** -> **21**
+    27. **21** -> **26**
+    28. **26** -> **15**
+    29. **15** -> **19**
+    30. **19** -> **7** ??
+        *Check distance 19-7:* It spans the entire top width. This is very unlikely.
+        There must be a bridge across the top.
+        Look at **26**. It's between 21 and 15.
+        Path so far: ...21 -> 26 -> 15 -> 19.
+        From 19, we must loop back. But 19 is an end.
+        This implies the loop direction is wrong or 19 isn't the end of that segment.
+        Is it possible **19 -> 14**? Then loop around bottom, come up left side?
+        Let's try linking 19 to 14.
+        **15 -> 19 -> 14** isn't too bad if 14 connects to 2.
+        **19 -> 15 -> 26 -> 30 -> 13 -> 25 -> 21 -> 7 -> 1 -> 29 -> 27 -> 28 -> 10 -> 6 -> 18 -> 20 -> 8 -> 5 -> 9 -> 3 -> 11 -> 4 -> 12 -> 16 -> 23 -> 22 -> 17 -> 24 -> 2 -> 14** -> (Close to 19?) No, 14 is already visited.
+        Let's adjust the right side.
+        **...24 -> 2 -> 14 -> 19?** No, 14-19 is a jump.
+        **...24 -> 14 -> 2 -> 30 -> 13 -> 26 -> 15 -> 19**.
+        From 19, close to **17**? No, 17 is far down.
+        From 19, close to **21**? No.
+        From 19, close to **22**? No.
+
+    **Let's reconsider the neighbors of 19.**
+    1. **15** (Closest)
+    2. **14** (Next closest visually)
+    3. **26** (Further)
+    4. **24** (Further)
+    So the path segment must be **...15-19-14...** or **...14-19-15...**.
+    Let's assume **15-19-14**.
+    Then from **14**, nearest is **2** or **24**.
+    If **14 -> 24**, then **24 -> 17 -> 22 -> 23...** (down right).
+    If **14 -> 2**, then **2 -> 30 -> 13 -> 26**? Then **26 -> 21**?
+    This leaves **15** disconnected from **26**.
+    Ah, **26 -> 15** is a strong link.
+    So sequence: **26 -> 15 -> 19 -> 14**.
+    Let's trace from there.
+    **14 -> 24 -> 17 -> 22 -> 23 -> 16 -> 12 -> 4 -> 11 -> 3 -> 9 -> 5**.
+    From **5**: **5 -> 8 -> 20 -> 18 -> 6 -> 10 -> 28 -> 27 -> 29 -> 1 -> 7 -> 21**.
+    From **21**: **21 -> 25 -> 13 -> 30 -> 2**.
+    From **2**: Connect to start of chain (**26**)?
+    Distance **2 -> 26**? It's a bit of a stretch, crossing over 30/13.
+    Better: **21 -> 25 -> 13 -> 26**.
+    So where does **30** and **2** fit?
+    **13 -> 30 -> 2**?
+    Then **2 -> 14**?
+    Let's re-stitch.
+    ...**25 -> 13 -> 30 -> 26**? No.
+    ...**25 -> 13 -> 26**. Then **26 -> 15 -> 19 -> 14**.
+    Then **14 -> 2 -> 30**.
+    From **30**: where to?
+    Maybe **30 -> 24**? No, 24 is far.
+    Maybe **30 -> ?**.
+    Let's look at **2**. It's between 14, 30, and maybe 24.
+    Let's try a different right-side topology.
+    **...13 -> 30 -> 2 -> 24 -> 17 -> 22 -> 23 -> 16...**
+    And the top: **...13 -> 26 -> 15 -> 19 -> 14**.
+    This leaves 14 hanging.
+    How about **19 -> 14 -> 2**?
+    Then **2 -> 30 -> 13 -> 26**? No, loop.
+    What if **24** connects to **14**?
+    **17 -> 24 -> 14 -> 2 -> 30 -> 13 -> 26 -> 15 -> 19**.
+    From 19, we are stuck again.
+
+    **Let's break the deadlock at 19.**
+    Maybe 19 connects to **22**? No.
+    Maybe the sequence is **15-26-30-2-14-19**? No, 14-19 and 19-something.
+    What if 19 is connected to **15** and **26**? No, 26 is far.
+    What if 19 is connected to **15** and **24**? (Skipping 14).
+    Distance 19-24 is large. 14 is right in the way.
+    It has to be **15-19-14**. I am fairly confident in this. It's the only way to turn the corner without crossing lines significantly.
+    So the chain segment is **26-15-19-14-24**.
+    Wait, check **14-24**.
+    14 is closer to 2.
+    Is it **26-15-19-14-2-30-13-25...**?
+    Let's see. **14-2** is short. **2-30** is short. **30-13** is short. **13-25** is short. **25-8** is short. **8-5** is short.
+    This creates a "zipper" down the middle.
+    What about **24**?
+    It's left out.
+    If **14** goes to **2**, how do we get to **24**?
+    Maybe **24** connects to **2**?
+    Let's check distance **24-2**. It's moderate.
+    **17-24-2**.
+    Then **2-14-19-15-26**?
+    Then **26-30-13**?
+    30 is very close to 26 and 13.
+    Sequence: **17-24-2-14** (Backtrack).
+    How about **17-24-14-19-15-26-30-2**?
+    14-19-15-26 is a hook.
+    26-30 is short.
+    30-2 is short.
+    2-...
+    Where does 13 go? 30-13 is short.
+    So **26-30-13**.
+    Then where does 2 go?
+    **13-2**? No, 30 is in between.
+    So **26-30-2-14**.
+    Where does 13 go? **25-13-30**? Or **25-13-26**?
+    If **25-13-26-15-19-14-2-30**... dead end at 30.
+    
+    Let's look at the cluster **13, 30, 2, 14, 24**.
+    Path: **...25-13-26-15-19-14-2-30...**
+    From 30, can we go to **24**? No, cross over 2.
+    From 30, can we go to **2**? Already visited.
+    From 30, go to **24** directly? Crossing 2-14 line?
+    
+    Let's try a different configuration for the top right.
+    **21-25-13-30-26-15-19-14-2-24-17...**
+    *   21-25: OK.
+    *   25-13: OK.
+    *   13-30: OK.
+    *   30-26: OK.
+    *   26-15: OK.
+    *   15-19: OK.
+    *   19-14: OK (Long jump).
+    *   14-2: OK.
+    *   2-24: OK.
+    *   24-17: OK.
+    *   17-22: OK.
+    This looks plausible. The only sketchy link is 19-14.
+    Let's verify 30-26. 30 is below 26. 13 is to left of 30.
+    So 13-30-26 is a sharp V? 13 to 26 directly is better.
+    If **13-26**, where does 30 go? **26-30**?
+    Then **30-2**?
+    Let's try: **21-25-13-26-15-19-14-30-2-24**?
+    14-30 crosses 2. Bad.
+    
+    What if **19** connects to **2**?
+    19-2 is very far.
+    
+    Let's look at **14**. Neighbors: 2, 19, 24, 30.
+    14 is central to that right-side gap.
+    Path must be **2-14-24** or **24-14-2** or **19-14-2** or **19-14-24**.
+    Given 19 is an end-cap, it must be **15-19-14**.
+    So we arrive at 14.
+    Leaving 14, we go to **2** or **24**.
+    If we go **14-24**, then **24-17...**. This leaves **2** isolated with **30**.
+    So we would need to come back to 2 from the bottom loop? No, that's messy.
+    We need to pick up 2 and 30 on the way down.
+    So **14-2**.
+    Then **2-30**.
+    Then **30-13**.
+    Then **13-26**.
+    Then **26-15**.
+    Then **15-19**.
+    Wait, this is going backwards.
+    Let's flow it:
+    **19 -> 15 -> 26 -> 13 -> 30 -> 2 -> 14 -> 24 -> 17**.
+    This feels very clean.
+    Links:
+    *   19-15: Good.
+    *   15-26: Good.
+    *   26-13: Good.
+    *   13-30: Good.
+    *   30-2: Good.
+    *   2-14: Good.
+    *   14-24: Good.
+    *   24-17: Good.
+    This handles the entire top-right block beautifully.
+    Now, how do we get into **19** and out of **17**?
+    Or into 26?
+    Actually, **13** connects to **25**.
+    So the chain extends: **...21-25-13-30-26-15-19...** (stuck at 19).
+    This direction (CCW top inner) forces a dead end at 19.
+    
+    So we must enter at 19 or exit 19 towards the "bridge" (14).
+    Let's try the sequence reversed:
+    **17 -> 24 -> 14 -> 2 -> 30 -> 13 -> 26 -> 15 -> 19**.
+    Now at 19. Must go to **14**? No, visited.
+    Must go to **15**? Visited.
+    So this sequence is a dead end.
+    
+    Therefore, the connection **19-14** is mandatory to create a loop, OR **19-?**.
+    Wait, is **19-26** possible? 15 is between them.
+    Is **19-30** possible? No.
+    Is **19-24** possible? 14 is between them.
+    
+    Could the order be **...26-15-19-14-24-17...**? (Skipping 2, 30, 13).
+    Then we need to grab 2, 30, 13 later.
+    How? **...17-22-23-16-12-4-11-3-9-5-8-25-13-30-2-?**
+    From 2, close the loop to left side?
+    2 is near 14 (visited). 2 is near 30 (visited).
+    2 needs to connect to the start of the loop.
+    If start is left side, e.g. **21**.
+    Is **2-21** a link? No.
+    Is **2-1**? No.
+    
+    Let's re-examine **19-14**. Is there a dot I missed? No.
+    Is it **19-2**? It passes 14.
+    
+    What if the order is **15-26-13-30-2-14-19**? Then from 19 go to **24**?
+    19-24 is a long jump but not impossible. It bypasses 14.
+    If we do **14-19-24**, that's a sharp V at 19.
+    Then **24-17...**.
+    Then we have **15-26-13-30-2-14**.
+    Where does 15 connect? To **21**?
+    Let's try: **21-?**. **21-25** or **21-26**.
+    If **21-26**, then **26-13-30-2-14-19-15**? No, 15 is up top.
+    
+    Let's try **21-26-15-19-14-2-30-13-25-8-5...**
+    *   21-26: OK.
+    *   26-15: OK.
+    *   15-19: OK.
+    *   19-14: OK (The Jump).
+    *   14-2: OK.
+    *   2-30: OK.
+    *   30-13: OK.
+    *   13-25: OK.
+    *   25-8: OK.
+    *   8-5: OK.
+    This consumes the middle block. What about the right side (**24, 17, 22, 23, 16...**)?
+    We skipped 24.
+    Where can 24 fit?
+    It's near 14, 2, 17.
+    In the previous chain: ...19-14-2...
+    Could we do **19-14-24-17-22-23-16-12-4-11-3-9-5...**?
+    Then we miss 2, 30, 13, 25, 8.
+    This implies the graph has two lobes on the right?
+    Upper lobe: 19, 15, 26, 13, 30, 2.
+    Lower lobe: 17, 24, 22, 23, 16.
+    Connector: 14.
+    
+    Let's weave them.
+    **...21-25-8-5-9-3-11-4-12-16-23-22-17-24-14-2-30-13-26-15-19...**
+    And from 19, back to 21? No, 21 is start. Back to 7?
+    Distance 19-7 is huge.
+    Distance 19-21 is huge.
+    This means the loop cannot start/end with 21/19 gap.
+    
+    The loop must bridge the top gap.
+    **7-21-25-13-26-15-19...** is bad because we get stuck at 19.
+    
+    **CRITICAL INSIGHT:** The path likely goes **7-19**? No. **1-19**? No.
+    The top row is **7...26...15...19**.
+    Maybe **7-21-26-15-19**?
+    Then **19-14** is the return path.
+    Then **14-24-17** (Right edge down).
+    Then **17-22-23-16** (Bottom right corner).
+    Then **16-12-4-11-3-9** (Bottom edge).
+    Then **9-5** (Bottom middle).
+    Then **5-8-25** (Up the middle).
+    Then **25-13** (Up).
+    Then **13-30** (Right).
+    Then **30-2** (Down/Right).
+    Now we are at 2. We need to get back to the left side (1, 29, 27...).
+    2 is deep inside.
+    Wait, I missed the left side connection.
+    Start again from left side.
+    **29-27-28-10-6-18-20**.
+    From 20, we can go to **5**.
+    From 5, we can go to **8**.
+    From 8, we can go to **25**.
+    From 25, we can go to **21**.
+    From 21, we can go to **7**.
+    From 7, we can go to **1**.
+    From 1, we can go to **29**.
+    This is a closed left loop.
+    
+    Now where do we splice in the right side?
+    Connections:
+    *   21-26
+    *   25-13
+    *   8-?
+    *   5-9
+    *   20-?
+    *   18-?
+    
+    Best splice points:
+    Top: **21-26**.
+    Middle: **25-13**.
+    Bottom: **5-9**.
+    
+    Let's try splicing at the top and bottom to create one big loop.
+    Go up left side: ...**20-18-6-10-28-27-29-1-7-21**.
+    Cross to right: **21-26**.
+    Go along top right: **26-15-19**.
+    Turn down: **19-14**.
+    Go to right edge: **14-24-17**.
+    Go down right edge: **17-22-23-16**.
+    Go along bottom: **16-12-4-11-3-9**.
+    Connect to left side: **9-5**.
+    From 5: **5-8-25-13-30-2**.
+    Now we are at 2. We need to close the loop.
+    We entered the right side at 21->26.
+    We came back at 9->5.
+    But we have a "tail" ending at 2.
+    And we visited 21...5... in the left loop.
+    
+    Let's correct the sequence.
+    **Start 7**.
+    **7-21**.
+    **21-25**? Or **21-26**?
+    Let's try **21-25**.
+    **25-8**.
+    **8-5**.
+    **5-20**.
+    **20-18-6-10-28-27-29-1**.
+    **1-7**. (Left Loop Closed).
+    
+    Now insert right side.
+    Break 5-20 link? No, 5-9 is better.
+    Break 21-25 link? **21-26**.
+    Break 25-8 link? **25-13**.
+    
+    Let's try this path:
+    **7 -> 1 -> 29 -> 27 -> 28 -> 10 -> 6 -> 18 -> 20 -> 5**.
+    From 5, go into right side: **5 -> 9 -> 3 -> 11 -> 4 -> 12 -> 16 -> 23 -> 22 -> 17**.
+    From 17, go up: **17 -> 24 -> 14**.
+    From 14, go to tip: **14 -> 19**.
+    From 19, go left: **19 -> 15 -> 26**.
+    From 26, go down/in: **26 -> 13 -> 30 -> 2**.
+    From 2, where to go? **2 -> 25**? (Distance is medium).
+    **2 -> 8**? (Distance is medium).
+    Let's look at **25**. 25 needs to connect to **21** and **8**.
+    So we need the sequence **21-25-8**.
+    From 8, we can go to **2**?
+    Let's check **8-2**. It crosses 30/13/25 lines.
+    But look at the map. 8 is central. 2 is central right.
+    There is a clear path **8-25-13-30-2**. This "spine" I found earlier.
+    Let's maintain that spine.
+    **...8-25-13-30-2...**
+    Where does 8 come from? **5? 20?**
+    Where does 2 go to? **14? 24?**
+    
+    Let's try connecting the spine to the rest.
+    **20 -> 8**.
+    **8 -> 25 -> 13 -> 30 -> 2**.
+    **2 -> 14**.
+    **14 -> 19 -> 15 -> 26**.
+    **26 -> 21**.
+    **21 -> 7 -> 1 -> 29 -> 27 -> 28 -> 10 -> 6 -> 18**.
+    **18 -> 20** (Loop closed).
+    
+    Wait, I missed the bottom right (9, 3, 11... 17, 24).
+    Where do they fit?
+    They are off 5 and 14/24.
+    
+    Let's splice the bottom right into the path above.
+    The path above had **2 -> 14** and **20 -> 8**.
+    It skipped 5 completely? No, 8 is near 5.
+    Neighbors of 5: 9, 20, 8.
+    Neighbors of 14: 2, 24, 19.
+    
+    Proposed Path:
+    Start **21**.
+    **21 -> 26 -> 15 -> 19 -> 14**.
+    **14 -> 24 -> 17 -> 22 -> 23 -> 16 -> 12 -> 4 -> 11 -> 3 -> 9**.
+    **9 -> 5**.
+    **5 -> 8**? Or **5 -> 20**?
+    If **5 -> 20**, then **20 -> 18 -> 6 -> 10 -> 28 -> 27 -> 29 -> 1 -> 7**.
+    Then **7 -> 21**? No, we started at 21. Loop closed?
+    Wait, what about **2, 30, 13, 25**?
+    They are inside.
+    We need to visit them.
+    We are at **5**.
+    Instead of 5->20, go **5 -> 8**.
+    **8 -> 25 -> 13 -> 30 -> 2**.
+    Now at 2.
+    We need to get to 20 to finish the left side.
+    **2 -> 20**? No, far.
+    **2 -> ?**
+    The only neighbors of 2 are 30, 14, and maybe 24.
+    We came from 30. 14 and 24 are visited in the proposed path (14->24).
+    This means we cannot do the outer loop 14->24 first.
+    We must do inner loop first?
+    **14 -> 2 -> 30 -> 13 -> 25 -> 8**.
+    From 8, go to **5**.
+    From 5, go to **9 -> 3 -> 11... -> 17 -> 24**.
+    From 24, go to **?**
+    24 needs to connect to the chain.
+    If we came from 14->2...
+    Then 24 connects to **14**? No, 14 is start of that segment.
+    24 connects to **?**.
+    Maybe **24 -> 19**? No.
+    Maybe **19 -> 15 -> 26 -> 21 -> 7 -> 1... -> 20**.
+    Then **20 -> ?**
+    
+    Let's look at **24**. It is a gateway node.
+    It connects to **17** and **14**.
+    Let's look at **14**. It connects to **19**, **2**, **24**.
+    This is a T-junction.
+    In a tour, we must enter on one and exit on another.
+    Path A: Enter 19, Exit 2. (Sequence 19-14-2). 24 is orphan.
+    Path B: Enter 19, Exit 24. (Sequence 19-14-24). 2 is orphan.
+    Path C: Enter 2, Exit 24. (Sequence 2-14-24). 19 is orphan.
+    
+    Since 19 is a dead end, it *must* be connected to 15 and 14. (Or 15 and 26, unlikely).
+    Let's assume **15-19-14**.
+    Then at 14, we must go to **2** or **24**.
+    If we go **14-2**, then 24 must be visited later. How?
+    ... -> 2 -> ... -> (loop around) -> 17 -> 24 -> (where?).
+    24 must connect to something else.
+    Is 24 near 2? Yes.
+    Is 24 near 30? No.
+    Is 24 near 14? Yes.
+    So if we have segment 17-24, 24 must connect to 2 or 14.
+    If 14 is used (19-14-2), then 24 must connect to 2.
+    Sequence: **...17-24-2-14-19...**.
+    Let's check **24-2**. Distance is okay. It crosses the 14-24 line visually? No, 14 is above. 2 is above left. 24 is below right.
+    Triangle: 14(top), 2(left), 24(right).
+    Path **2-14-24** is sides of triangle. Path **24-2-14** is other sides.
+    Path **17-24-2** looks feasible.
+    Then **2-30-13-25-8-5**?
+    From 5, go **5-9-3...-16-23-22-17**.
+    This forms a loop on the right!
+    Let's trace: **2-30-13-25-8-5-9-3-11-4-12-16-23-22-17-24-2**.
+    This is a closed loop for the right side + middle.
+    Now attach the left side and top.
+    Left side: **7...20**.
+    Top: **21, 26, 15, 19**.
+    Splice points:
+    Connect **20** to **8**? (8 is in loop).
+    Connect **21** to **25**? (25 is in loop).
+    Connect **19** to **14**? (14 is near 2 in loop).
+    Connect **26** to **13**? (13 is in loop).
+    
+    Let's build the master sequence:
+    Start **7** -> **1** -> **29** -> **27** -> **28** -> **10** -> **6** -> **18** -> **20**.
+    From 20, splice into the "Right Loop" at **8** (20-8 is close).
+    Enter at 8, traverse backwards to 25? Or forwards to 5?
+    Let's go **20 -> 8**.
+    Then **8 -> 5**.
+    Then **5 -> 9 -> 3 -> 11 -> 4 -> 12 -> 16 -> 23 -> 22 -> 17 -> 24**.
+    From 24, go to **2**. (24-2 splice).
+    From 2, go to **14**.
+    From 14, go to **19**.
+    From 19, go to **15**.
+    From 15, go to **26**.
+    From 26, go to **13**.
+    From 13, go to **30**.
+    From 30, go to **25**? No, 30 and 13 are swapped in my mental map?
+    Let's check image: 13 is between 26 and 25. 30 is between 13 and 2.
+    So sequence from 26: **26 -> 13 -> 30 -> 2**?
+    But we visited 2 earlier from 24.
+    Let's fix the 2-14-19-15-26-13-30 block.
+    We arrived at **24**.
+    Go **24 -> 2**?
+    Then **2 -> 30**.
+    Then **30 -> 13**.
+    Then **13 -> 26**.
+    Then **26 -> 15**.
+    Then **15 -> 19**.
+    Then **19 -> 14**.
+    Then **14 -> ?**. 14 connects to 2, 24, 19.
+    2 and 24 and 19 are used. 14 is a dead end?
+    Ah, 14 is adjacent to 2, 24, 19.
+    Sequence: **24 -> 2 -> 30 -> 13 -> 26 -> 15 -> 19 -> 14**.
+    From 14, where do we go?
+    We have 21, 25, 7 left to integrate.
+    And we are currently at 8 (start of block).
+    So we need to link 14 back to 8? No, 14 to 25?
+    14 is far from 25.
+    
+    Let's change the order in the top right block.
+    Arrive at 24.
+    **24 -> 17**? No, came from 17.
+    **24 -> 14**.
+    **14 -> 19**.
+    **19 -> 15**.
+    **15 -> 26**.
+    **26 -> 13**.
+    **13 -> 30**.
+    **30 -> 2**.
+    **2 -> ?**
+    We need to get to **25** (to connect to 21/7) or back to **8** (if 25 was before 8).
+    Sequence so far: **...20-8-5...**
+    Where is 25?
+    Let's put 25 between 21 and 8.
+    **...7-21-25-8-5...**
+    So 25 is visited.
+    We need to connect **2** to **21**? No.
+    We need to connect **2** to **25**?
+    No, 25 is used.
+    Is there an unvisited neighbor of 2?
+    We have visited 2, 30, 13, 26, 15, 19, 14, 24, 17...
+    The chain ends at 2.
+    We need to close the loop to **7**.
+    Is **2** near **7**? No.
+    Is **2** near **1**? No.
+    
+    This implies the path **20-8** or **21-25** splice is wrong.
+    
+    Let's try the "Spiral In" approach again, very carefully.
+    
+    1.  **7** -> **1**
+    2.  **1** -> **29**
+    3.  **29** -> **27**
+    4.  **27** -> **28**
+    5.  **28** -> **10**
+    6.  **10** -> **6**
+    7.  **6** -> **18**
+    8.  **18** -> **20**
+    9.  **20** -> **5**
+    10. **5** -> **9**
+    11. **9** -> **3**
+    12. **3** -> **11**
+    13. **11** -> **4**
+    14. **4** -> **12**
+    15. **12** -> **16**
+    16. **16** -> **23**
+    17. **23** -> **22**
+    18. **22** -> **17**
+    19. **17** -> **24**
+    20. **24** -> **14**
+    21. **14** -> **19**
+    22. **19** -> **15**
+    23. **15** -> **26**
+    24. **26** -> **21**
+    25. **21** -> **25**
+    26. **25** -> **13**
+    27. **13** -> **30**
+    28. **30** -> **2**
+    29. **2** -> **8** ?? (Jump 2 to 8?)
+    30. **8** -> **?**
+        Leftover: **8**.
+        Where can 8 go? 8 needs to connect to start (7) or end (2).
+        8 is near 5 and 20 (visited).
+        This path fails because 8 is isolated at the end.
+    
+    Correction: Visit 8 earlier.
+    Between 20 and 5? **20 -> 8 -> 5**.
+    Let's trace with 8 included.
+    ...**20 -> 8 -> 5**...
+    Rest of path same: ...**24 -> 14 -> 19 -> 15 -> 26 -> 21 -> 25 -> 13 -> 30 -> 2**.
+    Now at 2.
+    Need to close to **7**.
+    **2 -> 7**? No.
+    
+    Okay, the issue is the **21-25-13-30-2** chain. It ends deep inside.
+    We need to flow **through** it.
+    **26 -> 13 -> 30 -> 2 -> 25**? (Is 2 close to 25? No, 13/30/8 are closer).
+    Let's look at 25. Neighbors: 21, 13, 8.
+    So flow must be **21-25-13** or **21-25-8** or **8-25-13**.
+    
+    If **8-25-13**:
+    ...**20 -> 5 -> 9 ... -> 14 -> 19 -> 15 -> 26**.
+    Now we are at 26.
+    Connect **26 -> 21**.
+    Connect **21 -> 7**.
+    Connect **7 -> 1**.
+    Wait, we started at 7.
+    So ends are **26** and **13** (from the 8-25-13 chain).
+    Connect **26 -> 13**.
+    Is that valid? Yes, they are close.
+    Let's verify the whole loop.
+    
+    Start: **7**
+    Left side: **7-1-29-27-28-10-6-18-20**.
+    Bottom/Right: **20-5-9-3-11-4-12-16-23-22-17**.
+    Turn Up: **17-24-14**.
+    Tip: **14-2**. (Detour to 2? Then 2-30-19? No).
+    Let's detour to 2 block.
+    **14 -> 2 -> 30**.
+    **30 -> 19**? No.
+    **30 -> 13**? Yes.
+    **13 -> 25**.
+    **25 -> 8**.
+    **8 -> ?**
+    8 is near 5 and 20.
+    We passed 20-5. We can splice 8 in.
+    **20 -> 8 -> 5**.
+    
+    So the main loop follows perimeter.
+    The internal points (2, 30, 13, 25) must be visited.
+    Path segment: **14 -> 2 -> 30 -> 13 -> 26?**
+    If we go to 26, then **26 -> 15 -> 19**.
+    Then **19 -> ?**. 19 is dead end.
+    So we must turn around at 19.
+    **26 -> 15 -> 19 -> 14** (Used 14 already).
+    
+    Okay, **19, 15, 26** is one group.
+    **2, 30, 13** is another.
+    **14** is the hub.
+    **21, 25, 8** is another.
+    
+    Let's try a linear flow from left to right, top to bottom.
+    **7-21-26-15-19**.
+    **19-14**.
+    **14-24-17-22-23-16-12-4-11-3-9-5**.
+    **5-8**.
+    **8-20-18-6-10-28-27-29-1**.
+    **1-7**.
+    Leftover: **25, 13, 30, 2**.
+    These are in the upper middle.
+    Can we fit them in **21...26**?
+    **21-25-13-30-2-26**?
+    2-26 is a jump.
+    **21-25-13-26**. (Leave 30, 2).
+    Where to put 30, 2?
+    Between **14** and **19**? No.
+    Between **14** and **24**? **14-2-30-24**? No.
+    Between **26** and **15**? **26-30-2-15**? No.
+    
+    How about **14 -> 2 -> 30 -> 13 -> 25**.
+    Then **25 -> 8**.
+    Then **8 -> 5**.
+    This connects the Top Right (via 14) to the Bottom/Middle (via 8).
+    
+    Let's trace this Full Path:
+    Start **7**.
+    **7 -> 21**.
+    **21 -> 26**.
+    **26 -> 15**.
+    **15 -> 19**.
+    **19 -> 14**.
+    **14 -> 2**.
+    **2 -> 30**.
+    **30 -> 13**.
+    **13 -> 25**.
+    **25 -> 8**.
+    **8 -> 5**.
+    **5 -> 9**.
+    **9 -> 3**.
+    **3 -> 11**.
+    **11 -> 4**.
+    **4 -> 12**.
+    **12 -> 16**.
+    **16 -> 23**.
+    **23 -> 22**.
+    **22 -> 17**.
+    **17 -> 24**.
+    **24 -> ?**
+    Leftover: Left side (**1, 29, 27, 28, 10, 6, 18, 20**).
+    And we need to close 24 back to 7.
+    **24** is far from 7.
+    **24** is far from 20.
+    So the loop is broken.
+    
+    We need to traverse the right side (17..16) *before* coming inward to 8?
+    From **14**: **14 -> 24**.
+    **24 -> 17 -> 22 -> 23 -> 16 -> 12 -> 4 -> 11 -> 3 -> 9 -> 5**.
+    From **5**: **5 -> 8**.
+    **8 -> 25**.
+    **25 -> 13**.
+    **13 -> 30**.
+    **30 -> 2**.
+    Now at **2**.
+    We have handled everything except **21, 26, 15, 19** and the left loop.
+    **2 -> ?**
+    2 is near 14.
+    If we started at 14?
+    This configuration seems to isolate 2.
+    
+    Let's look at **2** again.
+    Closest points: **30**, **14**.
+    So in the chain it MUST be **30-2-14** or **14-2-30**.
+    Let's assume **14-2-30**.
+    Then **30-13**.
+    Then **13-25**.
+    Then **25-21**.
+    Then **21-7**.
+    Then **7-1-29...-20**.
+    Then **20-8-5-9...-24**.
+    Then **24-17**. (Wait, 24 is near 17).
+    Then **17-22...**
+    Where does the right loop connect back to the top?
+    We have ends: **24** (from bottom) and **14** (start of top chain).
+    Connect **24-14**.
+    Where does the top chain end?
+    **...25-21-7-1...-20-8-5...**
+    And we missed **26, 15, 19**.
+    Insert them near **21** or **13**.
+    **21-26-15-19**.
+    Now at **19**. Must connect to **14**.
+    Sequence: **19-14**.
+    
+    **FINAL PROPOSED PATH:**
+    Start **19**.
+    **19 -> 15**.
+    **15 -> 26**.
+    **26 -> 21**.
+    **21 -> 7**.
+    **7 -> 1**.
+    **1 -> 29**.
+    **29 -> 27**.
+    **27 -> 28**.
+    **28 -> 10**.
+    **10 -> 6**.
+    **6 -> 18**.
+    **18 -> 20**.
+    **20 -> 8**.
+    **8 -> 5**.
+    **5 -> 9**.
+    **9 -> 3**.
+    **3 -> 11**.
+    **11 -> 4**.
+    **4 -> 12**.
+    **12 -> 16**.
+    **16 -> 23**.
+    **23 -> 22**.
+    **22 -> 17**.
+    **17 -> 24**.
+    **24 -> 2**. (Jump? Check visual. 24 is right, 2 is left-up. 14 is between. 24-2 is valid if 14 is skipped).
+    **2 -> 30**.
+    **30 -> 13**.
+    **13 -> 25**.
+    **25 -> ?**
+    We need to close to **19**.
+    25 is near 21, 8.
+    This doesn't close.
+    
+    Let's tweak the top right again.
+    **...17 -> 24 -> 14**.
+    **14 -> 2**.
+    **2 -> 30**.
+    **30 -> 13**.
+    **13 -> 25**.
+    **25 -> 8** (Backwards? No).
+    **25 -> 21**.
+    **21 -> 26**.
+    **26 -> 15**.
+    **15 -> 19**.
+    **19 -> ?**
+    Loop needs to close to **17**? No.
+    Loop needs to close to **start**.
+    If start is **19**, we need to end at 19.
+    Previous end was 19.
+    Start was... where did we connect 25?
+    We need to put the **7...20** block in.
+    **25 -> 21 -> 7 -> ... -> 20 -> 8**.
+    Now we have ends: **8** and **5** (from 5->9...).
+    Connect **8 -> 5**.
+    
+    Let's verify this complete cycle:
+    **19 -> 14** (Long link, unavoidable).
+    **14 -> 24**.
+    **24 -> 17**.
+    **17 -> 22**.
+    **22 -> 23**.
+    **23 -> 16**.
+    **16 -> 12**.
+    **12 -> 4**.
+    **4 -> 11**.
+    **11 -> 3**.
+    **3 -> 9**.
+    **9 -> 5**.
+    **5 -> 8**.
+    **8 -> 20**.
+    **20 -> 18**.
+    **18 -> 6**.
+    **6 -> 10**.
+    **10 -> 28**.
+    **28 -> 27**.
+    **27 -> 29**.
+    **29 -> 1**.
+    **1 -> 7**.
+    **7 -> 21**.
+    **21 -> 25**.
+    **25 -> 13**.
+    **13 -> 30**.
+    **30 -> 2**.
+    **2 -> 26**? (Is 2 close to 26? 30 is between. 2-26 is a stretch).
+    **26 -> 15**.
+    **15 -> 19**.
+    
+    Problem: **2 -> 26**.
+    Alternative: **2 -> 30** -> **13 -> 26**.
+    (Current path: ...25 -> 13 -> 30 -> 2).
+    Swap: **25 -> 2**? No.
+    Swap: **25 -> 13 -> 26**.
+    Where do 30 and 2 go?
+    **26 -> 30 -> 2**.
+    Then **2 -> 15**? No.
+    Then **2 -> 14**? Yes!
+    Wait, 14 is connected to 19 and 24.
+    If **2 -> 14**, then 14 must disconnect from 24 or 19.
+    Disconnect 14-24.
+    **24 -> 17...** means we must get to 24 from somewhere else.
+    From **2**? **2 -> 24**.
+    
+    Revised Loop:
+    **19 -> 15**.
+    **15 -> 26**.
+    **26 -> 13**.
+    **13 -> 30**.
+    **30 -> 25**? No.
+    **13 -> 25**.
+    **25 -> 21**.
+    **21 -> 7... -> 8**.
+    **8 -> 5... -> 24**.
+    **24 -> 2**.
+    **2 -> 30**.
+    **30 -> ?**.
+    30 is dead end? 30 needs to connect to 13?
+    We visited 13.
+    **30 -> 13** is a link.
+    But we entered 13 from 26?
+    So **26 -> 13 -> 25**. 30 is skipped.
+    Correct: **26 -> 30 -> 2 -> 13**? No.
+    Correct: **26 -> 13 -> 30 -> 2**.
+    Then **2 -> 24**.
+    Then **24 -> 17... -> 8**.
+    Then **8 -> 25**. (Closing the loop).
+    Then **25 -> 21...**.
+    
+    Let's check the **8 -> 25** link.
+    We arrived at 8 from bottom.
+    We go to 25.
+    Then 25 -> 21.
+    Then 21 -> 7...
+    Then ... -> 26.
+    Then 26 -> 13.
+    Then 13 -> 30.
+    Then 30 -> 2.
+    Then 2 -> 24.
+    Then 24 -> 17...
+    Then ... -> 5.
+    Then 5 -> 8.
+    Wait, we used 8.
+    This is almost perfect.
+    **...5 -> 8 -> 25 -> 21...**
+    And the end of the top chain was **2**.
+    And the start of the bottom chain was **24**.
+    Link **2 -> 24**.
+    And the end of the bottom chain was **5**.
+    Link **5 -> 8**.
+    
+    Is **2 -> 24** valid? Yes.
+    Is **5 -> 8** valid? Yes.
+    Is **8 -> 25** valid? Yes.
+    Is **26 -> 13** valid? Yes.
+    Is **30 -> 2** valid? Yes.
+    Is **19 -> 14** valid? NO, this path doesn't use 14 for the big jump.
+    Where is **14**?
+    Between **19** and **?**.
+    We need to put **14** in.
+    **19 -> 14**.
+    **14 -> ?**
+    In this chain, we did **26-15-19**.
+    So we are at 19.
+    Go **19 -> 14**.
+    From 14, go to **2**? Or **24**?
+    If **14 -> 24**, then **2** is isolated in the **30-2** pocket.
+    If **14 -> 2**, then **2 -> 24**?
+    Path: **...19 -> 14 -> 2 -> 24...**?
+    Let's check: 14 is top, 2 is left-down, 24 is right-down.
+    14 -> 2 is OK.
+    2 -> 24 is OK.
+    Then **24 -> 17**.
+    And the rest holds.
+    
+    One snag: **30**.
+    Chain was **26 -> 13 -> 30 -> 2**.
+    But now we enter 2 from 14.
+    So **...26 -> 13 -> 30 -> ?**.
+    **30 -> 2**? No, 2 is visited from 14.
+    **30 -> 14**? No.
+    Maybe **26 -> 15 -> 19 -> 14 -> 2 -> 30 -> 13 -> 25**?
+    Let's check links.
+    14 -> 2: OK.
+    2 -> 30: OK.
+    30 -> 13: OK.
+    13 -> 25: OK.
+    This looks very strong.
+    
+    Full Verification:
+    **7, 1, 29, 27, 28, 10, 6, 18, 20, 8, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 14, 19, 15, 26, 13, 30, 2, 25?, 21**.
+    Wait, **13 -> 25**.
+    **25 -> 21**.
+    **21 -> 7**.
+    Wait, loop closure.
+    **2 -> 25**? No.
+    Sequence: **13 -> 30 -> 2**. (End of that line).
+    From 2, where to?
+    Maybe **2 -> 24**? (Used 24-17).
+    Wait, in my previous block: **24-14-19-15-26-13-30-2**.
+    This leaves **24** needing a predecessor, and **2** needing a successor.
+    Predecessor of 24 is **17**.
+    Successor of 2 is **25**?
+    Is **2 -> 25** valid?
+    Distance 2-25 is crossing the 13-30 line? No. 25 is left. 13/30 are right.
+    2 is below 30.
+    25 is left of 13.
+    So 2-25 crosses 13?
+    Visual check: 25 is central. 13 is right of it. 30 is right of 13. 2 is below 30.
+    So 2 is far from 25.
+    
+    Backtrack. **2** is the problem.
+    It must connect to **14** and **30**.
+    So sequence is **14-2-30** or **30-2-14**.
+    Let's assume **30-2-14**.
+    Then **14-19**.
+    Then **19-15**.
+    Then **15-26**.
+    Then **26-13**.
+    Then **13-25**.
+    Then **25-21**.
+    Then **21-7**.
+    Then **7...20**.
+    Then **20-8-5...24**.
+    Then **24-?**.
+    We need to connect **24** to **30**? No.
+    **24** is adjacent to **2**? Yes.
+    **24** is adjacent to **14**? Yes.
+    But 2 and 14 are occupied (30-2-14).
+    This implies **24** connects to **17** and **?**.
+    Maybe **24-2**? But 2 is occupied.
+    Maybe **24-14**? Occupied.
+    Is there a node between 24 and 14/2? No.
+    
+    This forces the path: **17-24-14** or **17-24-2**.
+    If **17-24-14**:
+    Then **14-19-15-26-13-30-2**.
+    From 2, go to **25**? (Still the jump).
+    Or **2-8**?
+    8 is below 25.
+    Is **2-8** a clear path? Yes, through the middle gap.
+    If **2-8** is valid:
+    Then **8-5-9...**.
+    Then left loop **...20-18...-7-21-25**.
+    Then **25-13**. (Wait, 13 visited).
+    
+    Re-order:
+    **...25-13-26-15-19-14-24-17...**
+    And **30-2**?
+    Insert **30-2** into **13-26**? **13-30-2-26**? No.
+    Insert **30-2** into **24-17**? **24-2-30-17**? No.
+    
+    How about **13-30-2-8**?
+    **21-25-13-30-2-8**.
+    **8-5...24**.
+    **24-14**.
+    **14-19**.
+    **19-15**.
+    **15-26**.
+    **26-21**.
+    Loop Closed!
+    
+    Let's check the links:
+    *   **2-8**: Visually long, but in the center hole. Is it blocked? 30, 13, 25 are above. 5 is below. 20 is left. Seems open.
+    *   **24-14**: Good.
+    *   **26-21**: Good.
+    
+    This looks like the Winner.
+    
+    **Path:**
+    Start **7**.
+    **7, 1, 29, 27, 28, 10, 6, 18, 20**.
+    **20, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17**.
+    **17, 24, 14, 19, 15, 26**.
+    **26, 21, 25, 13, 30, 2, 8**.
+    **8 -> 20**? No, we entered at 20.
+    We need to splice 8 into 20->5.
+    Current list has 20...5. 8 is not there.
+    Sequence: **20 -> 5 -> 8**?
+    Then **8 -> 2**.
+    Then **2 -> 30 -> 13 -> 25 -> 21 -> 26 -> 15 -> 19 -> 14 -> 24 -> 17 -> 22 -> 23 -> 16 -> 12 -> 4 -> 11 -> 3 -> 9**.
+    Then **9 -> 5**? (Already visited 5).
+    So loop is: **20 -> 8 -> 2 ... -> 17 -> ?**
+    We need to get back to **20**.
+    Right loop tail is **9**.
+    **9 -> 5**.
+    **5 -> 20**.
+    
+    So the splice is:
+    **18 -> 20 -> 8**. (In)
+    **5 -> 20**? No, 20 is start.
+    **5 -> 18**? No.
+    **9 -> 5**.
+    **5 -> 20**.
+    
+    Order:
+    ...**18 -> 20 -> 8 -> 2 -> 30 -> 13 -> 25 -> 21 -> 26 -> 15 -> 19 -> 14 -> 24 -> 17 -> 22 -> 23 -> 16 -> 12 -> 4 -> 11 -> 3 -> 9 -> 5**.
+    **5 -> 18**? No, 5 is far from 18. 5 is near 20.
+    But 20 is visited.
+    So **5 -> 20** (Closing the big loop).
+    Wait, 18 -> 20 was the entry.
+    So **...18 -> 20 -> 5**. (Start of right blob).
+    **5 -> 9 -> ... -> 17 -> 24 -> 14 -> 19 -> 15 -> 26 -> 21 -> 25 -> 13 -> 30 -> 2 -> 8**.
+    **8 -> 20**? (Closing the loop).
+    Check distance **8 -> 20**. Yes, very close.
+    
+    Let's check the **2-8** link again.
+    It's the only "internal" traversal.
+    Neighbors of 8: 25, 5, 20.
+    Neighbors of 2: 30, 14, 24.
+    Distance 2 to 8: It spans the gap between the upper-middle (2) and lower-middle (8).
+    It looks like the correct "bridge" to close the spiral.
+    
+    Let's write down the full sequence based on this path:
+    Start: **7**.
+    **7, 1, 29, 27, 28, 10, 6, 18, 20**. (Left Loop).
+    **20, 5**. (Bridge to bottom).
+    **5, 9, 3, 11, 4, 12, 16, 23, 22, 17**. (Bottom/Right Loop).
+    **17, 24, 14, 19, 15, 26**. (Right/Top Loop).
+    **26, 21**. (Top splice).
+    **21, 25, 13, 30, 2**. (Middle spiral in).
+    **2, 8**. (The jump).
+    **8 -> 20**. (Close).
+    
+    Wait, **8** needs to connect to **20**.
+    Is **8-20** valid? Yes.
+    Is **20-5** valid? Yes.
+    We have **18->20->5**.
+    Then at end **8->20**.
+    This visits 20 twice?
+    No.
+    Sequence: **18 -> 20**.
+    From 20, go to **5**?
+    Or go to **8**?
+    If we go **18 -> 20 -> 8**.
+    Then end at **5**.
+    **5 -> 20**?
+    Or **5 -> 18**?
+    No.
+    How about **6 -> 18 -> 5**? (Skip 20).
+    Then **8 -> 20**.
+    Then **20 -> 6**.
+    Check **18-5**. Distance is approx same as 20-5. Maybe.
+    Check **20-6**. No, 18 is between.
+    
+    Standard TSP doesn't allow visiting 20 twice.
+    So **18 -> 20** is the only visit.
+    So we must enter/exit 20 once.
+    Neighbors: 18, 8, 5.
+    Path must be **18-20-8** or **18-20-5** or **8-20-5**.
+    If **18-20-5**:
+    Then we end at **8**.
+    **8** must connect to start (**7** or **1**?). No.
+    **8** must connect to **18**? No.
+    
+    This suggests **8** is not the end.
+    Maybe the **2-8** jump is wrong.
+    What if **8** is in the middle?
+    **...5-8-25...**
+    **...2-?**
+    If **2** is the end, 2 must connect to **20**? Or **18**?
+    2 is far from 20.
+    
+    Let's rethink the **20** junction.
+    **18, 20, 5, 8**.
+    Cluster.
+    Maybe **18 -> 5 -> 9... -> 8 -> 20 -> 6**? (If 18-5 is valid).
+    
+    Alternative: **2 -> 14**.
+    **14 -> 19 -> 15 -> 26 -> 21 -> 25 -> 13 -> 30**.
+    **30 -> ?**
+    30 is the end.
+    Connect **30** to **7**? No.
+    
+    Let's go back to the most solid segments.
+    1. **19-14-24-17-22-23-16-12-4-11-3-9-5**. (Outer Right).
+    2. **20-18-6-10-28-27-29-1-7**. (Outer Left).
+    3. **21-25-13-30-2**. (Inner Top).
+    4. **26-15**. (Top Cap).
+    5. **8**. (Inner Bottom).
+    
+    Connections needed.
+    **20-8-5**?
+    **5-8-20**?
+    **7-21**.
+    **2-?**
+    **14-?** (Used in segment 1).
+    **26-?** (26-21? 26-13?).
+    **19-15**.
+    
+    Try: **7 -> 1... -> 18 -> 20 -> 8 -> 25 -> 13 -> 30 -> 2 -> 14 -> 24 -> 17... -> 5 -> 9...**.
+    Wait, **5** is at end of right loop. **9** is start.
+    **...17 -> 24 -> 14 -> 19 -> 15 -> 26 -> 21**.
+    Now at 21. Connect to **7**. (Loop Closed).
+    Path trace:
+    **7-1-29-27-28-10-6-18-20-8-25-13-30-2-14-24-17-22-23-16-12-4-11-3-9-5-?**
+    **5** must connect to **?**
+    We need to close to **21**. (5-21 is far).
+    Or splice **5** earlier?
+    We did **20-8-25**.
+    Where is **5**? 5 is near 8.
+    Maybe **20-5-9...** and **8** is elsewhere?
+    Maybe **...3-9-5-8-25...**
+    Let's check **5-8**. Yes.
+    Let's check **8-25**. Yes.
+    
+    Path:
+    **7-1-29-27-28-10-6-18-20**.
+    **20 -> ?**
+    If **20 -> ?** leads to 5 eventually.
+    Let's try **20 -> 5**?
+    No, 5 connects to 9 and 8.
+    **20 -> ?**
+    Maybe **20 -> 18** was end of left loop.
+    Maybe start at **8**.
+    **8-25-13-30-2-14-24-17-22-23-16-12-4-11-3-9-5-20-18-6-10-28-27-29-1-7-21-26-15-19-14**?
+    Double visit 14.
+    End at 19. Start at 8. **19-8**? No.
+    
+    Let's look at **19-15-26-21-7...-20-?**
+    If **20-5**.
+    **5-9-3...-17-24-?**
+    **24** needs to connect to **14**.
+    **14-2-30-13-25-8**.
+    **8** needs to connect to **19**? No.
+    **8** needs to connect to **start**? No.
+    This is a path, not a cycle yet.
+    Ends are **19** and **8**.
+    Is **19-8** valid? No.
+    
+    We need ends to be adjacent.
+    Try ends **21** and **25**.
+    **25-8-5-9...-24-17...-14-2-30-13-26-15-19-?**
+    **19-14**? Visited.
+    
+    Okay, look at the **14** area.
+    **2-14-24**.
+    **19-14-24**.
+    **19-14-2**.
+    These are the only ways through 14.
+    If **2-14-24**, then 19 must be attached to 2 or 24? No, 19 is attached to 14?
+    No, 14 is the hub.
+    If 14 is transit, 19 is a leaf.
+    Therefore 19 MUST be an end of the path or connected to 15 and 26?
+    Or **19-15-26-13-30-2-14...**
+    This makes 19 a start point.
+    
+    Let's assume path starts at **19**.
+    **19, 15, 26, 21, 7, 1, 29, 27, 28, 10, 6, 18, 20, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 14, 2, 30, 13, 25, 8**.
+    Ends: **19** and **8**.
+    This fails.
+    
+    Try: **19, 15, 26, 13, 30, 2, 14, 24, 17, 22, 23, 16, 12, 4, 11, 3, 9, 5, 8, 25, 21, 7, 1, 29, 27, 28, 10, 6, 18, 20**.
+    Ends: **19** and **20**.
+    Is **19-20** a link? No.
+    
+    What if **20-8**?
+    Ends: **19** and **8**? No.
+    What if **20** connects to **5**?
+    **20, 18, 6...1, 7, 21, 25, 8, 5, 9...17, 24, 14, 2, 30, 13, 26, 15, 19**.
+    Ends: **20** and **19**. No.
+    
+    Okay, look at **14** again.
+    **19-14-2** works.
+    **24** is isolated.
+    **17-24-2** works.
+    So **17-24-2-14-19**.
+    Then **19-15**.
+    Then **15-26**.
+    Then **26-13**.
+    Then **13-30**.
+    Then **30-?** (Must connect to left side).
+    **30-25**? (Check visual: 30 is top-right-ish, 25 is center-left-ish. 13 is between. 30-25 is crossing 13).
+    **30-2**? Visited.
+    
+    What about **30-25**?
+    Actually 13 is somewhat below 30/26 line.
+    Maybe **26-30-13-25**?
+    Let's check **26-30**. Yes.
+    **30-13**. Yes.
+    **13-25**. Yes.
+    **25-21**. Yes.
+    **21-7...**
+    This sequence **17...24-2-14-19-15-26-30-13-25-21...** looks continuous!
+    
+    Let's verify the **24-2** link again.
+    24 is (x=800, y=550).
+    2 is (x=700, y=350).
+    14 is (x=800, y=300).
+    So 24 is below 14.
+    2 is left of 14.
+    So **24-2** is hypotenuse?
+    14-24 is side. 14-2 is side.
+    If we do **24-2**, we bypass 14.
+    Then we visit 14 later? **2-14**.
+    Then **14-19**.
+    This works.
+    
+    Full Chain Check:
+    **...17 -> 24 -> 2 -> 14 -> 19 -> 15 -> 26 -> 30 -> 13 -> 25 -> 21 -> 7 -> 1 -> 29 -> 27 -> 28 -> 10 -> 6 -> 18 -> 20 -> 8 -> 5 -> 9 -> 3 -> 11 -> 4 -> 12 -> 16 -> 23 -> 22 -> 17**.
+    
+    Links to verify:
+    1.  **24 -> 2**. (Moderate length, no obstacles).
+    2.  **26 -> 30**. (Short).
+    3.  **20 -> 8**. (Short).
+    4.  **8 -> 5**. (Short).
+    5.  **5 -> 9**. (Short).
+    
+    This forms a complete cycle.
+    
+    Order starting from **7**:
+    7, 1, 29, 27, 28, 10, 6, 18, 20, 8, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 2, 14, 19, 15, 26, 30, 13, 25, 21.
+    (Then 21->7 close).
+    
+    One detail: **26 -> 30 -> 13**.
+    Visually 13 is further left. 30 is further right (near 2).
+    Coordinates roughly:
+    26 (600, 100).
+    30 (660, 250).
+    13 (550, 230).
+    25 (430, 410).
+    21 (350, 160).
+    
+    Path **26 -> 30** (dy=150, dx=60).
+    Path **30 -> 13** (dy=-20, dx=-110).
+    Path **13 -> 25** (dy=180, dx=-120).
+    
+    Alternative: **26 -> 13 -> 30**.
+    Path **26 -> 13** (dy=130, dx=-50).
+    Path **13 -> 30** (dy=20, dx=110).
+    Path **30 -> 2**? (30 to 2 is short).
+    But we need to connect to **25**.
+    If **30 -> 25**, that's a cross back.
+    So **30** must be visited *before* **13** or **2** must connect to **25**.
+    Since **2** connects to **24/14**, 2 is "right side".
+    So flow is Right -> Left.
+    **2 -> 30 -> 13 -> 25**.
+    This matches the proposed path.
+    
+    Wait, did I have **26->30->13** or **26->13->30**?
+    Proposed: **26 -> 30 -> 13**.
+    Let's check visual again.
+    26 is high. 30 is mid-right. 13 is mid-left.
+    13 is closer to 26 than 30 is.
+    But 30 is closer to 2.
+    We are coming from 15-26.
+    We are going to 25.
+    If we do **26->13->30**, then we are at 30.
+    Must go to **25**. (Cross over 13?).
+    So **30** is problematic if it's a dead end.
+    30 connects to 13 and 2.
+    We came from 2 (in the 2-14 block).
+    So **...2 -> 30 -> 13 -> 25**.
+    This direction works perfectly.
+    
+    So the sequence is:
+    ... **24 -> 2 -> 14 -> 19 -> 15 -> 26**.
+    Wait, **2 -> 14**?
+    Proposed was **24 -> 2 -> 14**.
+    Then **14 -> 19**.
+    Then **19 -> 15**.
+    Then **15 -> 26**.
+    Then **26 -> 30**? No, 30 connects to 2.
+    We visited 2.
+    We can't visit 30 from 2 now.
+    
+    So **2** must connect to **30**.
+    Path: **24 -> 14 -> 19 -> 15 -> 26 -> 13 -> 30 -> 2**.
+    Then **2 -> 8**?
+    Then **8 -> 5**.
+    Then **5 -> 9...17 -> 24**.
+    (Loop Closed).
+    
+    Let's re-verify **26-13-30-2**.
+    13 is between 26 and 30?
+    Yes, 13 is (550,230), 26 is (600,100), 30 is (660,250).
+    26-13 is approx 140.
+    13-30 is approx 110.
+    26-30 is approx 160.
+    26-13-30 is slightly longer but cleaner sweep?
+    Actually 13 is left of the 26-30 line.
+    So 26-13-30-2 zigzags right.
+    Then 2-8 zigzags left.
+    Then 8-5 zigzags down.
+    Then 5-9 zigzags right.
+    
+    And the connection **25**?
+    We missed **25** and **21**.
+    Sequence: **21 -> 25 -> 8**?
+    If **8** is used in **2-8**, then 25 must be visited before/after.
+    **21-25-13-30-2-8-5**.
+    Then **...15-26-?**.
+    26 needs to connect to 21.
+    So **...15-26-21-25-13...**.
+    
+    Path:
+    **7-1...20**.
+    **20-5**.
+    **5...17**.
+    **17-24**.
+    **24-14**.
+    **14-19-15-26**.
+    **26-21**.
+    **21-25**.
+    **25-13**.
+    **13-30**.
+    **30-2**.
+    **2-8**.
+    **8-20**.
+    
+    This works!
+    **8 -> 20** is the final link.
+    Start point was **20** (arbitrarily in loop).
+    Since requested start is free, let's list from 7.
+    
+    Sequence:
+    7, 21, 25, 13, 30, 2, 8, 20, 18, 6, 10, 28, 27, 29, 1
+    (Wait, 1 to 7 is loop close. Where does 1 connect in my chain? 1 connects to 7. 7 connects to 21).
+    So **1-7-21**... is good.
+    Now back to **8**.
+    **...30-2-8**.
+    **8 -> ?**
+    **8 -> 5**? Or **8 -> 20**?
+    If **8 -> 20**, we go left: **20-18-6...-1**.
+    Then **1 -> 7 -> 21...**.
+    This covers left, top, middle.
+    What about Right/Bottom?
+    We need to visit **5, 9...17, 24, 14...**.
+    Splice at **20**: **20-5**.
+    So **8 -> 20 -> 5 -> 9... -> 17 -> 24 -> 14 -> 19 -> 15 -> 26**.
+    Now connect **26** to the start of the chain (**25**? No, **21**?).
+    If start was **21**, **26-21** is good.
+    But chain started **25-13-30-2-8**.
+    So **26** connects to **25**? No.
+    **26** connects to **21**. **21** connects to **25**.
+    
+    Okay, correct order:
+    1. **26**
+    2. **21**
+    3. **7**
+    4. **1**
+    5. **29**
+    6. **27**
+    7. **28**
+    8. **10**
+    9. **6**
+    10. **18**
+    11. **20**
+    12. **5**
+    13. **9**
+    14. **3**
+    15. **11**
+    16. **4**
+    17. **12**
+    18. **16**
+    19. **23**
+    20. **22**
+    21. **17**
+    22. **24**
+    23. **14**
+    24. **19**
+    25. **15**
+    (Loop back to 26).
+    
+    Wait, missed **8, 25, 13, 30, 2**.
+    Splice them in.
+    **20 -> 8**.
+    **8 -> 25**.
+    **25 -> 13**.
+    **13 -> 30**.
+    **30 -> 2**.
+    **2 -> 5**? (No, 2 is high, 5 is low).
+    **2 -> 24**? (Yes).
+    
+    Path:
+    ...**20 -> 8 -> 25 -> 13 -> 30 -> 2 -> 24 -> ... -> 15 -> 26 -> 21 -> 7...**
+    Let's check links.
+    **20-8**: OK.
+    **8-25**: OK.
+    **25-13**: OK.
+    **13-30**: OK.
+    **30-2**: OK.
+    **2-24**: OK.
+    **24-17**: (Continue right loop).
+    **...15-26**: OK.
+    **26-21**: OK.
+    **21-7**: OK.
+    
+    Wait, where is **5**?
+    **...17-22-23-16-12-4-11-3-9-5**.
+    **5 -> ?**
+    **5** needs to connect to **20**?
+    But we left 20 to go to 8.
+    So **5 -> 20** closes the loop.
+    
+    Final check of the "5" splice.
+    We enter at 20. Go to 8.
+    We traverse middle. Go to 2.
+    Go to 24.
+    Traverse right loop (top part 14...15, then ?).
+    Wait, **24** connects to **14** and **17**.
+    If **2 -> 24 -> 17**.
+    Then **...5**.
+    Then **5 -> 20**.
+    Where is **14, 19, 15**?
+    We must visit them.
+    **24 -> 14 -> 19 -> 15 -> 26**.
+    Then **26 -> ?**
+    Connect to **21**?
+    We visited 21 already (21-7).
+    So 26 must connect to **17**? No.
+    
+    Okay, **24** is the hub.
+    **2 -> 24**.
+    **24 -> 14**.
+    **14 -> 19**.
+    **19 -> 15**.
+    **15 -> 26**.
+    **26 -> 21**? No, 21 used.
+    **26 -> 17**? Long.
+    **26 -> 22**? No.
+    
+    Alternative at **24**:
+    **2 -> 24 -> 17**.
+    Then **17 -> 22 -> 23 -> 16 -> 12 -> 4 -> 11 -> 3 -> 9 -> 5**.
+    Then **5 -> 20**.
+    Where is **14, 19, 15, 26, 21**?
+    Missed top right and top left.
+    
+    Okay, **26 -> 21 -> 7**.
+    So we must end right loop at **26**.
+    **... -> 14 -> 19 -> 15 -> 26**.
+    Connect to **21**.
+    
+    So sequence at **24**:
+    **2 -> 24**.
+    **24 -> 17 -> 22 -> 23 -> 16 -> 12 -> 4 -> 11 -> 3 -> 9 -> 5**.
+    **5 -> ?**
+    5 is near 8. 8 is visited.
+    5 is near 20. 20 is visited.
+    This direction traps 5.
+    
+    Reverse direction of right loop?
+    **2 -> 30 -> 13 -> 25 -> 8 -> 5**.
+    **5 -> 9 -> 3 -> 11 -> 4 -> 12 -> 16 -> 23 -> 22 -> 17**.
+    **17 -> 24**.
+    **24 -> 14**.
+    **14 -> 19**.
+    **19 -> 15**.
+    **15 -> 26**.
+    **26 -> 21**.
+    **21 -> 7**.
+    **7 -> 1 -> 29 -> 27 -> 28 -> 10 -> 6 -> 18 -> 20**.
+    **20 -> ?**
+    Connect to start of chain (**2**)?
+    **20-2**? No.
+    Connect **20** to **8**? 8 is inside chain.
+    But **20** connects to **8** and **5**.
+    We have **8->5** in chain.
+    Can we enter at **8**?
+    **20 -> 8**.
+    Then **8 -> 25**? (Reverse chain).
+    **20 -> 8 -> 25 -> 13 -> 30 -> 2 -> 24 -> 14 -> 19 -> 15 -> 26 -> 21 -> 7 -> 1... -> 18**.
+    **18 -> 5**? (To close).
+    **5 -> 9... -> 17**.
+    **17 -> ?**
+    Connect to **24**? Visited.
+    
+    Okay, **20 -> 8 -> 5**.
+    **5 -> 9... -> 17 -> 24**.
+    **24 -> 14 -> 19 -> 15 -> 26**.
+    **26 -> 13 -> 30 -> 2**.
+    **2 -> 25**. (The Jump).
+    **25 -> 21**.
+    **21 -> 7... -> 18 -> 20**.
+    
+    Is **2 -> 25** valid?
+    Visual Check: 2 (700,350). 25 (430,410).
+    Obstacles: 30(660,250), 13(550,230), 8(450,580).
+    Line 2-25 passes below 13/30 and above 8.
+    It seems open. It is a bit long (dx=270), but central.
+    This connects the right lobe to the left lobe.
+    
+    Let's go with this. It covers everything cleanly.
+    
+    Sequence:
+    7, 1, 29, 27, 28, 10, 6, 18, 20, 8, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 14, 19, 15, 26, 13, 30, 2, 25, 21.
+    
+    Wait, **13-30-2**.
+    Order: **26 -> 13 -> 30 -> 2**.
+    Check **26-13**. Yes.
+    
+    Final Order:
+    7, 1, 29, 27, 28, 10, 6, 18, 20, 8, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 14, 19, 15, 26, 13, 30, 2, 25, 21
+
+    One check: **2 -> 25** vs **2 -> 8**.
+    **2->8** is (700,350)->(450,580). dx=250, dy=230. Dist=340.
+    **2->25** is (700,350)->(430,410). dx=270, dy=60. Dist=276.
+    **2->25** is shorter and horizontally aligned.
+    
+    This confirms the sequence.
+
+    Final check on start/end.
+    Start 7.
+    End 21.
+    21->7 is valid.
+
+    List: 7, 1, 29, 27, 28, 10, 6, 18, 20, 8, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 14, 19, 15, 26, 13, 30, 2, 25, 21.
+
+    Wait, is **5-9** better than **5-8**?
+    My list has **8, 5, 9**.
+    So **20->8**. **8->5**. **5->9**.
+    This is perfect.
+
+    Final check: **24-14**.
+    24(800,550). 14(800,300). Vertical line.
+    Neighbors: 2, 17.
+    It is a straight shot.
+
+    Final check: **14-19**.
+    14(800,300). 19(950,20).
+    It's the only way to reach 19.
+
+    Final check: **19-15**.
+    19(950,20). 15(720,80).
+    Natural.
+
+    Final check: **15-26**.
+    15(720,80). 26(600,100).
+    Natural.
+
+    Final check: **26-13**.
+    26(600,100). 13(550,230).
+    Natural.
+
+    Final check: **13-30**.
+    13(550,230). 30(660,250).
+    Natural.
+
+    Final check: **30-2**.
+    30(660,250). 2(700,350).
+    Natural.
+
+    Final check: **2-25**.
+    2(700,350). 25(430,410).
+    Longer but clear.
+
+    Final check: **25-21**.
+    25(430,410). 21(350,160).
+    Natural vertical.
+
+    Final check: **21-7**.
+    21(350,160). 7(220,50).
+    Natural.
+
+    Result seems robust.
+
+    One possible optimization: **2-14**.
+    **24-17...**.
+    But **2-24** is required to link loop.
+    Unless **2-17**? No.
+    
+    Stick with the calculated path.
+
+    7, 1, 29, 27, 28, 10, 6, 18, 20, 8, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 14, 19, 15, 26, 13, 30, 2, 25, 21.
+
+    Wait, I might have swapped 26/13 order in my head again.
+    26->13 is good.
+    13->30 is good.
+    30->2 is good.
+    Yes.
+
+    One tiny detail: **10** and **6**.
+    **28->10->6**.
+    Is **28->6->10** better?
+    28 is high. 6 is low. 10 is left.
+    28->10 is down-left. 10->6 is down-right.
+    28->6 crosses 10? No.
+    28(150,560). 10(100,670). 6(150,770).
+    It's a line. 28-10-6 is correct.
+
+    One tiny detail: **18** and **20**.
+    6->18->20.
+    6(150,770). 18(330,710). 20(390,700).
+    Line. Correct.
+
+    One tiny detail: **11, 4, 12**.
+    11(600,750). 4(650,770). 12(690,770).
+    Line. Correct.
+
+    One tiny detail: **22, 17, 24**.
+    22(910,730). 17(990,550). 24(800,550).
+    22->17->24.
+    Triangle corner. Correct.
+
+    Answer formulated.
+
+    Start point doesn't matter. I will start with 7 as requested by the mental trace.
+    7, 1, 29, 27, 28, 10, 6, 18, 20, 8, 5, 9, 3, 11, 4, 12, 16, 23, 22, 17, 24, 14, 19, 15, 26, 13, 30, 2, 25, 21

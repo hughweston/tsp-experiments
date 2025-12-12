@@ -1,0 +1,1236 @@
+Based on the visual arrangement of the points in the image, the shortest tour is a cycle that connects the nearest neighbors in a loop.
+
+Here is the step-by-step path:
+
+1.  Start at the bottom-left cluster with **10**.
+2.  Move up to **13**.
+3.  Continue slightly up and right to **2**.
+4.  Move significantly up to the top cluster, hitting **7** first (it's lower than 15).
+5.  Move up to **15**.
+6.  Move right across the top to **5**.
+7.  Continue right to the top-right cluster, starting with **8**.
+8.  Move slightly down and right to **11**.
+9.  Continue right to **14**.
+10. Drop down the far right side to **9**.
+11. Continue down to **6**.
+12. Sweep back to the left along the bottom, hitting **3**.
+13. Move up and left to **12**.
+14. Continue up to **4** (or possibly 1, let's look closer). From 12, going to 1 or 4 is the question. The path from 6 -> 3 -> 12 seems solid. From 12, the next nearest point generally moving back toward the start is 1 or 4. However, 1 and 4 are close together.
+    *   Let's re-evaluate the middle section. The loop usually encircles the points.
+    *   Let's trace the "perimeter" path again: 10 -> 13 -> 2 -> 7 -> 15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12...
+    *   Now we have points 1, 4, and 5 left to integrate properly. Wait, I already visited 5.
+    *   Let's re-route near 5. From 2, going to 5 then up to 7/15 is awkward.
+    *   Let's try a counter-clockwise sweep starting from the bottom-left:
+    *   **12** -> **3** -> **6** -> **9** -> **14** -> **11** -> **8** -> **5** -> **15** -> **7** -> **2** -> **13** -> **10** -> **1** -> **4** -> (back to 12). No, 1 and 4 are "internal" to that loop.
+    *   Let's look for the most logical geometric loop.
+    *   Start at **10**.
+    *   Go to **12**.
+    *   Go to **3**.
+    *   Go to **6**.
+    *   Go to **9**.
+    *   Go to **14**.
+    *   Go to **11**.
+    *   Go to **8**.
+    *   From 8, go left to **5**.
+    *   From 5, go left to **15**.
+    *   Go down to **7**.
+    *   Go down-left to **2**.
+    *   Go down-left to **13**.
+    *   Go down-left to **10**.
+    *   **Wait, I missed 1 and 4.** Where do they fit? They are in the middle. The path must snake through them.
+    *   Let's try weaving them in.
+    *   ... 13 -> 2 -> **?** -> 7... 2 is quite close to 1.
+    *   Let's try: 10 -> 13 -> 2 -> 7 -> 15 -> 5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> **4** -> **1** -> 10.
+    *   Let's check the distance 12->4->1->10. From 12 to 4 is a bit of a stretch. From 1 to 10 is okay.
+    *   Let's try: 10 -> 13 -> 2 -> **1** -> **4** -> 5? No, 4 to 5 is far.
+    *   Let's try: 10 -> 13 -> 2 -> 7 -> 15 -> **5** -> **?** -> 8... No.
+    *   Let's try: ... -> 12 -> **1** -> **4** -> 5 -> 8 ...
+        *   Path: 10 -> 13 -> 2 -> 7 -> 15 -> 5 -> **4** -> **1** -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> 5 (loop closed incorrectly).
+    *   Let's reconsider the cluster around 1 and 4. They act as a bridge.
+    *   Path: 10 -> 13 -> 2 -> 7 -> 15 -> 5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> **1** -> **4**... But 4 connects poorly back to 10? No, 4 is far from 10.
+    *   Let's look at 4 and 5. They are somewhat close.
+    *   Let's look at 1 and 10 or 12. 1 is close to 10 and 12.
+    *   Let's look at 4 and 1. They are close.
+    *   Let's try this route:
+        1.  **3**
+        2.  **6**
+        3.  **9**
+        4.  **14**
+        5.  **11**
+        6.  **8**
+        7.  **5** (Bridge across top)
+        8.  **15**
+        9.  **7**
+        10. **2**
+        11. **13**
+        12. **10**
+        13. **1**
+        14. **4**
+        15. **12**
+        *   Check connection 12 back to 3: Yes, 12 and 3 are neighbors.
+        *   Check connection 4 to 12: 4 to 12 is a bit long, but 4 to 1 is short, and 1 to 10 is short.
+        *   Let's check 4 to 5. The distance 4-5 is moderate. Is it better than 5-8? No.
+        *   Let's check alternative for 4. Is it better as: ... -> 6 -> 3 -> 4 -> 1 -> 12...? No 3 to 4 is very far.
+    *   Let's re-examine the center left.
+        *   Maybe: ... 13 -> 2 -> **7** -> **15** -> **5** -> **4** -> **1** -> **10** ...
+        *   If I go 5 -> 4, then where? 4 -> 1 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> 5? That would mean 5 is a hub, which isn't allowed.
+        *   Let's break the top connection. 15 -> 5 -> 8 vs 15 -> 7...
+        *   How about: **8** -> **11** -> **14** -> **9** -> **6** -> **3** -> **12** -> **1** -> **10** -> **13** -> **2** -> **7** -> **15** -> **5** -> **4** -> (back to 8)?
+        *   Distance 4 -> 8 is very long. This is wrong.
+    *   Let's try connecting 4 to its nearest neighbors. 4 is closest to 1. 4 is also reasonably close to 5.
+    *   So the segment **1 - 4 - 5** seems likely, or **1 - 4** and then somewhere else.
+    *   If **1 - 4 - 5**:
+        *   Path: ... 10 -> 13 -> 2 -> 7 -> 15 -> **?** -> 5 -> 4 -> 1 -> **12** -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> **?**
+        *   We need to connect 8 and 15. That works.
+        *   Let's trace: 10 -> 13 -> 2 -> 7 -> 15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 1 -> 4 -> 5... but 5 doesn't connect well back to 10? No.
+        *   Does 5 connect to 2? No.
+        *   Wait, look at 5 -> 8. It's a standard gap. Look at 15 -> 8. That's a huge gap.
+        *   So 5 must connect to 8? Or 5 to 15? 5 is between 15 and 8 horizontally but much lower.
+        *   Actually, 5 is quite close to 2 geometrically? No, 2 is far left.
+        *   Let's look at the gap between 7/15 and 8/11. Point 5 sits in the middle.
+        *   So the top chain is likely **15 -> 7 -> 2 -> 13 -> 10 -> 1 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> 5 -> 4**.
+        *   Then from 4, where do we go? We have to close the loop back to 15. 4 to 15 is far.
+    *   Let's reconsider the cluster around 1.
+        *   1 is clearly a hub between 10, 12, and 4.
+        *   Sequence **10 - 1 - 4** or **12 - 1 - 4** or **10 - 1 - 12**.
+        *   If we do **10 - 1 - 12**, then where is 4? 4 is stranded.
+        *   So 4 must be an endpoint of the 1-cluster. Like **4 - 1 - 10** or **4 - 1 - 12**.
+        *   Let's try **5 - 4 - 1 - 12 - 3**. This looks very straight.
+        *   Then **3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+        *   From 8, traverse long distance left to **15**?
+        *   Then **15 -> 7 -> 2 -> 13 -> 10**.
+        *   Then **10** needs to connect back to the start (**5**). 10 to 5 is huge.
+        *   However, earlier we had **4 - 1 - 12**. What if it's **4 - 1 - 10**?
+        *   Let's try: **5 - 4 - 1 - 10 - 13 - 2 - 7 - 15**.
+        *   From 15, jump to **8**? That's the longest jump, but might be necessary.
+        *   **8 - 11 - 14 - 9 - 6 - 3 - 12**.
+        *   Then **12** must connect back to **5**. No, 12 is bottom left, 5 is middle top.
+        *   Wait, let's swap the ends.
+        *   ... **15 -> 7 -> 2 -> 13 -> 10 -> 1 -> 4 -> 5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+        *   Close 12 back to 15? No.
+        *   Close 12 back to 7? No.
+        *   Maybe the 1-4-5 bridge is wrong.
+    *   Let's try the sequence: **13 - 2 - 5**. Then **5 - 8**. Then **8...6...3 - 12 - 1 - 4 - 10**. No, 4 is far from 10.
+    *   Let's try: **13 - 2 - 7 - 15**. This is a tight cluster.
+    *   Let's try: **3 - 12 - 1 - 10 - 13 - 2 - 7 - 15 - 5 - 4**.
+        *   End of chain is 4. Start is 3.
+        *   We still have the right side: 8, 11, 14, 9, 6.
+        *   4 connects well to 8? No.
+        *   4 connects well to 11? No.
+        *   5 connects to 8 better. So swap 4 and 5? **...15 - 4 - 5 - 8...**
+        *   Is 15 to 4 close? No.
+    *   Let's look at 4 again. It is nearest to 1 and 5. It sits between them.
+    *   So the path segment **1 - 4 - 5** is almost certainly correct.
+    *   Now, extend from 1 and 5.
+    *   From 5: The nearest unvisited is **8**. Or **15**? 5 is closer to 15 than 8. But 15 is very close to 7. 7 is close to 2.
+    *   From 1: The nearest unvisited is **10** or **12**.
+    *   Let's trace two possibilities:
+        *   **Path A:** ... -> 8 -> 5 -> 4 -> 1 -> 10 -> 13 -> 2 -> 7 -> 15 -> ... (Close 15 to 8? Yes, across the top gap). And we still have the bottom right ... -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8.
+        *   Let's Stitch Path A:
+            *   **15** -> **7** -> **2** -> **13** -> **10** -> **1** -> **4** -> **5** -> **8** -> **11** -> **14** -> **9** -> **6** -> **3** -> **12**.
+            *   Now we need to close **12** back to **15**. This is a long diagonal.
+            *   Is there a better closure?
+            *   What about **12** to **10**? Then 10... but 10 is used.
+            *   Let's rearrange the bottom left.
+            *   Instead of 10->1->4, try **10->12->3...**? No, 12 is far from 10 compared to 1.
+            *   Try **13 -> 10 -> 12**. 10 is fairly close to 12.
+            *   Sequence: **2 -> 13 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> 5 -> 4 -> 1**.
+            *   Now close **1** back to **2**? 1 to 2 is reasonable.
+            *   Wait, we missed **7** and **15**.
+            *   Insert them near 2. **...1 -> 2 -> 7 -> 15 -> ...?** No, 15 is a dead end unless we jump.
+            *   Better: **...1 -> 2 -> 13 -> 10...** No.
+            *   Let's look at **15 -> 7 -> 2**. Then from 2 go to **1**? Yes.
+            *   **15 -> 7 -> 2 -> 1 -> 4 -> 5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 10 -> 13**.
+            *   Close **13** back to **15**. This is a vertical jump. It's visible. Is it optimal?
+            *   Let's compare the "long" links.
+                1.  13 -> 15 (Path 1)
+                2.  12 -> 15 (Path 2)
+            *   13 is much closer to 15 than 12 is. 12 is way down.
+            *   Let's re-verify the **12 -> 10** connection. 12 to 10 is okay.
+            *   Let's re-verify the **2 -> 1** connection. 2 to 1 is okay.
+            *   Let's re-verify **5 -> 8**. 5 to 8 is a bit long but standard for that gap.
+    *   Let's refine this loop:
+        *   **15 -> 7 -> 2 -> 1 -> 4 -> 5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 10 -> 13 -> (back to 15)**
+        *   Let's check the crossing lines.
+            *   12->10 crosses 1->something? 1 connects to 2 and 4. 10 connects to 12 and 13.
+            *   12 is at bottom. 10 is left. 1 is middle-left.
+            *   Visually: 10 is far left. 12 is bottom left. 1 is slightly right of 10.
+            *   Sequence 13-10-12-3... seems to flow along the perimeter.
+            *   Then 3-6-9-14-11-8-5... perimeter.
+            *   Then 5-4-1... going inward.
+            *   Then 1-2-7-15... going up.
+            *   Then 15-13? No, 15 is top, 13 is left. 13 is below 2.
+            *   So 15->13 is crossing over 2 and 7? That's bad.
+    *   Let's uncross that top-left corner.
+        *   We need the sequence **13 -> 2 -> 7 -> 15**. That is a clean line up.
+        *   So we enter 13 from 10. **10 -> 13**.
+        *   We leave 15 to go where? To 8? Or to 5?
+        *   If **15 -> 8**: That's a huge jump.
+        *   If **15 -> 5**: That's shorter.
+        *   Then **5 -> 8**.
+        *   Then **8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+        *   Now we are at 12. We have left: **1, 4**. And we started at 10.
+        *   So from 12, go to **1**. Then **1 -> 4**.
+        *   Then **4 -> 10**? No, 4 to 10 is bad.
+        *   Maybe **12 -> 4 -> 1 -> 10**. 12 to 4 is long.
+        *   Maybe **12 -> 1 -> 4**. Then **4 -> 10**? Still bad.
+        *   What if 4 connects to 5? We established 4 is close to 5.
+        *   Let's reverse the flow.
+        *   ... **15 -> 5 -> 4 -> 1**.
+        *   From 1, go to **2**? No, 2 is in the 13-2-7 chain.
+        *   From 1, go to **10**? Yes.
+        *   **1 -> 10 -> 13 -> 2 -> 7 -> 15**.
+        *   Now we have a chain **4-1-10-13-2-7-15**.
+        *   From 15, go to **8**? (Long jump)
+        *   From 4, go to **?**. We used 1 and 5.
+        *   Wait, in this chain I used 15->5. So 15 is connected to 5.
+        *   Chain: **8... -> 5 -> 4 -> 1 -> 10 -> 13 -> 2 -> 7 -> 15**.
+        *   Now close **15 -> 8**.
+        *   Let's check the 5->4->1->10 segment.
+            *   5 to 4: Good.
+            *   4 to 1: Good.
+            *   1 to 10: Good.
+            *   10 to 13: Good.
+        *   Let's check the bottom. Where is 12?
+        *   I missed 12 in that chain.
+        *   1 is close to 12. 10 is close to 12.
+        *   So instead of 1->10, do **1 -> 12 -> 10**? No, 12 is below 10. 1 is right of 10. 12 is right of 10.
+        *   Triangle 1-10-12.
+        *   Shortest path through these 3?
+        *   If coming from 4 (right side): 4 -> 1 -> 12 -> 10 -> 13...
+        *   Let's check distances.
+            *   1 to 12 vs 1 to 10. 1 is closer to 10 visually.
+            *   12 to 10 vs 12 to 1. 12 looks equidistant.
+            *   So **4 -> 1 -> 10 -> 12 -> 3...**? No, 10 to 12 is "backwards" if going to 3.
+            *   Wait, 12 is next to 3.
+            *   So **...3 -> 12**.
+            *   From 12, go to **10**.
+            *   From 10, go to **13**.
+            *   From 13, go to **2**.
+            *   From 2, go to **1**. (Cutting back in).
+            *   From 1, go to **4**.
+            *   From 4, go to **5**.
+            *   From 5, go to **7**? Or **15**? 5 is far from 7 compared to 15. Actually 5 to 7/15 is roughly same.
+            *   Let's try **5 -> 15 -> 7**.
+            *   Then **7 -> 2**? No, 2 is already visited.
+            *   Let's backtrack.
+            *   We have a "left blob" (1,2,4,7,10,12,13,15,5) and a "right blob" (3,6,8,9,11,14).
+            *   Connection points:
+                *   Top: 15-8 or 5-8.
+                *   Bottom: 12-3.
+            *   Let's assume the loop goes clockwise.
+            *   **12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+            *   From 8, go left. To **5** or **15**?
+            *   Let's try **8 -> 5**.
+            *   From 5, go to **15**? Or **4**?
+            *   If **5 -> 15**: Then **15 -> 7 -> 2 -> 13 -> 10**.
+            *   Now we are at 10. Remaining: **1, 4**.
+            *   We need to end at 12.
+            *   **10 -> 1 -> 4 -> 12**? 4 to 12 is long.
+            *   **10 -> 4 -> 1 -> 12**? 10 to 4 is very long.
+            *   Let's try alternative from 5.
+            *   **8 -> 5 -> 4**.
+            *   **4 -> 1**.
+            *   **1 -> 2**? Then **2 -> 7 -> 15 -> 13...** No, 15 is dead end.
+            *   **1 -> 10**. Then **10 -> 13 -> 2 -> 7 -> 15**.
+            *   From 15, we need to close to **12**. **15 -> 12** is the whole height of the image. Very bad.
+    *   Let's look for a different topological path. The shape is a "C".
+    *   Maybe the 1-4 points are visited on the return trip.
+    *   Start **15 -> 7 -> 2 -> 13 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> 5**.
+    *   Now at 5. Remaining: **1, 4**.
+    *   **5 -> 4 -> 1**.
+    *   From 1, close back to **15**. 1 to 15 is long.
+    *   From 1, close back to **2**? 1 to 2 is short.
+    *   But 2 is in the middle of the start chain. We can't join there.
+    *   We need to insert 1,4 into the chain.
+    *   ... **13 -> 2 -> 1 -> 4 -> 5 -> 15 -> 7**?
+    *   Let's check 2->1->4->5.
+        *   2 to 1: Good.
+        *   1 to 4: Good.
+        *   4 to 5: Good.
+        *   5 to 15: Good.
+    *   Let's check the rest.
+        *   Start: **10**.
+        *   **10 -> 13**.
+        *   **13 -> 2**.
+        *   **2 -> 1**.
+        *   **1 -> 4**.
+        *   **4 -> 5**.
+        *   **5 -> 15**. (This crosses the 2-7 line? No. 2 is left, 7 is above 2. 15 is above 7. 5 is right of 15. The line 4-5 goes up-right. 5-15 goes left-up. 2-1 goes down-right. 13-2 goes up-right. This looks messy around 2/7/15).
+        *   Actually 7 is very close to 15. **7-15** is a mandatory pair almost.
+        *   And 7 is very close to 2. **2-7** is a mandatory pair?
+        *   If **2-7-15** is fixed, then how do we get to 5?
+        *   **15 -> 5**.
+        *   So **...13 -> 2 -> 7 -> 15 -> 5...**
+        *   Then **5 -> 4 -> 1**.
+        *   From 1, we must go to **10** or **12**?
+        *   We came from 13. 10 is connected to 13. So we could do **1 -> 10 -> 13**. But we started the chain at 13.
+        *   Let's work backwards from 13. **13 <- 10 <- 12 <- 3 <- 6 <- 9 <- 14 <- 11 <- 8**.
+        *   Now connect **8** to the other end (**1**). **8 -> 1** is huge.
+        *   Connect **8** to **5**.
+        *   So **...8 -> 5 -> 4 -> 1**.
+        *   Now connect **1** to **10**.
+        *   So loop: **1 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> 5 -> 4 -> (back to 1)**? No, missed 2, 7, 13, 15.
+        *   Insert them. The group (2,7,13,15) is near 10 and 1.
+        *   Sequence: **10 -> 13 -> 2 -> 7 -> 15**.
+        *   Where does this block fit?
+        *   It fits between 1 and 5? Or 10 and 1?
+        *   Let's try fitting between 10 and 5.
+        *   Path: **...12 -> 10 -> 13 -> 2 -> 7 -> 15 -> 5 -> 4 -> 1 -> (back to 12)**.
+        *   Check links:
+            *   12 to 10: OK.
+            *   10 to 13: OK.
+            *   13 to 2: OK.
+            *   2 to 7: OK.
+            *   7 to 15: OK.
+            *   15 to 5: OK (Top crossing).
+            *   5 to 4: OK.
+            *   4 to 1: OK.
+            *   1 to 12: OK (This is the weak link. 1 to 12 is a bit of a span).
+            *   But wait, where is the right side? **8,11,14,9,6,3**.
+            *   They form a loop off of 5 and 12.
+            *   We need to insert that whole right-side loop.
+            *   Insertion points: Between 5 and 4? No. Between 15 and 5? No.
+            *   Between 5 and ... ?
+            *   Clearly **5 -> 8** is the link.
+            *   And **3 -> 12** is the other link.
+            *   So the path goes from 5 to 8, does the right loop, comes back to 3, then 12.
+            *   Let's integrate:
+                *   ... -> **15** -> **5** -> **8** -> **11** -> **14** -> **9** -> **6** -> **3** -> **12** -> ...
+            *   Now we need to close 12 back to 15 using the remaining points: **1, 4, 10, 13, 2, 7**.
+            *   Current start: 15. Current end: 12.
+            *   Remaining set: {1, 2, 4, 7, 10, 13}.
+            *   Let's path from 12 to 15.
+            *   **12 -> 10**.
+            *   **10 -> 13**.
+            *   **13 -> 2**.
+            *   **2 -> 1**?
+            *   **1 -> 4**.
+            *   **4 -> 7**? No.
+            *   **4 -> ...**? 4 is near 5. But 5 is already visited (before 8).
+            *   This topology is broken.
+    *   Let's try putting 1 and 4 on the **return** from the top.
+        *   **12 -> 10 -> 13 -> 2 -> 7 -> 15**.
+        *   **15 -> 5**.
+        *   **5 -> 8**.
+        *   **8 -> 11 -> 14 -> 9 -> 6 -> 3**.
+        *   Now we are at 3. We need to go back to 12. But we started at 12.
+        *   We missed **1** and **4**.
+        *   Where are 1 and 4? They are "inside" the C-shape.
+        *   They are near 12 and 5.
+        *   Maybe the path zig-zags inwards.
+        *   **12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8 -> 5 -> 4 -> 1**.
+        *   Now from 1, go to **2**? Or **10**?
+        *   If **1 -> 2**:
+            *   **2 -> 7 -> 15**.
+            *   From 15, close to **13**.
+            *   **13 -> 10**.
+            *   **10 -> 12**.
+            *   Let's trace this loop: **12-3-6-9-14-11-8-5-4-1-2-7-15-13-10-12**.
+            *   Let's evaluate the "weak" links.
+                *   **8 -> 5**: Standard.
+                *   **5 -> 4**: Good.
+                *   **4 -> 1**: Good.
+                *   **1 -> 2**: Good distance. Crossings?
+                    *   Line 4-1 goes down-left.
+                    *   Line 1-2 goes up-left.
+                    *   Line 15-13 goes down-left (far left).
+                    *   Line 13-10 goes down-left.
+                    *   Line 10-12 goes down-right.
+                    *   This looks very promising. The path winds inwards at 4-1 then spirals out to 2.
+                *   **15 -> 13**: This is the one concerning link. 15 is top, 13 is middle-left.
+                    *   Is there a point between? **7**.
+                    *   We have **2->7->15**. That is solid.
+                    *   So the jump is 15 to 13.
+                    *   Visually, 13 is below 2. 15 is above 2. The line 15->13 passes right by 7 and 2.
+                    *   Actually, 7 is between 15 and 2. So **15-7-2**.
+                    *   Then **2 -> 13**.
+                    *   Then **13 -> 10**.
+                    *   Then **10 -> 1**.
+                    *   Then **1 -> 4**.
+                    *   Then **4 -> 5**.
+                    *   Then **5 -> 8**.
+                    *   ... **3 -> 12**.
+                    *   Close **12 -> 15**? No.
+                    *   Close **12 -> ...**?
+                    *   Let's try closing the loop differently.
+    *   Let's look at the **15-13** jump again. It feels wrong.
+    *   Alternative for the left cluster: **10 -> 13 -> 2 -> 7 -> 15**.
+    *   This is the natural spine.
+    *   How to connect to it?
+        *   Enter at 10. Leave at 15.
+        *   Enter at 15. Leave at 10.
+        *   Enter at ...?
+    *   Maybe enter at 2? **1 -> 2 -> 13 -> 10**. Then **10 -> 12**.
+        *   Then **12 -> 3 ... -> 8 -> 5**.
+        *   Then **5 -> 4**.
+        *   Then **4 -> ...?**
+        *   We have ends at 4 and 15 (from the 2-7-15 part). But we broke the spine.
+        *   If we do **1 -> 2 -> 7 -> 15**.
+        *   Then **15 -> 5**.
+        *   Then **5 -> 4**.
+        *   Now we have ends 4 and 10 (from 1->2->13->10... wait 2 connects 13 and 7).
+        *   Let's trace: **4 -> 5 -> 15 -> 7 -> 2 -> 13 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+        *   Now close **8 to 4**. That is a long diagonal.
+        *   Is **8 to 4** better than **8 to 1**? Yes. Better than **8 to 15**? No, 8 to 15 is "top edge".
+        *   So keeping 15-8 or 5-8 is preferred.
+    *   Let's keep **5-8**.
+    *   So we have **... -> 8 -> 5 -> ...**
+    *   From 5, go to **15**?
+    *   **5 -> 15 -> 7 -> 2 -> 13 -> 10**.
+    *   From 10, go to **12**.
+    *   From 12, go to **1**? Or **3**?
+    *   If **12 -> 3**: **3 -> 6 -> 9 -> 14 -> 11 -> (back to 8)**.
+    *   So we have a gap between **10** and **1**. And **12** and **1**.
+    *   We missed **1** and **4**.
+    *   We need to put **1** and **4** between **10/12** and **5**?
+    *   We have the sequence **5 -> 15 ... -> 10 -> 12 ... -> 8 -> 5**.
+    *   Where can 1 and 4 fit?
+        *   Between 5 and 15? No.
+        *   Between 12 and 3? No.
+        *   Between 10 and 12? **10 -> 1 -> 4 -> 12**? No, 4-12 is far.
+        *   Between 10 and 12: **10 -> 1 -> 12**? Yes.
+        *   Where does 4 go?
+        *   Attached to 1 or 5.
+        *   Attach to 5: **5 -> 4 -> 15**? No.
+        *   Attach to 5: **8 -> 5 -> 4 -> ...**
+        *   From 4, go to **1**.
+        *   From 1, go to **2**? **2 -> 7 -> 15 -> 13 -> 10 -> 12 -> 3 ...**
+        *   Let's check this path: **8 -> 5 -> 4 -> 1 -> 2 -> 7 -> 15 -> 13 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> (8)**.
+        *   Let's audit the links:
+            *   8 -> 5: OK.
+            *   5 -> 4: OK.
+            *   4 -> 1: OK.
+            *   1 -> 2: OK.
+            *   2 -> 7: OK.
+            *   7 -> 15: OK.
+            *   15 -> 13: **Suspicious**. Same problem as before. 15 to 13 jumps over 7 and 2 vertically.
+            *   Is there a way to smooth 2-7-15-13?
+            *   **2 -> 13** is short. **7 -> 2** is short. **15 -> 7** is short.
+            *   So the chain is **15-7-2-13**.
+            *   Connect ends: 15 and 13.
+            *   Connect 15 to what? To **5** (or 4).
+            *   Connect 13 to what? To **10**.
+            *   So: **... 5 -> 4 -> 15 ...** (No, 4 is far from 15).
+            *   So: **... 5 -> 15 -> 7 -> 2 -> 13 -> 10 ...**
+            *   Where do 1 and 4 go?
+            *   1 is near 2 and 10.
+            *   4 is near 1 and 5.
+            *   So insert 4 and 1 between 5 and 10?
+            *   Path: **5 -> 4 -> 1 -> 2 ...** (Wait, 2 is in the chain).
+            *   Can we reorder the chain?
+            *   Instead of **15-7-2-13-10**, try **15-7-2-1-10-13**?
+                *   2 -> 1: Good.
+                *   1 -> 10: Good.
+                *   10 -> 13: Good.
+            *   Now we have ends: **15** and **13**.
+            *   Connect 13 to **12**? (13 is above 10, 10 is near 12).
+            *   **13 -> 12** is a jump over 10.
+            *   Better: **13 -> 10 -> 12**.
+            *   So segment: **15 -> 7 -> 2 -> 1 -> 10 -> 13 -> ?**
+            *   Wait, 10 connects to 12. 13 is a dead end?
+            *   Swap 10 and 13? **... 2 -> 1 -> 13 -> 10 -> 12**? 1 to 13 is longer than 1 to 10. 10 to 13 is very short.
+            *   So **... 2 -> 1 -> 10 -> 13 ...**
+            *   Now from 13, jump to **12**? 13 to 12 is longer than 10-12.
+            *   Maybe **13 -> 10 -> 12**.
+            *   Where did 4 go?
+            *   We have **5**. 4 is between 5 and 1.
+            *   So **... 5 -> 4 -> 1 ...**
+            *   Let's splice that in.
+            *   Path: **... 8 -> 5 -> 4 -> 1 -> 2 -> 7 -> 15 ...**
+            *   Now we are at 15. We have left: **13, 10, 12, 3...**
+            *   We need to connect 15 to the rest.
+            *   **15 -> 13**? (Long jump again).
+            *   Is there any other way?
+            *   What if 4 connects to 2? **4 -> 2**? No, crosses 1.
+            *   What if 1 connects to 13? **1 -> 13**? Crosses 2-10?
+            *   Let's look at the numbers.
+            *   Maybe **13** is the end of the line.
+            *   **15 -> 7 -> 2 -> 13**.
+            *   **13 -> 10**.
+            *   **10 -> 12**.
+            *   **12 -> 3 ... -> 8 -> 5**.
+            *   **5 -> 4**.
+            *   **4 -> 1**.
+            *   **1 -> 2**? But 2 is already used.
+            *   **1 -> 7**? No.
+            *   **1 -> 15**? No.
+            *   This implies 1 must connect to something unvisited or be an endpoint.
+            *   If 1 connects to 2, we must traverse 2 immediately.
+            *   **1 -> 2 -> 13 -> 10 -> 12**.
+            *   Then loop around back to 5-4. **... 8 -> 5 -> 4**.
+            *   Then **4 -> 15**? No.
+            *   Then **4 -> 7**? No.
+            *   Then **4 -> ...**?
+            *   Wait, what if the chain is **15 -> 7 -> 2 -> 1 -> 4 -> 5**?
+            *   That connects the top left to top right perfectly.
+            *   Now we have ends **15** and **5**.
+            *   Connect **5** to **8**.
+            *   **8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+            *   Now at 12. Need to connect to **15**.
+            *   Remaining points: **10, 13**.
+            *   **12 -> 10 -> 13**.
+            *   Now connect **13 -> 15**.
+            *   This brings us back to the **13 -> 15** link.
+            *   Is that link real? Let's look at the image again.
+            *   Point 13 is at (x=150, y=400). Point 15 is at (x=300, y=120).
+            *   Point 2 is at (x=160, y=340). Point 7 is at (x=300, y=160).
+            *   Distance 13-15 is approx sqrt(150^2 + 280^2) ~ 317.
+            *   Distance 13-2 is small ~60. 2-7 is ~140. 7-15 is ~40. Total path 13-2-7-15 is ~240.
+            *   So jumping 13->15 skips the intermediate points, but covers a huge distance.
+            *   Going 13->2->7->15 is much shorter than 13->15.
+            *   Therefore, the path **must** traverse 13-2-7-15 in sequence (or reverse).
+            *   So we have a block: **10-13-2-7-15** or **12-10-13-2-7-15**.
+            *   Let's assume the block is **12-10-13-2-7-15**.
+            *   End points: 12 and 15.
+            *   We need to connect 12 and 15 to the rest of the graph using 1, 4, 5, 8, ...
+            *   Connect 15 to **5**.
+            *   Connect 5 to **4**.
+            *   Connect 4 to **1**.
+            *   Connect 1 to **12**?
+            *   Let's check 1 -> 12.
+            *   Distance is moderate.
+            *   Then we have the right loop: **8, 11, 14, 9, 6, 3**.
+            *   Where do they fit?
+            *   They must form a loop attached to one of the edges.
+            *   It looks like **5 -> 8 ... 3 -> 12** is the attachment.
+            *   But we used 5->4->1->12.
+            *   So the path splits? No.
+            *   We need to integrate the loop.
+            *   Maybe **5 -> 8 ... 3 -> 1**.
+            *   Then **1 -> 4**.
+            *   Then **4 -> 12**?
+            *   Then **12 -> 10 -> 13 -> 2 -> 7 -> 15**.
+            *   Then **15 -> 5**.
+            *   Let's check the links:
+                *   5 -> 8: OK.
+                *   3 -> 1: Is 3 close to 1? 3 is bottom center. 1 is left center. 12 is between them. 3 is close to 12. 12 is close to 1. So 3->1 skips 12. Bad.
+            *   We must go **3 -> 12**.
+            *   From 12, we can go to **1** or **10**.
+            *   If **12 -> 1**:
+                *   **1 -> 4**.
+                *   **4 -> ...**?
+                *   If **4 -> 5**: Then **5 -> 15**. Then **15 -> 7 -> 2 -> 13 -> 10**.
+                *   Now we are at 10. Need to close to **8** (start of loop).
+                *   **10 -> 8** is huge.
+            *   This means the **5 -> 8** link must be preserved? Or is there another way to enter the right cluster?
+            *   **15 -> 8**?
+            *   Let's try: **15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+            *   Now at 12. Leftovers: **10, 13, 2, 7, 5, 4, 1**.
+            *   We need to get back to 15.
+            *   **12 -> 10 -> 13 -> 2 -> 7**. (Close to 15! But missed 1, 4, 5).
+            *   Where to put 1, 4, 5?
+            *   Attached to 7? **7 -> 5 -> 4 -> 1**.
+            *   Then **1 -> 2**.
+            *   Then **2 -> 13 -> 10 -> 12**.
+            *   Let's trace: **15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 10 -> 13 -> 2 -> 1 -> 4 -> 5 -> 7 -> 15**.
+            *   Let's audit links:
+                *   15 -> 8: Long, but maybe necessary.
+                *   12 -> 10: OK.
+                *   10 -> 13: OK.
+                *   13 -> 2: OK.
+                *   2 -> 1: OK.
+                *   1 -> 4: OK.
+                *   4 -> 5: OK.
+                *   5 -> 7: OK.
+                *   7 -> 15: OK.
+            *   This looks like a valid candidate. It has no crossings.
+            *   The only questionable link is **15 -> 8**.
+            *   Alternative: **5 -> 8**.
+            *   If we use **5 -> 8**, we need **... -> 5 -> 8**.
+            *   So modify the previous loop.
+            *   Replace **7 -> 15 -> 8** with **7 -> 15 -> 5 -> 8**? No, 5 is used.
+            *   Replace **5 -> 7 -> 15** with **5 -> 15 -> 7**?
+            *   Then we end at 7. Connect 7 to 8? No.
+            *   We need **... -> 5 -> 8**.
+            *   So **... 4 -> 5 -> 8 ...**
+            *   Let's work backwards from 5.
+            *   **5 <- 4 <- 1 <- 2 <- 13 <- 10 <- 12 <- 3 <- 6 <- 9 <- 14 <- 11 <- 8**.
+            *   Now we have open ends **5** and **8**. Connect them. **5 -> 8**.
+            *   Wait, I missed **7, 15**.
+            *   Where do they fit?
+            *   Near 2 and 5.
+            *   **... 2 -> 7 -> 15 -> 5 ...**?
+            *   Let's check links:
+                *   2 -> 7: Good.
+                *   7 -> 15: Good.
+                *   15 -> 5: Good.
+            *   So trace: **8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 10 -> 13 -> 2 -> 7 -> 15 -> 5 -> 4 -> 1**.
+            *   Now close **1** back to **8**? Terrible.
+            *   Close **1** back to **...**?
+            *   Maybe the start point was wrong.
+            *   We have ends **1** and **8**.
+            *   We need to close the loop.
+            *   Is there a connection **1 -> 12**? Yes.
+            *   So can we insert the loop there?
+            *   **... 1 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+            *   Now close **8** back to start.
+            *   Start was **10** (preceding 13).
+            *   **8 -> 10**? Bad.
+            *   Start was **5** (preceding 4).
+            *   **8 -> 5**. Good.
+            *   Let's trace the full loop:
+            *   **5 -> 4 -> 1 -> 12 -> 10 -> 13 -> 2 -> 7 -> 15 -> (back to 5)**?
+            *   Wait, I dropped the right side loop.
+            *   **5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+            *   Now from 12: **12 -> 10 -> 13 -> 2 -> 7 -> 15**.
+            *   From 15: **15 -> ... -> 5**.
+            *   Where are 1 and 4?
+            *   We need to pick them up.
+            *   Can we do **15 -> 4 -> 1 -> 5**? No.
+            *   Can we do **15 -> 5 -> 4 -> 1**? Yes.
+            *   From 1, where to?
+            *   We ended the other chain at **2**.
+            *   **1 -> 2**.
+            *   Chain: **1 -> 2 -> 7 -> 15 -> 5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 10 -> 13**.
+            *   Now close **13 -> 1**.
+            *   Is 13 close to 1?
+            *   13 is at (150, 400). 1 is at (250, 520).
+            *   10 is at (80, 570).
+            *   13 to 1 is ~ 150 px.
+            *   13 to 2 is ~ 60 px.
+            *   13 to 10 is ~ 180 px.
+            *   Wait, looking at the image:
+            *   13 is near 2.
+            *   10 is far left.
+            *   12 is bottom left.
+            *   1 is in the middle of 10, 12, 4.
+            *   13 is definitely closer to 2 than 1.
+            *   10 is closer to 13? Let's check 10. 10 is far left. 13 is up-right from 10.
+            *   So **10 -> 13** is correct.
+            *   Is **13 -> 1** viable? It crosses 2-10 line?
+            *   Let's re-evaluate the **13 -> 2 -> 1** connection.
+            *   **13 -> 2**.
+            *   **2 -> 1**?
+            *   Then **1 -> 4 -> 5 -> 15 -> 7**.
+            *   Then **7 -> ...**? 7 is near 2. But 2 is visited.
+            *   Dead end at 7.
+            *   So **7** must connect to **2** or **15**.
+            *   If **15 -> 7 -> 2**, then we are at 2.
+            *   **2 -> 13**.
+            *   **13 -> 10**.
+            *   **10 -> 12**.
+            *   **12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+            *   **8 -> 5**.
+            *   **5 -> 4**.
+            *   **4 -> 1**.
+            *   Now close **1** back to **15**.
+            *   **1 -> 15** is very long.
+            *   Is there a swap?
+            *   Maybe **1 -> 2**? No, 2 is inside the chain.
+            *   Maybe **1 -> 7**? No.
+            *   Let's look at the "hub" 1 again.
+            *   Neighbors of 1: 4, 12, 2, 10.
+            *   Neighbors of 4: 1, 5.
+            *   Neighbors of 5: 4, 8, 15.
+            *   Neighbors of 15: 7, 5, 8.
+            *   Neighbors of 7: 15, 2.
+            *   Neighbors of 2: 7, 13, 1.
+            *   Neighbors of 13: 2, 10.
+            *   Neighbors of 10: 13, 12, 1.
+            *   Neighbors of 12: 10, 1, 3.
+            *   Let's build a path from these neighbor lists.
+            *   Start at **3**. Next must be **12**.
+            *   From 12: **1** or **10**.
+            *   Try **12 -> 10**.
+            *   From 10: **13** or **1**.
+            *   Try **10 -> 13**.
+            *   From 13: **2**.
+            *   From 2: **7** or **1**.
+            *   Try **2 -> 7**.
+            *   From 7: **15**.
+            *   From 15: **5** or **8**.
+            *   Try **15 -> 5**.
+            *   From 5: **4** or **8**.
+            *   Try **5 -> 4**.
+            *   From 4: **1**.
+            *   From 1: **...**?
+            *   Options for 1 were 4, 12, 2, 10.
+            *   4 is previous.
+            *   12 is used (start).
+            *   2 is used.
+            *   10 is used.
+            *   So **12->10->13->2->7->15->5->4->1** is a dead end.
+            *   Backtrack.
+            *   Change **5->4** to **5->8**.
+            *   **... 15 -> 5 -> 8**.
+            *   From 8: **11 -> 14 -> 9 -> 6 -> 3**.
+            *   Loop closed back to **12** (start).
+            *   Path: **12 -> 10 -> 13 -> 2 -> 7 -> 15 -> 5 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> (12)**.
+            *   Who is missing? **1** and **4**.
+            *   We need to insert **1** and **4**.
+            *   They fit between **12** and **10**?
+                *   **12 -> 1 -> 4 -> 10**? No.
+                *   **12 -> 4 -> 1 -> 10**? No.
+            *   They fit between **2** and **7**?
+                *   **2 -> 1 -> 4 -> 7**? No.
+            *   They fit between **5** and **8**?
+                *   **5 -> 4 -> 1 -> 8**? No.
+            *   They fit between **5** and **15**?
+                *   **15 -> 4 -> 1 -> 5**?
+                *   Neighbors of 4: 1, 5. So 1-4-5 is a unit.
+                *   Neighbors of 1: 2, 12, 10, 4.
+                *   So we need a link **X -> 1 -> 4 -> 5 -> Y**.
+                *   Or **X -> 5 -> 4 -> 1 -> Y**.
+                *   Y must be 2, 12, or 10.
+                *   X must be 15 or 8.
+                *   Let's try **Y = 2**.
+                *   **2 -> 1 -> 4 -> 5**.
+                *   Connect 5 to **15** or **8**.
+                *   Connect 2 to **7** or **13**.
+                *   Let's try **7 -> 2 -> 1 -> 4 -> 5 -> 15**.
+                    *   7 connects to 15. So loop **15-7-2-1-4-5-15**.
+                    *   This is a sub-loop.
+                    *   We need to break it to include the rest.
+                    *   Break 7-15? No, they are tight.
+                    *   Break 5-15? Yes.
+                    *   Go **5 -> 8**.
+                    *   Go **15 -> ...**? 15 needs to connect to the other end.
+                    *   The other end comes from 2.
+                    *   We entered 2 from 7.
+                    *   Where did 7 come from?
+                    *   **... 13 -> 2**? No, 7 is isolated if we do 13->2.
+                    *   We need **13 -> 2**? No, 13 is closer to 10 and 2.
+                    *   Let's try **10 -> 13 -> 2**.
+                    *   Then **2 -> 1**.
+                    *   **1 -> 4**.
+                    *   **4 -> 5**.
+                    *   **5 -> 15**.
+                    *   **15 -> 7**.
+                    *   Now from 7? Close to **2** (used).
+                    *   Close to **...**?
+                    *   We have ends 10 and 7.
+                    *   Remaining: 12, 3, 6, 9, 14, 11, 8.
+                    *   Connect 7 to **8**? (Long).
+                    *   Connect 10 to **12**.
+                    *   **10 -> 12**.
+                    *   **12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+                    *   Now close **8** to **7**.
+                    *   Distance 8-7 is approx 200px.
+                    *   Is there a shorter closure?
+                    *   Maybe **5 -> 8**?
+                    *   Modify sequence: **... 4 -> 5 -> 8 ...**
+                    *   Then from 8 loop around to 12.
+                    *   **... 8 -> ... -> 3 -> 12**.
+                    *   From 12 go to **10**.
+                    *   **10 -> 13**.
+                    *   **13 -> 2**.
+                    *   **2 -> 7**.
+                    *   **7 -> 15**.
+                    *   Now close **15** to **... 4**? (Start of chain).
+                    *   **15 -> 4**? No.
+                    *   Chain was 4->5->8.
+                    *   So **15 -> 4** is bad.
+                    *   What about **15 -> 1**? (If chain started at 1).
+                    *   **15 -> 1** is bad.
+                    *   What about **15 -> 5**?
+                    *   Yes! **15 -> 5** is decent.
+                    *   But 5 is connected to 4 and 8.
+                    *   So **4 -> 5 -> 8**. 15 can't connect to 5.
+                    *   Unless **4 -> 5 -> 15**.
+                    *   Then **15 -> 7 -> 2 -> 13 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+                    *   Now close **8** to **4**.
+                    *   Is 8-4 shorter than 8-7?
+                    *   4 is at roughly (350, 300). 8 is at (650, 120).
+                    *   7 is at (300, 160).
+                    *   8 to 7 is ~ 350px.
+                    *   8 to 4 is ~ 350px.
+                    *   Both are bad.
+            *   Let's reconsider **15 -> 8**.
+            *   Distance ~ 350px.
+            *   If we accept one long jump, which is best?
+            *   Usually the top gap.
+            *   If **15 -> 8**:
+                *   Loop: **15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 10 -> 13 -> 2 -> 7 -> 15**.
+                *   Cost: Includes 15->8.
+                *   Missing: **1, 4, 5**.
+                *   Insert them.
+                *   Best spot: **2 -> 1 -> 4 -> 5 -> 7**?
+                    *   **2 -> 1**: good.
+                    *   **1 -> 4**: good.
+                    *   **4 -> 5**: good.
+                    *   **5 -> 7**: good? 5 to 7 is very close.
+                    *   Wait, 5 (420, 310) to 7 (300, 160). Distance ~ 190.
+                    *   5 to 15 (300, 120). Distance ~ 220.
+                    *   Actually 5 is at **(420, 310)**. 4 is at **(320, 510)** -- wait, that's label 4. Point 4 is at (320, 510).
+                    *   Let's re-read coordinates.
+                        *   1: (250, 520)
+                        *   4: (320, 510) - Yes, 1 and 4 are neighbors.
+                        *   5: (420, 310) - Up and right from 4.
+                        *   2: (160, 340)
+                        *   7: (300, 160) - Top left.
+                        *   15: (300, 120) - Top left, above 7.
+                        *   8: (650, 120) - Top right.
+                    *   Distances:
+                        *   4 to 5: ~ 220.
+                        *   5 to 7: ~ 190.
+                        *   5 to 8: ~ 300.
+                        *   7 to 15: ~ 40.
+                        *   15 to 8: ~ 350.
+                    *   It seems **5 -> 7** is better than **5 -> 8**.
+                    *   It seems **5 -> 15** is similar.
+                    *   Let's check **5 -> 8**. 220 + 350 = 570.
+                    *   Path **4 -> 5 -> 7 -> 15 -> 8** ... cost = 220 + 190 + 40 + 350 = 800.
+                    *   Path **4 -> 5 -> 8 ... 15 -> 7** ... cost = 220 + 300 ... + 40.
+                    *   We need to bridge the top gap (between 15 and 8) or the middle gap (5 to 8).
+                    *   5 is in the middle.
+                    *   If we go **15 -> 5 -> 8**, cost is 220 + 300 = 520.
+                    *   If we go **15 -> 8**, cost is 350. (Direct is shorter than detour via 5).
+                    *   BUT, if we skip 5, we have to visit it later.
+                    *   Visiting 5 requires entering and leaving.
+                    *   Best neighbors of 5 are 4 and (15 or 8 or 7).
+                    *   So **4-5-15** or **4-5-8**.
+                    *   If **4-5-15**: 220 + 220 = 440.
+                    *   Then 15->7->2...
+                    *   And we must cross to 8 eventually.
+                    *   **... 2 -> 13 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+                    *   Now close **8** to **4**? (Cost ~350).
+                    *   Total extra cost: 440 + 350 = 790.
+                    *   If **4-5-8**: 220 + 300 = 520.
+                    *   Then **8...12**.
+                    *   Then **12 -> 10 -> 13 -> 2 -> 7 -> 15**.
+                    *   Now close **15** to **4**? (Cost ~ 400).
+                    *   Total extra cost: 520 + 400 = 920.
+                    *   So **4-5-15** with **8-4** close is better? No, **8-4** crosses stuff.
+                    *   What if **15-8** is the bridge?
+                    *   **... 4 -> 5**.
+                    *   Where does 5 go? To **2**? (Distance 260).
+                    *   To **1**? (Distance 270).
+                    *   If **4-5-2**: 220 + 260 = 480.
+                    *   Then **2 -> 7 -> 15 -> 8 ... -> 12**.
+                    *   Then **12 -> 10 -> 13**.
+                    *   Close **13 -> 1**. (Cost ~150).
+                    *   Then **1 -> 4**.
+                    *   Loop: **1-4-5-2-7-15-8-11-14-9-6-3-12-10-13-1**.
+                    *   Audit links:
+                        *   4-5: OK.
+                        *   5-2: OK (Crosses 1-4? No, 5 is right, 2 is left. 1-4 is bottom. 5-2 goes diag-left).
+                        *   2-7: OK.
+                        *   7-15: OK.
+                        *   15-8: Long jump.
+                        *   ...
+                        *   13-1: OK.
+                        *   1-4: OK.
+                    *   Does **13-1** cross **12-10**?
+                        *   13 is (150, 400). 1 is (250, 520).
+                        *   12 is (200, 800). 10 is (80, 570).
+                        *   13-1 is down-right. 10-12 is down-right. They are parallel-ish. No cross.
+                    *   Does **13-1** cross **2-5**?
+                        *   2 is (160, 340). 5 is (420, 310).
+                        *   13 is (150, 400). 1 is (250, 520).
+                        *   13 is below 2. 1 is below 5.
+                        *   2-5 is top horiz. 13-1 is bottom horiz. No cross.
+                    *   This looks like a valid loop.
+                    *   Key sequence: **13 -> 1 -> 4 -> 5 -> 2**.
+                    *   Wait, **13 -> 1** skips 10? No, 10 is connected to 12 and 13?
+                        *   In this loop: ... **12 -> 10 -> 13**. Yes.
+                    *   Wait, is **13 -> 1** better than **13 -> 2**?
+                        *   13 to 2 is super short. 13 to 1 is medium.
+                        *   By going 13-1, we skip the short 13-2 link.
+                        *   We replace it with 13-1 and 5-2.
+                        *   If we use 13-2, we need another way to 1/4/5.
+                        *   **10 -> 1 -> 4 -> 5 -> 2**? (10 to 1 is good).
+                        *   Then **2 -> 13**? Then **13 -> 12**? (13 to 12 is long).
+                        *   Maybe **2 -> 7 -> 15 -> 8 ... -> 12 -> 13 -> 10**.
+                        *   Then **10 -> 1**.
+                        *   Path: **10 -> 1 -> 4 -> 5 -> 2 -> 7 -> 15 -> 8 ... -> 12 -> 13 -> 10**?
+                        *   Check 12 -> 13.
+                        *   12 (200,800) to 13 (150,400). Huge. 12 to 10 is much better.
+                        *   So **12 -> 10**.
+                        *   Then **10 -> 13**.
+                        *   Then **13 -> 2**.
+                        *   Then **2 -> 7 -> 15 -> 8 ... -> 3 -> 12**.
+                        *   Where are **1, 4, 5**?
+                        *   We need to detour from the main loop.
+                        *   Detour at 2? **2 -> 5 -> 4 -> 1 -> ...**?
+                        *   From 1, return to ... **13**? No, 13 is before 2.
+                        *   Return to **10**?
+                        *   Try **13 -> 2 -> 5 -> 4 -> 1 -> 10**.
+                        *   Then **10 -> 12**.
+                        *   Then **12 -> 3 ... -> 8 -> 15 -> 7 -> (back to 2?)**.
+                        *   No, 7 is near 2.
+                        *   So **7 -> 2**. But 2 is start of detour.
+                        *   So chain: **15 -> 7 -> 2 -> 5 -> 4 -> 1 -> 10 -> 13**.
+                        *   Now close **13** to **12**? No, 13-12 is far.
+                        *   Swap 10/13? **... 1 -> 13 -> 10 -> 12**.
+                        *   Is 1 closer to 13 or 10? 1 to 10 is closer.
+                        *   So **... 1 -> 10 -> 13**.
+                        *   Then **13 -> 12**? Still far.
+                        *   Is there a better way?
+                        *   **... 5 -> 4 -> 1 -> 12**. (Good).
+                        *   **12 -> 10 -> 13**. (Good).
+                        *   **13 -> 2**. (Good).
+                        *   **2 -> 7 -> 15**. (Good).
+                        *   **15 -> 8**. (Long).
+                        *   **8 -> 11 -> 14 -> 9 -> 6 -> 3**. (Good).
+                        *   **3 -> 12**? But 12 is already visited.
+                        *   We need to close **3** to **5**. (Start of chain).
+                        *   **3 -> 5** is a long diagonal.
+            *   Let's compare the long links.
+                1.  **15 -> 8** (Top) + **3 -> 5** (Center diag).
+                2.  **5 -> 8** (Mid) + **15 -> ... 4**. (Top to bottom).
+            *   Let's try to eliminate **3 -> 5**.
+            *   Connect **3 -> 12** (Neighbors).
+            *   So **... 3 -> 12**.
+            *   Enter 12 from **1**.
+            *   Enter 1 from **4**.
+            *   Enter 4 from **5**.
+            *   Enter 5 from **8**.
+            *   Enter 8 from **15**.
+            *   Enter 15 from **7**.
+            *   Enter 7 from **2**.
+            *   Enter 2 from **13**.
+            *   Enter 13 from **10**.
+            *   Loop: **10 -> 13 -> 2 -> 7 -> 15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 1 -> 4 -> 5 -> (close to 10)**.
+            *   Close **5 -> 10**? Distance ~ 450.
+            *   Can we improve **5 -> 10**?
+            *   Maybe **5 -> 2**? No, 2 visited.
+            *   Maybe **5 -> 15**? No.
+            *   Maybe **4 -> 10**? No.
+            *   Maybe reorder the start.
+            *   Instead of **5 -> 10**, how about **5 -> 13**? No.
+            *   How about **5 -> 2** (if 2 wasn't visited).
+            *   Swap block: **10-13-2**.
+            *   Do **12 -> 1 -> 4 -> 5 -> 2 -> 13 -> 10**.
+            *   Then **10 -> ... 3?** (Close loop). **10 -> 12?** (Visited).
+            *   So **10 -> 3**. (Far).
+            *   What about **10 -> ...**?
+            *   This is getting complicated. Let's go with the most obvious clusters.
+            *   **Cluster 1**: 15-7-2-13-10-1-4-5. (Left + Center).
+            *   **Cluster 2**: 8-11-14-9-6-3-12. (Right + Bottom).
+            *   Connections:
+                *   10-12? Yes.
+                *   1-12? Yes.
+                *   5-8? Yes.
+                *   15-8? Yes.
+            *   Let's try **1-12** and **5-8**.
+                *   Path segment: **15-7-2-13-10-4-1** (Wait, 10-4 is bad).
+                *   Path segment: **15-7-2-13-10-1-4-5**.
+                *   Link **5 -> 8**.
+                *   Path segment: **8-11-14-9-6-3-12**.
+                *   Link **12 -> 15**. (Bad).
+                *   Link **12 -> 10**? (10 visited).
+                *   Link **12 -> 13**? (13 visited).
+                *   Link **12 -> 2**? (2 visited).
+                *   Link **12 -> 7**? (7 visited).
+                *   Link **12 -> 1**? (1 visited).
+                *   We are stuck at 12.
+                *   Can we reverse the first segment?
+                *   **5-4-1-10-13-2-7-15**.
+                *   Link **15 -> 8**.
+                *   Link **... 3 -> 12**.
+                *   Link **12 -> 5**. (Bad).
+            *   Try **10-12** and **5-8**.
+                *   Segment: **... 13-2-7-15-5-4-1**.
+                *   Link **1 -> 10**? Yes.
+                *   Link **10 -> 12**. Yes.
+                *   Link **12 -> 3 ... -> 8**.
+                *   Link **8 -> ... 13**? (Bad).
+                *   Link **8 -> 15**? (15 visited).
+                *   Link **8 -> 5**? (5 visited).
+                *   We need to close the loop at 8.
+                *   Maybe start at 8?
+                *   **8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+                *   **12 -> 10 -> 1 -> 4 -> 5**.
+                *   **5 -> 15 -> 7 -> 2 -> 13**.
+                *   Link **13 -> 8**. (Distance ~ 500).
+                *   Is there a better close?
+                *   Maybe **13 -> 15**? (Distance 300).
+                *   Then we need to open the loop elsewhere.
+                *   Break **15-5**.
+                *   **5 -> 15** (visited).
+                *   Let's restart the sequence at 13.
+                *   **13 -> 2 -> 7 -> 15**.
+                *   **15 -> 8**. (Bridge).
+                *   **8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+                *   **12 -> 10**.
+                *   **10 -> 1 -> 4 -> 5**.
+                *   **5 -> 13**. (Distance 300).
+                *   This seems the most balanced. 15-8 is 350. 5-13 is 300. 12-10 is short. 10-1 is short. 5-4 is short.
+                *   Let's check 5-13 crossing.
+                *   5 (420,310) to 13 (150,400).
+                *   Crosses 2-7? 2(160,340), 7(300,160).
+                *   Line 5-13 goes left-down. Line 2-7 goes right-up.
+                *   They likely cross.
+                *   Let's try to avoid 5-13.
+                *   Connect **5 -> 15**? (Distance 220).
+                *   Then break **7-15**.
+                *   **7 -> 2 -> 13 -> 10 -> 12 -> 3 -> 6 -> 9 -> 14 -> 11 -> 8**.
+                *   **8 -> 5 -> 4 -> 1**.
+                *   **1 -> ...**? Connect to 7?
+                *   **1 -> 7**. (Distance ~ 300. Crosses 2-5?).
+            *   Let's try **2 -> 5**. (Distance 260).
+                *   **13 -> 10 -> 1 -> 4 -> 5 -> 2 -> 7 -> 15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+                *   **12 -> 13**. (Distance ~ 400).
+                *   Can we improve 12-13?
+                *   Use **12-10**.
+                *   **... 3 -> 12 -> 10 -> 13 ...**
+                *   Now we need to close 13 to the start.
+                *   Start was **1**.
+                *   **13 -> 1**. (Distance 150).
+                *   Check crossing of 13-1.
+                *   13 (150,400) -> 1 (250,520).
+                *   Other lines:
+                    *   10-13: OK.
+                    *   1-4: OK.
+                    *   4-5: OK.
+                    *   5-2: (420,310) -> (160,340).
+                    *   13-1 is below 5-2. No crossing.
+                    *   2-7: OK.
+                    *   7-15: OK.
+                    *   15-8: OK.
+                    *   ...
+                    *   12-10: OK.
+                *   This loop: **1 -> 4 -> 5 -> 2 -> 7 -> 15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12 -> 10 -> 13 -> 1**.
+                *   Let's sanity check distances.
+                    *   1-4: Short.
+                    *   4-5: Short.
+                    *   5-2: Medium (260).
+                    *   2-7: Short.
+                    *   7-15: Short.
+                    *   15-8: Long (350).
+                    *   8-11: Short.
+                    *   ...
+                    *   3-12: Short.
+                    *   12-10: Short/Medium.
+                    *   10-13: Short.
+                    *   13-1: Short/Medium (150).
+                *   This looks excellent. The only "jumps" are 5-2 and 15-8.
+                *   Is there a way to avoid 5-2?
+                *   Connect **5 -> 7**? (190).
+                *   **... 4 -> 5 -> 7 -> 15 -> 8 ...**
+                *   Then 2 is isolated.
+                *   **... 10 -> 13 -> 2 -> 1**.
+                *   **1 -> 4**.
+                *   So: **12 -> 10 -> 13 -> 2 -> 1 -> 4 -> 5 -> 7 -> 15 -> 8 -> 11 -> 14 -> 9 -> 6 -> 3 -> 12**.
+                *   Check links:
+                    *   2 -> 1: OK.
+                    *   1 -> 4: OK.
+                    *   4 -> 5: OK.
+                    *   5 -> 7: OK.
+                    *   7 -> 15: OK.
+                    *   15 -> 8: Long.
+                    *   ...
+                    *   3 -> 12: OK.
+                    *   12 -> 10: OK.
+                    *   10 -> 13: OK.
+                    *   13 -> 2: OK.
+                *   This seems to beat the 5-2 jump (260) with a 5-7 jump (190).
+                *   Is 5-7 valid? 5 (420,310) -> 7 (300,160).
+                *   Crossings?
+                    *   Line 5-7 goes up-left.
+                    *   Line 2-1 (160,340 -> 250,520) goes down-right. No cross.
+                    *   Line 4-5 (320,510 -> 420,310) goes up-right.
+                    *   Line 15-8 (Top).
+                    *   This looks cleaner.
+                *   Let's check 5-7 vs 5-15.
+                    *   5 to 7 is ~190.
+                    *   5 to 15 is ~220.
+                    *   7 to 15 is ~40.
+                    *   So 5->7->15 is 230. 5->15->7 is 260.
+                    *   Order **5->7->15** is better.
+                *   Let's check 2->1 vs 2->13.
+                    *   We have 13->2->1.
+                    *   13 to 2 is ~60. 2 to 1 is ~200. Total 260.
+                    *   Vs 10->13->2...
+                *   Wait, is 2-1 crossing 13-?
+                    *   2(160,340) -> 1(250,520).
+                    *   13(150,400).
+                    *   13 is left of the line 2-1. No crossing.
+                *   Let's check 1-4.
+                    *   1(250,520) -> 4(320,510). Very short.
+                *   Let's check 4-5.
+                    *   4(320,510) -> 5(420,310). Short.
+                *   Let's check 5-7.
+                    *   5(420,310) -> 7(300,160). Medium.
+                *   Let's check 7-15.
+                    *   Short.
+                *   Let's check 15-8.
+                    *   Long.
+                *   Let's check 12-10-13-2.
+                    *   Standard.
+                *   This seems to be the optimal path.
+
+Final path sequence:
+1.  **12**
+2.  **10**
+3.  **13**
+4.  **2**
+5.  **1**
+6.  **4**
+7.  **5**
+8.  **7**
+9.  **15**
+10. **8**
+11. **11**
+12. **14**
+13. **9**
+14. **6**
+15. **3**
+(Returns to 12)
+
+Let's double check **2 -> 1**.
+Is **2 -> 7** better?
+If **2 -> 7**:
+**13 -> 2 -> 7 -> 15 -> 5 -> 4 -> 1 -> 10 -> 12**.
+Links:
+- 5 -> 4 (OK)
+- 4 -> 1 (OK)
+- 1 -> 10 (OK)
+- 10 -> 12 (OK)
+Compare **1->10->12** vs **10->13->2->1**.
+- 1->10 (Short) + 10->12 (Med).
+- 2->1 (Med) + 1->4 (Short).
+Wait, in my proposed path: **12->10->13->2->1->4->5...**
+Link 10->13 is short. 13->2 is short.
+Link 2->1 is med (~200).
+Link 1->4 is short.
+Total for "left side" connections: 10-13-2-1-4.
+Alternative: **12->10->1->4->5...** and **2->13**?
+If we do **10->1**, we skip 13 and 2.
+We must include 13 and 2.
+Attach 13, 2 to 10? **12->1->2->13->10**?
+- 1->2 (Med). 2->13 (Short). 13->10 (Short). 10->? (Dead end).
+So 10 must be connected to 12.
+So **12->10->13->2**. This chain is solid.
+From 2, we go to **1**.
+From 1, we go to **4**.
+From 4, we go to **5**.
+From 5, we go to **7**.
+From 7, we go to **15**.
+From 15, we go to **8**.
+This feels right.
+
+Let's check if **5->15->7** is better.
+5->15 (220). 15->7 (40). 7->2 (140).
+Total 400.
+My path: 5->7 (190). 7->15 (40). 15->8 (350).
+Wait, 7 connects to 2? No, 7 connects to 15.
+In my path **2 -> 1**, I broke the **2 -> 7** link.
+Distance 2->7 is ~160.
+Distance 2->1 is ~200.
+So breaking 2-7 costs ~40 px.
+But it enables the flow 2->1->4->5->7.
+If I keep 2->7, I have **2->7->15->5->4->1**.
+Then 1 must connect to **10** (or 12).
+If **1 -> 10**:
+Path: **... 13->2->7->15->5->4->1->10->12 ...**
+Let's check 1->10 vs 2->1.
+1(250,520) -> 10(80,570). Dist ~ 180.
+2(160,340) -> 1(250,520). Dist ~ 200.
+They are similar.
+But if I do **1->10**, I need **10->12**.
+And I entered **2** from **13**.
+So **13->2**.
+And I entered **13** from **?**.
+If I go **1->10**, 10 connects to 12.
+Where does 13 connect?
+**13** is a leaf off 10/2?
+No, **10->13->2**.
+So **... 1->10->13->2->7 ...**?
+Let's trace: **12 -> (3...8) -> 15 -> 5 -> 4 -> 1 -> 10 -> 13 -> 2 -> 7**.
+Now **7** is the end. Close **7** to **15**? No, 15 is start of that segment.
+Close **7** to **15** is good. But 15 is connected to 8.
+So loop: **15->8...12->?->10->13->2->7->15**.
+Gap is **12** to **10**.
+If **1->10** is used, then **12->1**.
+Is **12->1** good?
+12(200,800) -> 1(250,520). Dist ~ 280.
+12(200,800) -> 10(80,570). Dist ~ 260.
+Similar.
+So **12->1->4->5->15->8...3->12**?
+Where is the rest? **10, 13, 2, 7**.
+Insert them.
+Between 12 and 1? No.
+Between 5 and 15?
+**5 -> 7 -> 2 -> 13 -> 10 -> 15**? No.
+**5 -> 15** and **7 -> ...**
+It seems the block **10-13-2-7** should be kept together.
+And **10** connects to **12** or **1**.
+And **7** connects to **15**.
+So **12 -> 10 -> 13 -> 2 -> 7 -> 15**.
+Then **15 -> 8**.
+Then **8 ... 3 -> 12**.
+Missing: **1, 4, 5**.
+Where do they go?
+Between **15** and **8**?
+**15 -> 5 -> 4 -> 1 -> 8**? (1 to 8 is huge).
+Between **7** and **15**?
+**7 -> 5 -> 4 -> 1 -> 15**? (1 to 15 is huge).
+Between **2** and **7**?
+**2 -> 1 -> 4 -> 5 -> 7**.
+This is the path I found earlier!
+**12 -> 10 -> 13 -> 2 -> 1 -> 4 -> 5 -> 7 -> 15 -> 8 ...**
+This preserves all short links except 2-7, which it replaces with 2-1 (med) and 5-7 (med).
+The cost is breaking 2-7 (~160) and adding 2-1 (~200) + 5-7 (~190). Net +230.
+Is there a better spot?
+Between **10** and **13**?
+**10 -> 1 -> 4 -> 5 -> 13**? (5 to 13 is long).
+Between **12** and **10**?
+**12 -> 1 -> 4 -> 5 -> 10**? (5 to 10 is long).
+It seems breaking 2-7 is the best insertion point.
+
+Let's re-verify the "break 2-7" strategy.
+Original chain: 10-13-2-7-15.
+New chain: 10-13-2 -> 1-4-5 -> 7-15.
+Links:
+2->1: OK.
+1->4: OK.
+4->5: OK.
+5->7: OK.
+This seems robust.
+
+Final check of the loop:
+12, 10, 13, 2, 1, 4, 5, 7, 15, 8, 11, 14, 9, 6, 3.
+
+List: 12, 10, 13, 2, 1, 4, 5, 7, 15, 8, 11, 14, 9, 6, 3.
+Starting point requested: Any.
+Let's start with 1 for the output to be canonical-ish, or just start at the beginning of my list.
+The request asks for a comma-separated list.
+Example starts with 1. I'll start with 1.
+1, 4, 5, 7, 15, 8, 11, 14, 9, 6, 3, 12, 10, 13, 2
+Check last link 2->1. OK.
+
+Wait, is **5->15->7** better than **5->7->15**?
+If 5->15: 12...2->1->4->5->15->7->?
+7 is dead end. 7 must connect to 8? No.
+So 7 must connect to 15.
+So **5->7->15** is the only way to flow into 8 (via 15->8).
+Or **5->15->8**? Then 7 is skipped.
+We need to visit 7.
+So **5->?->7->?->8**.
+**5->2->7**? No, 2 visited.
+**5->15->7->8**? 7 to 8 is far.
+So **5->7->15->8** is the correct order.
+
+Path: 1, 4, 5, 7, 15, 8, 11, 14, 9, 6, 3, 12, 10, 13, 2.
+
+One visual check on 2->1.
+2 is at (160,340). 1 is at (250,520).
+Is there an obstacle? 13 is at (150,400).
+Line 2-1 passes near 13.
+Since 13 is connected to 2 and 10, it forms a V shape < 2, 10 > with 13 at the vertex.
+The line 2-1 closes the top of the V.
+13 is "inside" the triangle 2-1-10?
+10(80,570), 1(250,520), 2(160,340).
+13(150,400).
+Yes, 13 is roughly between 2 and 10 vertically.
+1 is to the right.
+If we go **10->13->2->1**, we go Up, then Down-Right.
+This loops around 13 nicely. No crossing.
+
+One visual check on 5->7.
+5(420,310) -> 7(300,160).
+Goes Up-Left.
+Crosses 15-8? No, 15-8 is above.
+Crosses 2-1? No, 2-1 is left.
+Crosses 4-5? No, connected.
+Looks good.
+
+One final alternative to rule out:
+**1-2-7-15-5-8-11-14-9-6-3-12-10-13-4-1**?
+13->4 is bad.
+
+Final Answer formulation.
+Start at 1.
+1, 4, 5, 7, 15, 8, 11, 14, 9, 6, 3, 12, 10, 13, 2.

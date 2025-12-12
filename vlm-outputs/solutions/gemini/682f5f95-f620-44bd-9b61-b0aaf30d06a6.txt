@@ -1,0 +1,810 @@
+Based on the visual positions of the points, the shortest path that connects all points into a single loop (Traveling Salesman Tour) is as follows:
+
+1.  Start at the top left cluster: **8, 6**.
+2.  Move slightly down to: **1**.
+3.  Go further down and left to the outlier: **10**.
+4.  Move towards the bottom: **3**.
+5.  Continue along the bottom edge: **11, 14**.
+6.  Move up slightly to: **7, 15**.
+7.  Go up to the central-left area: **17**.
+8.  Move up to the upper central cluster: **12, 16, 18, 9**.
+9.  From 9, cross the large gap to the right side cluster. The closest points on the right are near the top/middle. Let's re-evaluate the crossing. Actually, a better flow is probably to finish the left side and cross over, or weave through the middle.
+
+Let's trace a more logical perimeter path to minimize crossing lines:
+
+1.  **Top-Left:** Start at **6**, go to **8**.
+2.  **Down-Left:** Go down to **1**, then out to **10**.
+3.  **Bottom-Left:** Go across to **3**.
+4.  **Bottom-Center:** Continue to **11**, then **14**.
+5.  **Bottom-Right:** From 14, go to the bottom-most point on the right side: **2**.
+6.  **Right-Cluster (upwards):** From 2, move up to **19**, then out to **4**, then **13**, **5**, and **20**.
+7.  **Crossing back to Center:** From 20 (the left-most of the right cluster), jump across the gap to the central points. The closest is likely **15** or **7**. Let's aim for the bottom-center cluster first to avoid crossing paths later.
+    *   *Correction*: From 20, jumping to 15/7 creates a crossing with the path from 14->2. Let's rethink the connection between the left/center group and the right group.
+    *   The gap is largest between the center group (12,16,18,17,15,7) and the right group (2,19,4,13,5,20).
+    *   The bridge should probably happen at the top (9 to somewhere) or bottom (14 to 2). Let's try a circular sweep.
+
+**Revised Path Tracing (Counter-Clockwise Sweep):**
+
+1.  Start top-left: **6**.
+2.  Go to neighbor: **8**.
+3.  Down to: **1**.
+4.  Out to: **10**.
+5.  Across bottom to: **3**.
+6.  To: **11**.
+7.  To: **14**.
+8.  Bridge the gap to the right side: **2**.
+9.  Up the right side: **19**.
+10. To the edge: **4**.
+11. Up to: **13**.
+12. Up to: **5**.
+13. In to: **20**.
+14. Now bridge back to the center/top. From 20, the closest logical point is likely in the central vertical strip. Let's target the bottom of that strip to move upwards, or top to move downwards.
+    *   Actually, point **7** and **15** are quite low. Point **17** is middle.
+    *   Let's look at the gap between 20 and the rest. It's wide.
+    *   Let's look at the gap between 5/20 and 18.
+    *   Let's try a "C" shape path for the center cluster inserted into the loop.
+
+**Let's try connecting nearest neighbors logically:**
+
+*   **Left Cluster:** 8-6-1-10 is a strong local group, but 10 is far. 6-8 is tight. 1-8 is okay. 1-10 is the only way to get to 10 efficiently without backtracking.
+    *   Path: ...9 -> 8 -> 6 -> 1 -> 10 -> 3...
+*   **Bottom:** 3 -> 11 -> 14 is a clear line.
+*   **Right Cluster:** 2, 19, 4, 13, 5, 20.
+    *   Sequence: 14 -> 2 -> 19 -> 4 -> 13 -> 5 -> 20.
+*   **Return Trip (Center):** Now we are at 20. We need to pick up 15, 7, 17, 16, 12, 18, 9 and close the loop back to start (let's say 9 connects to 8).
+    *   From 20, go to **15**.
+    *   From 15, go to **7** (they are very close).
+    *   From 7, go up to **17**.
+    *   From 17, go to **16**? Or **12**? 16 is closer.
+    *   From 16, go to **12**.
+    *   From 12, go to **18**.
+    *   From 18, go to **9**.
+    *   From 9, go to **8**.
+
+**Let's verify this loop:**
+8 -> 6 -> 1 -> 10 -> 3 -> 11 -> 14 -> 2 -> 19 -> 4 -> 13 -> 5 -> 20 -> 15 -> 7 -> 17 -> 16 -> 12 -> 18 -> 9 -> (back to 8)
+
+Let's check for crossings or inefficient jumps.
+*   20 -> 15: This is a long jump, but unavoidable to cross the gap.
+*   17 -> 16 -> 12: Looks clean.
+*   12 -> 18 -> 9: Looks clean.
+*   9 -> 8: This is a bit of a jump across the top, but 9 is isolated. Is there a better way?
+    *   Maybe 18 -> 9 -> 6 -> 8?
+        *   If 18->9->6->8... then from 8 where do we go? To 1. Then 1->10. This works.
+    *   Let's compare 9->8 vs 9->6. Visually 9 is closer to 8. But 6 is "behind" 8 relative to 9. So 9->8->6->1 is smoother.
+
+**Let's refine the bottom center:**
+*   3 -> 11 -> 14.
+*   After 14, we go to 2.
+*   Is there a point we missed? 7 and 15 are "hanging" in the middle.
+*   Maybe 14 -> 7 -> 15 -> (cross to right) -> 20...
+    *   If 14 -> 7 -> 15 -> 20... then how do we get to 2?
+    *   We would have to come down the right side: 5->13->4->19->2.
+    *   Then from 2 cross back to... where? We've used 14. We would need to cross to 17? That's a huge diagonal jump. Unlikely.
+
+The previous path (Outer shell loop) seems most robust:
+Left Side Down -> Bottom -> Right Side Up -> Cross Left to Center -> Up Center -> Back to Start.
+
+Let's re-verify the "Center Up" segment.
+From 20 (top of right inner), the closest central point is 15 or 17?
+Actually, looking at the coordinates:
+20 is roughly same height as 17.
+15 and 7 are lower.
+So a path 20 -> 15 -> 7 -> 17 involves backtracking up/down.
+Maybe the Right Cluster should be traversed differently?
+Start bottom right: 14 -> 2 -> 19 -> 4 -> 13 -> 5 -> 20.
+From 20, go to **17**? Or **15**?
+Visual distance check: 20 to 15 vs 20 to 17. 15 looks slightly closer or similar.
+However, 7 and 15 are a tight pair. 7 is lower than 15.
+17 is higher.
+So traversing 7-15-17 moves upwards.
+Traversing 17-15-7 moves downwards.
+
+If we move downwards (17-15-7), we end at 7. From 7, where do we go?
+To 14? 14 is already connected to 11 and 2.
+So we must insert the {7, 15, 17} group into the flow.
+Could it be: 11 -> 7 -> 15 -> 14?
+*   11 to 7 is a jump up. 7 to 15 is tiny up. 15 to 14 is a jump down.
+*   Then 14 to 2.
+*   This detours the smooth bottom line (11-14).
+*   However, 14 is very low. 7 and 15 are significantly higher.
+*   11 -> 14 is a straight shot.
+*   Maybe 11 -> 7 -> 15 -> 17... then cross to right? No, 17 is far from right.
+
+Let's stick to the perimeter theory, it usually solves these best.
+Points 7, 15, 17, 16, 12, 18 are "interior" points relative to the outer ring of 10, 3, 11, 14, 2, 4, 5, 9, 6, 8.
+Standard TSP heuristic: Visit the convex hull, inserting interior points where cost is minimal.
+
+**Current best candidate path:**
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 15, 7, 17, 16, 12, 18, 9
+
+**Critique:**
+*   **20 -> 15:** A long horizontal jump. Is there a shorter bridge?
+    *   Maybe 5 -> 18? (Top right to top center). No, 5 is lower than 18.
+    *   Maybe 20 -> 17? Similar to 20->15.
+    *   Maybe 14 -> 7? Then up the middle, then cross to right at top?
+        *   Path: ...11 -> 14 -> 7 -> 15 -> 17 -> 16 -> 12 -> 18 -> 9 -> (cross to right) -> 5 -> 13 -> 4 -> 19 -> 20 -> 2? No, 2 is bottom.
+        *   Path: ...11 -> 14 -> 7 -> 15 -> 17 -> 16 -> 12 -> 18 -> 9 -> 5 -> 13 -> 20 -> 4 -> 19 -> 2. Then 2 back to start? 2 to 10? No way.
+    *   We need the loop to close. The gap between Left/Center and Right is the main constraint. We must cross it twice.
+    *   Crossing 1: Bottom (14 -> 2).
+    *   Crossing 2: Top/Middle (20 -> 15/17/18? or 5 -> 9/18?).
+    *   Let's look at 20 -> 15 vs 20 -> 17 vs 5 -> 18.
+    *   20 -> 15 seems the most "neighborly" bridge in the middle band.
+    *   Let's check the sequence within the center cluster. If we arrive at 15 from 20:
+        *   15 -> 7 (down slightly).
+        *   7 -> 17 (up).
+        *   This zig-zags. 20 is higher than 15. 15 is higher than 7.
+        *   Maybe 20 -> 17? Then 17 -> 15 -> 7? Then from 7... dead end? No.
+        *   We need to move generally "Left" and "Up" to get back to 9/8.
+        *   If we are at 7, we are low. To get to 9 (high), we need to climb.
+        *   So entering at the bottom of the center stack (7 or 15) and exiting at the top (18) makes sense.
+        *   Therefore, the bridge 20 -> 15/7 is better than entering at 18.
+    *   Sequence: 20 -> 15 -> 7 is awkward because 7 is a dead end node visually below 15.
+    *   Better: 20 -> 7 -> 15 -> 17. (7 is further from 20 than 15 is).
+    *   Let's look at **20 -> 17**.
+        *   17 -> 15 -> 7. Now at 7. How to go up?
+        *   We are stuck at the bottom.
+    *   Let's reconsider the cluster 7/15.
+        *   Maybe the path comes from the bottom left?
+        *   3 -> 7 -> 15 -> 11? No, crossing lines.
+        *   11 -> 7 -> 15 -> 14?
+            *   11 (bottom) up to 7, up to 15, down to 14.
+            *   Then 14 -> 2...
+            *   This effectively absorbs 7 and 15 into the bottom line.
+            *   Let's trace the rest: ... -> 2 -> 19 -> 4 -> 13 -> 5 -> 20 -> 17 -> 16 -> 12 -> 18 -> 9 -> 8...
+            *   This looks VERY promising. It removes the awkward 20->15 jump. Now we have 20->17 which is a cleaner horizontal jump. And 15->14 is a clean drop.
+            *   Let's check 11 -> 7. 11 is bottom left-ish. 7 is mid-center-low. 3 -> 11 is tight. 11 -> 14 is tight.
+            *   If we do 11 -> 7, we skip the 11-14 edge. The distance 11->7 is larger than 11->14. Distance 15->14 is medium.
+            *   Compare total cost:
+                *   Option A (Perimeter): 11->14->...->20->15->7->17... (Cost: Edge 11-14 (short) + Jump 20-15 (long) + 7-17 (medium))
+                *   Option B (Absorption): 11->7->15->14->...->20->17... (Cost: Edge 11-7 (medium/long) + 15-14 (medium) + 20-17 (long)).
+            *   Visually, 11->14 is very short. Breaking it is expensive. The jump 20->15 is the problem to solve.
+
+Let's look closer at the Right Cluster.
+2, 19, 4, 13, 5, 20.
+Is 20 -> 17 really the best exit?
+What if we exit from 5? 5 is high up.
+5 -> 18? No, huge gap.
+5 -> 9? Huge gap.
+
+Let's look at the Center Cluster again.
+12, 16, 17, 15, 7, 18.
+18 is top. 7 is bottom.
+If we flow 9 -> 18 -> 12 -> 16 -> 17 -> 15 -> 7...
+Then from 7 we need to go to the right side? Or the bottom?
+7 -> 14? Then 14 -> 2...
+This direction: Start 8->6->1->10->3->11.
+From 11, go up to the center stack?
+11 -> 7? (Leaving 14 for later?)
+If 11 -> 7 -> 15 -> 17 -> 16 -> 12 -> 18 -> 9.
+Now at 9. Must cross to right.
+9 -> 5? (Long). 9 -> 20? (Long).
+Then down the right side ... -> 2 -> 14.
+Then 14 back to start (8)? No, 14 is bottom, 8 is top.
+We need to close the loop 14 -> 11? We started 11->7.
+So loop is: 8..11 -> 7..9 -> 5..2 -> 14 -> 11??
+Check connection 14 -> 11. Yes, they are close.
+Check connection 11 -> 7. Medium jump.
+Check connection 9 -> 5. Long jump.
+This creates a "Snake" path: Up the middle, Down the right.
+Is 9 -> 5 shorter than 20 -> 15? Visually, 9-5 is very long. 20-15 is shorter.
+So the Right-to-Center bridge should be in the middle (20-15 or 20-17).
+
+**Back to the Perimeter Loop:**
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 15, 7, 17, 16, 12, 18, 9.
+
+Let's optimize the specific segments.
+**Segment: 20, 15, 7, 17, 16, 12.**
+*   From 20, closest is 15.
+*   From 15, closest is 7.
+*   From 7, closest is... 17 is far. 14 is closer (but visited). 11 is far.
+*   This is the bottleneck. Point 7 is a "cul-de-sac".
+*   If we visit 15 then 7, we are stuck at 7. We must backtrack or make a long jump from 7 to 17.
+*   Is there a way to visit 7 "on the way" to 15?
+    *   20 -> 17 -> 7 -> 15?
+    *   17 to 7 is long. 7 to 15 is short.
+    *   This order (17-7-15) leaves us at 15.
+    *   From 15, where to? 16? 15 to 16 is medium.
+*   Let's rethink the center structure.
+    *   It's a vertical line: 18 (top), 12, 16, 17, 15, 7 (bottom).
+    *   We enter from the right (20). We exit to the left/top (9/8).
+    *   We need to traverse this vertical line efficiently.
+    *   Entry point: 17 or 15.
+    *   Exit point: 18 or 12.
+    *   If we enter at 15/7, we should move UP.
+    *   20 -> 15 -> 7 (dead end).
+    *   20 -> 7 -> 15? (20 to 7 is longer than 20 to 15).
+    *   Maybe 20 -> 17 -> 16 -> 15 -> 7?
+        *   20 to 17 (ok).
+        *   17 to 16 (short).
+        *   16 to 15 (medium/long - crossing 17?). No, 16 is left of 17. 15 is below 17. 16 to 15 is clear.
+        *   15 to 7 (short).
+        *   From 7... long jump to 12? No.
+    *   Maybe the connection to the bottom row is the key.
+    *   What if 7 connects to 11 or 14?
+    *   Recalling the "Absorption" idea:
+        *   11 -> 14 is the base.
+        *   If we do 11 -> 7 -> 15 -> 20... (leaves 14 stranded? No, 14 connects to 2).
+        *   ...3 -> 11 -> 7 -> 15 -> 20 -> 5 -> 13 -> 4 -> 19 -> 2 -> 14 -> (where does 14 go?).
+        *   If 14 goes to 17? No, huge jump.
+        *   If 14 goes to 16/12? No.
+    *   What if we wind around?
+        *   ...3 -> 11 -> 14 -> 7 -> 15 -> 20...?
+        *   14 back to 7? 14 is right of 11. 7 is above between them.
+        *   14 -> 7 is a clean vertical line.
+        *   Then 7 -> 15 -> 20.
+        *   So: ...3 -> 11 -> 14 -> 7 -> 15 -> 20...
+        *   The bridge is now 15 -> 20.
+        *   And 14 -> 2 is BROKEN.
+        *   If we break 14->2, how do we get to the right cluster?
+        *   15 -> 20 works.
+        *   We do the right cluster: 20 -> 5 -> 13 -> 4 -> 19 -> 2.
+        *   Now at 2. We need to go back to the center/left.
+        *   From 2, huge jump to 17? 16? 12?
+        *   This seems bad. 2 is isolated at the bottom right. The only good neighbor is 14 or 19.
+        *   So the link 14-2-19... must be maintained.
+
+**Conclusion:** The link 14 -> 2 is critical.
+This implies we pass below 7 and 15.
+So 7 and 15 must be visited AFTER the right cluster loop, on the return trip.
+Return trip starts at 20.
+Path: 20 -> 15.
+From 15, we must go to 7.
+From 7, we must go UP to the rest of the center (17, 16, 12, 18).
+This implies a jump 7 -> 17?
+Or 7 -> 16?
+Or maybe 15 -> 17, and 7 is visited some other way?
+No, 7 is hanging off 15.
+What if 20 -> 7? (Diagonal). Then 7 -> 15. Then 15 -> 17.
+This sequence (20 -> 7 -> 15 -> 17) looks viable.
+*   20 -> 7 is longer than 20 -> 15.
+*   But 7 -> 15 is short.
+*   15 -> 17 is short/medium.
+*   17 -> 16 is short.
+*   16 -> 12 is short.
+*   12 -> 18 is short.
+*   18 -> 9 is medium.
+*   9 -> 8 is medium.
+This seems the most logical topological sort of the points.
+
+Let's check the alternative for the "7 problem":
+What if 17 -> 7 -> 15? No, 7 is below 15.
+What if 16 -> 15 -> 7 -> 17? No.
+What if 12 -> 16 -> 15 -> 7 -> 17? No.
+
+Maybe the order in the center is:
+17 -> 15 -> 7 -> (jump) -> 16 -> 12?
+Jump 7 to 16 is long.
+
+Let's re-evaluate **20 -> 15 -> 7 -> 17**.
+Is 7 -> 17 really that bad?
+7 is at y=low. 17 is at y=mid.
+There are no points in between. It's a straight shot up.
+It crosses the imaginary line of 20->15? No.
+20 is right. 15 is left. 7 is below 15. 17 is above 15.
+Path: 20 (right) -> 7 (bottom-center) -> 15 (mid-center) -> 17 (upper-mid-center).
+Wait, 7 is below 15.
+So 20 -> 7 goes down-left.
+7 -> 15 goes up.
+15 -> 17 goes up.
+This works perfectly linearly.
+Is 20 -> 7 clear?
+It passes "under" 15. It might be close to 15.
+But 20 -> 15 -> 7 -> 17 involves backtracking at 15 (down to 7 then back up past 15 to 17).
+Going 20 -> 7 -> 15 -> 17 is a smoother "sweep".
+Let's look at the distance:
+dist(20, 15) < dist(20, 7).
+dist(15, 17) ~ dist(7, 17) - dist(7, 15). Actually 7->17 is dist(7,15)+dist(15,17) roughly since they are collinear.
+So 20->15->7->17 traverses 15-7 twice geometrically.
+20->7->15->17 traverses 20-7 (hypotenuse) then 7-15 then 15-17.
+By triangle inequality, going to the furthest point (7) first from the side (20) is usually longer than going to the middle (15) then end (7).
+BUT, if we go to middle (15) then end (7), we are stuck at the end. We have to come back.
+So we pay the cost of the "return" trip (7 to 17).
+Cost A: 20->15 + 15->7 + 7->17.
+Cost B: 20->7 + 7->15 + 15->17.
+Visually:
+20 is at (X, Y). 15 is at (x, y). 7 is at (x, y-d). 17 is at (x, y+d).
+Cost A ~ (X-x) + d + 2d = X-x + 3d.
+Cost B ~ sqrt((X-x)^2 + d^2) + d + d.
+If X-x is large (the gap is wide), then sqrt((X-x)^2 + d^2) is roughly (X-x).
+So Cost B ~ X-x + 2d.
+Cost B is lower. It avoids the double-back "cul-de-sac" penalty.
+So **20 -> 7 -> 15 -> 17** is likely superior to 20 -> 15 -> 7 -> 17.
+
+Let's double check 17 vs 16.
+17 is right of 16.
+15 is right of 7? No, roughly vertical.
+15 is right of 16? Yes.
+So 15 -> 17 -> 16 makes sense (moving left).
+Then 16 -> 12 -> 18.
+
+**Revised Path:**
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 16, 12, 18, 9.
+
+Let's refine the start/end connection (9 back to 8).
+9 is top-center. 8 is top-left.
+Straight shot. No obstacles.
+Loop closed.
+
+Let's confirm the "Right Cluster" order.
+14 -> 2 -> 19 -> 4 -> 13 -> 5 -> 20.
+Is there a better way?
+Maybe 14 -> 2 -> 20 -> 5 -> 13 -> 4 -> 19?
+If we end at 19, crossing back to center is hard (19 is low/right).
+If we end at 20, crossing is good (20 is mid/right).
+So ending at 20 is correct.
+Sequence 2 -> 19 -> 4 -> 13 -> 5 -> 20 is a clean sweep up the outside edge.
+Is 2 -> 20 -> ... better?
+2 -> 20 skips 19.
+2 -> 19 -> 20? 19 is outside.
+Order 2, 19, 4, 13, 5 is a convex hull walk. It's optimal.
+20 is inside the hull slightly?
+Actually 20 is left of 5.
+So 5 -> 20 is good.
+
+**Final check on indices:**
+Start: 8
+8 -> 6 (up-right)
+6 -> 1 (down)
+1 -> 10 (down-left)
+10 -> 3 (down-right)
+3 -> 11 (right)
+11 -> 14 (right-down)
+14 -> 2 (right-up-ish jump)
+2 -> 19 (up-right)
+19 -> 4 (up-right)
+4 -> 13 (up-left)
+13 -> 5 (up)
+5 -> 20 (left-down)
+20 -> 7 (left-down, long jump) -- *Wait, check 20 -> 7 vs 20 -> 17 again.*
+If 20->17, then 17->15->7... stuck.
+If 20->7, then 7->15->17... good flow up.
+What about 20->15?
+20->15, then 15->17... skips 7? No, must visit 7.
+If 20->15->7->(backtrack)->17. This is the "bad" one.
+Is there a 20 -> 17 -> 15 -> 7 -> 11??
+No, we already visited 11.
+What if we visit 7/15 on the way OUT?
+11 -> 7 -> 15 -> 14?
+Cost: Break 11-14 (short). Add 11-7 (med), 7-15 (short), 15-14 (med). Total penalty: med+med+short - short = 2*med.
+Cost of 20-7 jump: Long.
+This is tricky.
+Let's visually simulate 11 -> 7 -> 15 -> 14.
+It creates a "bubble" on the bottom line.
+Then we do the right loop ... -> 20.
+From 20, we need to get to 17/16/12.
+20 -> 17 is a clean horizontal jump. Much shorter than 20 -> 7 diagonal.
+So, if we incorporate 7/15 into the bottom line, we save the massive return diagonal.
+Is 11->7->15->14 valid?
+15 to 14 is a bit backward. 15 is higher than 14.
+Does 11->15->7->14 work?
+11 to 15 (long). 15 to 7 (short). 7 to 14 (short).
+11->7->15->14 looks geometrically smoother than 11->15->7->14.
+But is it better than the Perimeter approach?
+The Perimeter approach forces a "return" path through the center column.
+If we strip 7/15 from that column, the return path is just 20 -> 17 -> 16 -> 12 -> 18 -> 9. This is very straight.
+The detour 11->7->15->14 is a "local" detour.
+The jump 20->7 is a "global" jump.
+Usually local detours are cheaper than global bad edges.
+Let's check the distance 15->14.
+15 is at (x, y). 14 is at (x, y-h). 7 is at (x, y-h/2).
+14 is actually quite far right of 11. 7 is in between x-wise?
+Looking at the image:
+11 is at x=350. 14 is x=450.
+7 is x=480? No, 7 is above 14 roughly.
+15 is above 7.
+So 7 and 15 are almost directly above 14.
+Sequence 11 -> 14 -> 7 -> 15 -> 20?
+11 to 14 (good).
+14 to 7 (up).
+7 to 15 (up).
+15 to 20 (right).
+Then 20... right cluster loop... end at 2.
+2 to... where?
+We need to get back to 17/16.
+2 to 17? Huge diagonal across everything. Terrible.
+So we cannot exit right cluster at 2.
+We must exit right cluster at 20.
+This implies we enter right cluster at 2.
+This implies we come from 14.
+This implies the sequence 14 -> 2 is fixed.
+This implies we can't do 14 -> 7 -> 15 -> 20.
+
+So 7 and 15 must be visited either:
+1. Before 14 (on the way there): 11 -> 7 -> 15 -> 14.
+   - 11 to 7 is a jump. 15 to 14 is a jump back down.
+   - Then 14 -> 2 -> ... -> 20 -> 17...
+2. After 20 (on the way back): 20 -> 7 -> 15 -> 17 (or 20->15->7->17).
+
+Let's compare distance:
+Path 1 (Detour):
+   Remove 11-14.
+   Add 11-7, 7-15, 15-14.
+   Add 20-17.
+Path 2 (Return Sweep):
+   Keep 11-14.
+   Add 20-7, 7-15, 15-17.
+
+Visually:
+11 to 14 is very efficient.
+11 to 7 is diagonal up.
+15 to 14 is vertical down.
+20 to 17 is horizontal left.
+20 to 7 is diagonal down-left (long).
+
+Let's look at the coordinates roughly.
+20 is (800, 600).
+17 is (400, 600).
+7 is (500, 800).
+15 is (500, 750).
+11 is (400, 900).
+14 is (450, 950).
+(Y increases downwards).
+
+Path 1 Distances:
+11(400,900) -> 7(500,800) ~ 141 px
+7(500,800) -> 15(500,750) ~ 50 px
+15(500,750) -> 14(450,950) ~ 206 px
+20(800,600) -> 17(400,600) ~ 400 px
+Total added segments: 141+50+206+400 = 797.
+Removed: 11->14 ~ 70 px. Net cost ~ 727.
+
+Path 2 Distances:
+11(400,900) -> 14(450,950) ~ 70 px (kept)
+20(800,600) -> 7(500,800) ~ sqrt(300^2 + 200^2) = 360 px
+7(500,800) -> 15(500,750) ~ 50 px
+15(500,750) -> 17(400,600) ~ sqrt(100^2 + 150^2) = 180 px
+Total added segments: 360 + 50 + 180 = 590.
+Net cost ~ 590.
+
+Path 2 is significantly shorter (590 vs 727).
+The "Return Sweep" visiting 7 and 15 on the way back from 20 is better.
+The sequence 20 -> 7 -> 15 -> 17 avoids the cul-de-sac.
+Is 20 -> 7 (360px) better than 20 -> 15 (335px) + 15->7 (50px) + 7->17 (223px)?
+Path 2a (20->7->15->17): 360 + 50 + 180 = 590.
+Path 2b (20->15->7->17): 335 + 50 + 223 = 608.
+They are very close. 20->7 is safer to avoid sharp turns.
+Visually, 20 is "above" 7. 15 is "above" 7.
+So 20 -> 7 is going "under" 15.
+Then 7 -> 15 is going up.
+Then 15 -> 17 is going up-left.
+This flow is smooth.
+20 -> 15 -> 7 is a zig-zag (Left, Down). Then 7 -> 17 (Up-Left).
+A "V" shape detour.
+The smooth curve 20->7->15->17 is better.
+
+Wait, check point 16.
+17 is (400, 600).
+16 is (450, 350)? No, 16 is near 12.
+12 is (350, 320). 16 is (450, 340).
+18 is (480, 280).
+9 is (250, 150).
+So from 17(400, 600) we go to 16(450, 340). This is Up.
+Then 16 -> 12 (Left).
+Then 12 -> 18 (Right-Up).
+Then 18 -> 9 (Left-Up).
+This looks fine.
+
+What about 17 -> 12 -> 16 -> 18?
+17 is left of 16? No 17 is left-ish. 16 is right-ish.
+17 is roughly x=430. 16 is x=460.
+12 is x=380.
+So 17 is between 12 and 16 in X.
+But 17 is much lower in Y.
+So going 17 -> 16 -> 12 -> 18?
+17 -> 16 (Up-Right).
+16 -> 12 (Left).
+12 -> 18 (Right-Up).
+Zig-zags.
+17 -> 12 (Up-Left).
+12 -> 16 (Right).
+16 -> 18 (Up).
+18 -> 9 (Left).
+This (17->12->16->18) looks slightly less zig-zaggy?
+Let's check 16 vs 12 vs 18 positions.
+12 and 16 are a pair. 18 is above them.
+12 is left, 16 is right.
+We are coming from 17 (below, center).
+We need to exit to 9 (top left).
+Ending at 18 makes sense to jump to 9? Or ending at 12?
+18 is closer to 9? No, 18 is right. 12 is left. 12 is closer to 9.
+So we should end the center sequence at 12 or 18?
+Actually, 9 is quite far left.
+Distance 18->9 vs 12->9.
+18 is (480, 280). 9 is (270, 170). Dist = sqrt(210^2 + 110^2) = 237.
+12 is (380, 320). 9 is (270, 170). Dist = sqrt(110^2 + 150^2) = 186.
+12 is closer to 9.
+So we should try to end at 12.
+Sequence: ... -> 17 -> 16 -> 18 -> 12 -> 9.
+Let's trace:
+17 -> 16 (Up).
+16 -> 18 (Up).
+18 -> 12 (Down-Left).
+12 -> 9 (Up-Left).
+This has a backtrack 18->12. 18 is highest. 12 is lower.
+Sequence ... -> 17 -> 12 -> 16 -> 18 -> 9.
+17 -> 12 (Up-Left).
+12 -> 16 (Right).
+16 -> 18 (Up).
+18 -> 9 (Left).
+This looks cleaner.
+Let's compare 17 -> 16 vs 17 -> 12.
+17 is (430, 600). 16 is (460, 340). 12 is (380, 320).
+17 is closer to 16 or 12? Visually equidistant.
+12 is further left. 16 is "above" 17 more directly.
+If we go 17->16->18->12->9. 18 to 12 is the problem.
+If we go 17->12->16->18->9. 18 to 9 is the problem (longer than 12->9).
+However, 16->18 is very short. 12->16 is short.
+12->18 is medium.
+16->18->9 cost = Short + Long.
+16->12->9 cost = Short + Medium.
+12->16->18->9 cost = Short + Short + Long.
+Let's look at 17 -> 16 -> 18 -> 9? (Skipping 12? No must visit).
+So:
+A: 17 -> 16 -> 18 -> 12 -> 9.
+B: 17 -> 12 -> 16 -> 18 -> 9.
+C: 17 -> 16 -> 12 -> 18 -> 9.
+   16->12 is left. 12->18 is right-up. 18->9 is left-up.
+   This crosses itself? 16->12 and 18->9 don't cross.
+   12->18 and 18->9 makes a sharp angle.
+   12->18 goes Right. 18->9 goes Left. Backtrack.
+   So C is bad.
+D: 17 -> 18 -> 16 -> 12 -> 9.
+   17 to 18 is a jump past 16. Bad.
+
+Comparison A vs B.
+A: ...16 (up) -> 18 (up) -> 12 (left-down) -> 9 (left-up). 12 is "in the pocket" between 16/18/9.
+B: ...12 (up-left) -> 16 (right) -> 18 (up) -> 9 (left).
+B sweeps Left -> Right -> Up -> Left.
+A sweeps Up -> Up -> Left -> Left.
+Geometrically, B circles the cluster {12, 16, 18} counter-clockwise.
+A circles it clockwise? No.
+Center of {12,16,18} is roughly (430, 310).
+12 is left, 16 right, 18 top.
+Visiting order 12->16->18 is CCW.
+Visiting order 16->18->12 is CCW.
+Entry is from 17 (bottom). Exit is to 9 (top-left).
+We enter from bottom. 17 -> 12 (left) or 17 -> 16 (right).
+If we go 17->12 (left), we are on the left side.
+Then 12->16 (cross to right).
+Then 16->18 (up).
+Then 18->9 (cross back left).
+This is a zig-zag. Left, Right, Left.
+If we go 17->16 (right).
+Then 16->18 (up).
+Then 18->12 (left).
+Then 12->9 (left).
+This is Right, Left, Left. Only one direction change.
+This (A) seems smoother.
+Also 18->12 brings us closer to 9.
+So **17 -> 16 -> 18 -> 12 -> 9** is the winner.
+
+Wait, check 16->12 vs 16->18.
+16 and 18 are VERY close. 16 and 12 are close.
+18 and 12 are... medium.
+Is 16 closer to 18 or 12? 16 is (450, 340). 18 is (480, 280). 12 is (380, 320).
+Dist 16-18 ~ sqrt(30^2 + 60^2) ~ 67.
+Dist 16-12 ~ sqrt(70^2 + 20^2) ~ 73.
+Very similar.
+However, 18 is "above" 12. 12 is "left" of 18.
+If we do 16->18, we go up.
+Then 18->12, we go down-left.
+Then 12->9, we go up-left.
+The down-move 18->12 is counter-productive to reaching 9 (up).
+BUT 18->9 is a long jump. 12->9 is a medium jump.
+Does the saving on 12->9 outweigh the backtrack 18->12?
+18->9 ~ 237. 12->9 ~ 186. Saving = 51.
+18->12 ~ sqrt(100^2 + 40^2) ~ 107.
+So we pay 107 to save 51. Not worth it.
+Direct 18->9 is better than detouring to 12.
+This implies 12 should be visited BEFORE 18.
+So order B: 17 -> 12 -> 16 -> 18 -> 9.
+Check 17 -> 12.
+17(430, 600) -> 12(380, 320).
+17(430, 600) -> 16(460, 340).
+17 is almost vertically below 12 and 16.
+17->12 is slightly shorter/similar to 17->16.
+But 12->16 is horizontal. 16->18 is vertical. 18->9 is diagonal.
+Path: Up-Left -> Right -> Up -> Left.
+This seems totally fine.
+So: **... 17, 12, 16, 18, 9 ...**
+
+Let's re-verify 16->12->18.
+16->12 (Left).
+12->18 (Up-Right).
+18->9 (Left).
+Zig-zag.
+12->16 (Right).
+16->18 (Up).
+18->9 (Left).
+Smooth turn.
+So **12 -> 16 -> 18** is the correct internal order.
+
+So the full sequence is:
+Start 8.
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20.
+Then **7, 15, 17**. (Using the 20->7 smooth sweep).
+Then **12, 16, 18**.
+Then **9**.
+Loop to 8.
+
+Let's do a final visual check on 20->7 vs 20->15.
+20 is high right. 7 is low center. 15 is mid center.
+If I draw a line 20->7, does it cross anything? No.
+If I draw 20->15, no.
+20->7 sets up 7->15 (vertical up).
+20->15 sets up 15->7 (vertical down).
+Then from 7 we need to go to 17 (high up).
+So 7->17 is a long vertical line.
+7->15 is short vertical.
+15->17 is short vertical.
+So 20->7->15->17 is [Long Diagonal] + [Short Up] + [Short Up].
+20->15->7->17 is [Med Diagonal] + [Short Down] + [Long Up].
+The "Long Up" (7->17) basically retraces the "Short Down" (15->7) plus the 15->17 distance.
+Geometrically: A->B->C where C is between A and B? No.
+17 is top. 15 middle. 7 bottom.
+Path 1: Enter 7. 7->15->17. Monotonic upward progress. Good.
+Path 2: Enter 15. 15->7. 7->17. Down then Big Up. Bad.
+So **20, 7, 15, 17** is definitely correct.
+
+Final Sequence Candidate:
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 12, 16, 18, 9
+
+Wait, check 17 -> 12 vs 17 -> 16.
+17(430,600). 12(380,320). 16(460,340).
+12 is slightly further away from 17 than 16 is? (Vertical diff 280 vs 260).
+But 12 sets up the CCW rotation {12,16,18}.
+17->16 sets up CW rotation {16,12,18}? No.
+16->12->18. 12 is left of 16. 18 is right of 12.
+This is a zig-zag.
+So 12->16->18 is the geometric curve.
+Thus we must enter at 12.
+So 17->12.
+
+Final Sequence Confirmation:
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 12, 16, 18, 9
+
+One last check: 1 vs 10 vs 3.
+1->10->3.
+1 is (200, 380). 10 is (50, 600). 3 is (260, 860).
+1->3? No, 10 is way out there. 1->10 is necessary. 10->3 is necessary.
+Is 6->1 correct? 6 is top. 1 is below. Yes.
+Is 8->6 correct? Yes.
+Is 9->8 correct? 9(270,170) -> 8(90,120). Yes.
+
+Looks solid.
+
+Start point in prompt: "You can start from any point".
+I will list starting from 1 to be canonical, or just follow my derivation.
+Prompt example: 1, 5, 3...
+I'll provide the list starting from 8 as derived.
+
+Order: 8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 12, 16, 18, 9
+
+Double check the comma separation and format.
+"List each point label once, in visit order. Do NOT repeat the first point at the end."
+
+Let's consider if 20->17 is better than 20->7.
+If 20->17, we skip 7, 15?
+We must insert 7, 15.
+If 20->17... then 17->15->7? Then 7->12? (Huge jump).
+Then 7->16? (Huge jump).
+So 7 must be a leaf or start of a chain.
+Since we come from 20, 7 is the best entry point for the upward chain.
+So 20->7 is the only logical choice to maintain monotonicity.
+
+Final check on 12 vs 16.
+17 is (430,600).
+12 is (380,320).
+16 is (460,340).
+17->16 is (30, -260). Length ~261.
+17->12 is (-50, -280). Length ~284.
+16 is closer.
+If we go 17->16, we must do 16->12->18? Or 16->18->12?
+16->18 (30, -60). Length 67.
+18->12 (-100, 40). Length 107.
+12->9 (-110, -150). Length 186.
+Total from 17: 261 + 67 + 107 + 186 = 621.
+Path via 12:
+17->12 (284).
+12->16 (80, 20). Length 82.
+16->18 (67).
+18->9 (237).
+Total from 17: 284 + 82 + 67 + 237 = 670.
+
+Path A (17->16->18->12->9) distance ~ 621.
+Path B (17->12->16->18->9) distance ~ 670.
+
+Wait, why did I think A was bad?
+"16->12 (Left). 12->18 (Right-Up). 18->9 (Left)."
+12 is left of 16. 18 is right of 12. 9 is left of 18.
+Left, Right, Left.
+Zig-zag.
+But look at the distances. 16->18 is super short. 18->12 is medium. 12->9 is medium.
+vs
+12->16 (short). 16->18 (super short). 18->9 (long).
+The penalty of 18->9 (237) vs 12->9 (186) is ~50.
+The penalty of 18->12 (107) vs 16->12 (82).
+Wait, comparing paths:
+A: 17->16 + 16->18 + 18->12 + 12->9.
+B: 17->12 + 12->16 + 16->18 + 18->9.
+Terms:
+17->16 (261) vs 17->12 (284). A wins by 23.
+16->18 (67) is in both (if direction doesn't matter).
+A has 18->12 (107) + 12->9 (186) = 293.
+B has 12->16 (82) + 18->9 (237) = 319.
+Total A = 261 + 67 (shifted) + 293. Actually 17->16(261)+16->18(67)+18->12(107)+12->9(186) = 621.
+Total B = 17->12(284)+12->16(82)+16->18(67)+18->9(237) = 670.
+Path A is shorter by ~50 pixels!
+Despite the zig-zag, the 12->9 connection is so much better than 18->9 that it's worth detouring back from 18 to 12.
+Also 17->16 is shorter than 17->12.
+
+So the sequence is 17 -> 16 -> 18 -> 12 -> 9.
+Let's visually confirm 16->18->12.
+16 is low-right. 18 is high-right. 12 is low-left (of the group).
+Triangle 12-16-18.
+Entering from bottom (17). Exiting to top-left (9).
+17 is below.
+Go to 16.
+Go to 18 (top).
+Go to 12 (left).
+Go to 9 (top-left).
+This makes sense. It uses 18 to "turn around" vertically and 12 to bridge the gap leftward.
+
+One final option: 17->16->12->18->9.
+17->16 (261).
+16->12 (82).
+12->18 (107).
+18->9 (237).
+Sum = 261+82+107+237 = 687.
+This is worst.
+
+So **17, 16, 18, 12, 9** is the winner for the cluster.
+
+Full list:
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 16, 18, 12, 9.
+
+Wait, 17, 16, 18, 12...
+17->16 (Up). 16->18 (Up). 18->12 (Down-Left).
+This creates a crossing?
+Line 17->16 vs Line 18->12.
+17 is (430,600). 16 is (460,340).
+18 is (480,280). 12 is (380,320).
+Slope 17-16 is steep positive.
+Slope 18-12 is positive.
+18 is above 16. 12 is left of 16.
+17 is below 16.
+They don't cross.
+18->12 passes "above" 17->16 segment.
+12->9 passes way clear.
+This looks valid.
+
+Final path:
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 16, 18, 12, 9
+
+List:
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 16, 18, 12, 9.
+
+One suspicious thing: 16 to 18 to 12.
+16(450,340) -> 18(480,280) -> 12(380,320).
+Angle at 18 is sharp.
+16 to 18 is up-right.
+18 to 12 is down-left.
+Backtrack?
+Is 16->12->18 better?
+16->12 (left). 12->18 (right-up).
+Angle at 12 is sharp?
+17->16->12. Angle at 16? 17 is below. 12 is left. Angle is ~90 deg. OK.
+16->12->18. Angle at 12? 16 is right. 18 is right-up. Angle is acute ~45 deg. Sharp.
+17->16->18. Angle at 16? 17 is below. 18 is above. Angle is 180 (straight). Excellent.
+16->18->12. Angle at 18? 16 is below. 12 is left-down. Angle is ~45 deg. Sharp.
+Both have a sharp turn.
+But 16->18 is "on the way" from 17.
+Basically 17->16->18 is a straight line.
+Then we hook back 18->12.
+Then 12->9 extends that hook.
+This seems most natural. Run up the spine, hook back to the left.
+
+Final decision stands.
+
+8, 6, 1, 10, 3, 11, 14, 2, 19, 4, 13, 5, 20, 7, 15, 17, 16, 18, 12, 9.

@@ -1,0 +1,33 @@
+To find the shortest tour, I will trace the path by connecting nearest neighbors in a logical loop, avoiding crossing lines where possible.
+
+Here is the step-by-step route construction:
+
+1.  **Start at point 9** on the far left.
+2.  Move to the next closest point downwards: **24**.
+3.  From 24, move right to **1**.
+4.  From 1, the nearest point is **18**.
+5.  From 18, go down to **25**.
+6.  From 25, move right to **22**.
+7.  From 22, the logical next step is down to **11**.
+8.  From 11, move right to **14**.
+9.  From 14, go down to the corner point **13**.
+10. From 13, move up to **7**.
+11. From 7, go up to **23**.
+12. From 23, move left to **3**.
+13. From 3, continue left to **16**.
+14. From 16, move left/down slightly to **4**.
+15. From 4, move left/up to **10**.
+16. From 10, go right to **21**.
+17. From 21, go up to **19**.
+18. From 19, move left/up to the isolated point **12**.
+19. From 12, move left to **20**.
+20. From 20, go up slightly to **5**.
+21. From 5, go left to **8**.
+22. From 8, go down/left to **17**.
+23. From 17, go down to **15**.
+24. From 15, go down/left to **6**.
+25. From 6, go down to **2**.
+26. Finally, from 2, you would return to **9** to complete the loop.
+
+**Tour Order:**
+9, 24, 1, 18, 25, 22, 11, 14, 13, 7, 23, 3, 16, 4, 10, 21, 19, 12, 20, 5, 8, 17, 15, 6, 2

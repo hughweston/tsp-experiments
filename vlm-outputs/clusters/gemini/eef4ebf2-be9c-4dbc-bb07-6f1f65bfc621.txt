@@ -1,0 +1,17 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1: Top Group**
+This group spans the upper region of the image.
+*   5, 17, 15, 11, 13
+
+**Cluster 2: Left Group**
+These points are clustered on the left side of the image.
+*   4, 9, 2, 18, 7, 12
+
+**Cluster 3: Central-Right Group**
+These points form a vertical-ish line in the middle and extend to the right.
+*   3, 20, 8, 10, 1, 14, 16
+
+**Cluster 4: Bottom Group**
+These points are isolated at the very bottom.
+*   6, 19

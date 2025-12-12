@@ -1,0 +1,20 @@
+Based on the spatial arrangement of the points in the image, here is a logical clustering:
+
+**Cluster 1:** 2, 4, 8, 1, 9
+(These points are all located on the left side of the image, forming a somewhat loose vertical group.)
+
+**Cluster 2:** 5, 7
+(These two points are isolated on the far right side of the image.)
+
+**Cluster 3:** 6, 10
+(These two points form a pair in the central area.)
+
+**Cluster 4:** 3
+(This point is isolated at the bottom center, distinct from the other groups.)
+
+---
+*Alternatively, if broader groupings are preferred:*
+
+**Cluster 1 (Left Group):** 1, 2, 4, 8, 9
+**Cluster 2 (Center Group):** 3, 6, 10
+**Cluster 3 (Right Group):** 5, 7

@@ -1,0 +1,16 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1:** This group is located on the far left side of the image.
+1, 6, 11, 22
+
+**Cluster 2:** This is the large central group of points.
+2, 3, 9, 10, 13, 14, 16, 23, 25
+
+**Cluster 3:** This group is situated towards the bottom center/left.
+4, 7, 15, 24
+
+**Cluster 4:** This group is in the bottom right area.
+8, 12, 18, 19, 20
+
+**Cluster 5:** This small group is in the top right corner.
+5, 17, 21

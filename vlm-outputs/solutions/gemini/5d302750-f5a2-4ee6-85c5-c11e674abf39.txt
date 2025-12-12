@@ -1,0 +1,39 @@
+To solve this Traveling Salesman Problem, I'll visually trace the shortest path connecting all 30 points. I'll start from a point on the periphery, like point 27, and work my way around the set of points to form a closed loop.
+
+Here is the step-by-step path:
+
+1.  Start at **27** (bottom left).
+2.  Move down to **29**.
+3.  Then to **24** right next to it.
+4.  Move right to **16**.
+5.  Then down to **10**.
+6.  Move up and right to **12**.
+7.  Continue right to **3**.
+8.  Then to **14**.
+9.  Continue right to **18**.
+10. Then to **19**.
+11. Drop down to **15**.
+12. Move up and right to **11** (far right edge).
+13. Move left to **9**.
+14. Move up to **17**.
+15. Move right to **13**.
+16. Move right to **21**.
+17. Move right to **2** (far right).
+18. Move up and left to **28**.
+19. Move down and left to **1**.
+20. Move down and left to **4**.
+21. Move left to **22**.
+22. Move down to **5**.
+23. Move left to **20**.
+24. Move up and left to **8**.
+25. Move up and left to **23**.
+26. Move up to **26** (top point).
+27. Move down and left to **25**.
+28. Move down to **30**.
+29. Move right to **7**.
+30. Move up to **6**.
+31. From 6, the path naturally loops back to the start point 27, closing the tour.
+
+Here is the sequence of points:
+
+**27, 29, 24, 16, 10, 12, 3, 14, 18, 19, 15, 11, 9, 17, 13, 21, 2, 28, 1, 4, 22, 5, 20, 8, 23, 26, 25, 30, 7, 6**

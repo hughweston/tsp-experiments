@@ -1,0 +1,15 @@
+Based on a visual analysis of the points to form the shortest cycle (solving the Traveling Salesman Problem), here is the optimal tour. I will start from the leftmost point (11) and sweep through the clusters in a logical path.
+
+**Tour:**
+11, 22, 6, 1, 7, 4, 15, 24, 3, 10, 16, 23, 14, 25, 9, 13, 2, 19, 12, 20, 8, 18, 17, 21, 5
+
+**Explanation of the path:**
+1.  **Left Cluster:** Start at the far left `11`. Move up to `22`, then down to `6` and `1`.
+2.  **Lower Left/Bottom:** Move from `1` over to `7`, then down to the bottom-most points `4` and `15`.
+3.  **Center Bottom:** Move up slightly to `24`, then `3`.
+4.  **Center Cluster (Dense):** Navigate the tight group in the middle. From `3`, go to `10`, `16`, `23`, `14`, `25`.
+5.  **Upper Center:** Move up to `9` and then the highest point in that area, `13`.
+6.  **Bridge to Right:** From `13`, move right to `2`, then `19`.
+7.  **Lower Right:** Go down to `12`, then towards the corner with `20` and `8`.
+8.  **Upper Right:** Move up to `18`, then `17`, `21`, and finish at the far top-right point `5`.
+9.  *(Implicitly, the loop closes by connecting 5 back to 11 across the top, completing the cycle).*

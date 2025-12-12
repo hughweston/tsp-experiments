@@ -1,0 +1,1333 @@
+To solve this Traveling Salesman Problem, I'll visually trace the shortest path connecting all 30 cities. The goal is to minimize the total distance by always moving to the nearest unvisited neighbor and avoiding crossing paths as much as possible, forming a clean loop.
+
+Here is the step-by-step route I've determined:
+
+1.  Starting in the top-left cluster, let's begin at point **23**.
+2.  Move right to **16**, then to the nearby **27**.
+3.  Continue slightly right and up to **30**.
+4.  Move down and right to **13**.
+5.  Move left to **22**.
+6.  Go down and left to **19**.
+7.  Move further left to **10**.
+8.  Go down and left to **15**.
+9.  Move down and right to **14**.
+10. Go up and right to **20**.
+11. From 20, we need to bridge to the central/right area. The best bridge is towards the top-middle. Let's backtrack slightly visually: Actually, from 30, the nearest neighbor to the right is **3**, but let's see. A better flow might be to clear the left side first. Let's restart the sequence mentally to ensure smoothness.
+
+**Refined Path Tracing:**
+
+*   Start at **23** (top left corner).
+*   Go to **16**.
+*   Go to **27**.
+*   Go to **30**.
+*   Go to **3**. This is an outlier, best grabbed now.
+*   Go down to **28**.
+*   Go right to **2**.
+*   Go down to **18**.
+*   Go down and right to **21**.
+*   Go left to **5**.
+*   Go down to **11**.
+*   Go left/down to **29**.
+*   Go down to **26**.
+*   Go left to **4**.
+*   Go left/up to **1**.
+*   Go up slightly to **25**.
+*   Go left to **7**.
+*   Go left/down to **24**.
+*   Go left/up to **17**.
+*   Go up to **9**. (This connects the lower right cluster to the middle).
+*   From 9, let's look for the next connection. The path needs to get back to the left side. The closest point to the left cluster from here isn't obvious. Let's try a different approach: Let's trace the perimeter and fill in.
+
+**Third Attempt (creating a continuous loop):**
+
+1.  **23**
+2.  **16**
+3.  **30**
+4.  **3**
+5.  **2**
+6.  **28**
+7.  **18**
+8.  **21**
+9.  **5**
+10. **11**
+11. **29**
+12. **26**
+13. **4**
+14. **1**
+15. **25**
+16. **7**
+17. **24**
+18. **17**
+19. **9**
+20. **12** (Long jump, but looks like the bottom connector). Let's re-evaluate the bottom left.
+    *   The points 6, 12, 8 are isolated at the bottom.
+    *   The points 24, 17, 9 are central.
+    *   Points 14, 20, 19, 10, 15 are left-central.
+
+Let's try a counter-clockwise sweep starting from the bottom left:
+
+1.  **6** (Bottom left)
+2.  **12**
+3.  **8**
+4.  **24**
+5.  **1**
+6.  **4**
+7.  **26**
+8.  **29**
+9.  **11**
+10. **21**
+11. **5**
+12. **7**
+13. **25**
+14. **18**
+15. **2**
+16. **28**
+17. **9**
+18. **17**
+19. **20**
+20. **14**
+21. **15**
+22. **10**
+23. **19**
+24. **22**
+25. **13**
+26. **27**
+27. **16**
+28. **23**
+29. **30**
+30. **3** ... But then 3 to 6 is a huge jump. The loop must close.
+
+**Final Optimized Route Calculation:**
+
+Let's trace locally optimal connections:
+*   Cluster 1 (Top Left): 23-16-30-27-22-13-19-10-15-14-20.
+*   Cluster 2 (Bottom Left): 6-12-8.
+*   Cluster 3 (Bottom Right): 24-17-9 (bridge)-7-25-1-4-26-29-11-5-21-18.
+*   Outliers: 3, 2, 28.
+
+Let's stitch them:
+Start at **6**.
+Go to **15** (closest upwards).
+Go to **23**.
+Go to **16**.
+Go to **30**.
+Go to **27**.
+Go to **22**.
+Go to **13**.
+Go to **3**.
+Go to **2**.
+Go to **28**.
+Go to **18**.
+Go to **21**.
+Go to **5**.
+Go to **11**.
+Go to **29**.
+Go to **26**.
+Go to **4**.
+Go to **1**.
+Go to **25**.
+Go to **7**.
+Go to **24**.
+Go to **17**.
+Go to **9**.
+Go to **20**. (Bridge back to left side)
+Go to **19**.
+Go to **10**.
+Go to **14**.
+Go to **12**.
+Go to **8**.
+... And 8 connects back to 6.
+
+This looks very solid. Let's verify the order 9 -> 20. 17 is closer to 9. 20 is closer to 19.
+Let's refine the middle crossover.
+... 24 -> 17 -> 9 -> 28 ... no, 28 is high up.
+Let's try: ... 28 -> 18 ... -> 7 -> 24 -> 17 -> 20 ...
+Is 17 close to 20? Yes.
+Is 20 close to 19? Yes.
+Is 19 close to 10? Yes.
+Is 10 close to 14? Yes.
+Is 14 close to 12? It's a bit of a stretch but logical.
+Is 12 close to 8? Yes.
+Is 8 close to 6? Yes.
+Is 6 close to 15? Yes.
+
+Let's refine the top right:
+... 13 -> 3 -> 28? Or 13 -> 3 -> 2 -> 18?
+13 is close to 3. 3 is close to 2. 2 is close to 28. 28 is close to 9? Or 18?
+Visually: 28 is between 3 and 18.
+So: 13 -> 3 -> 2 -> 28 -> 9? No, 9 is lower.
+Maybe 13 -> 3 -> 2 -> 18 -> 21...?
+Let's check the bridge from Left to Right at the top.
+27 -> 22 -> 13 -> 3. This works.
+
+Let's check the bridge from Right to Left at the bottom.
+... 24 -> 17 -> 20?
+17 is somewhat isolated in the middle. 20 is the rightmost of the left cluster. This is the natural bridge.
+
+Let's re-list the full sequence carefully:
+
+1.  **6**
+2.  **15**
+3.  **10**
+4.  **23**
+5.  **16**
+6.  **30**
+7.  **27**
+8.  **22**
+9.  **13**
+10. **3**
+11. **2**
+12. **21**
+13. **5**
+14. **11**
+15. **29**
+16. **26**
+17. **4**
+18. **1**
+19. **25**
+20. **7**
+21. **24**
+22. **17**
+23. **9**
+24. **28**
+25. **18**
+Wait, I missed 28 and 18 in the previous flow. 28 is high.
+Correction: ... 3 -> 2 -> 28 -> 18 -> 21 ... No, 28 is left of 2.
+Let's look at 28. It's near 2 and 9.
+Let's look at 18. It's near 2 and 9 and 21.
+Better loop: ... 3 -> 28 -> 2 -> 21 ...? No, 2 is right of 28.
+Maybe: ... 13 -> 3 -> 2 -> 18 -> 28 -> 9 -> 17 ...?
+From 18 to 28 is back left. From 28 to 9 is down.
+From 18 to 21 is down right.
+Let's try: 3 -> 2 -> 21 -> 5 -> 11 -> 29 -> 26 -> 4 -> 1 -> 25 -> 7 -> 18 -> 28 -> 9 -> 17 -> 24 -> 8 -> 12 -> 6...?
+24 to 8 is a long jump.
+The bottom chain is almost certainly 6-12-8-24.
+So, ... 17 -> 24 -> 8 -> 12 -> 6 -> 14 -> 20 ...?
+6 to 14 is a big jump. 6 to 15 is better. 14 is below 15.
+Let's try the bottom chain: 8-12-6-14-15.
+From 15 go to 10 -> 23...
+So: ... 24 -> 8 -> 12 -> 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 19 -> 20 -> 17 ...
+Now we are at 17.
+From 17 -> 9 -> 28 -> 18 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 2 -> 3 -> 13.
+And 13 connects back to 22? No, 22 is already visited. 13 connects to 27?
+Let's adjust the top right bridge.
+... 22 -> 19 -> 20 -> 17 -> 9 -> 28 -> 18 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 2 -> 3 -> 13 -> 27...
+From 27 -> 30 -> 16 -> 23 -> 10 -> 15 -> 14 -> 6 -> 12 -> 8 -> 24 -> 17 (visited).
+Okay, let's reverse the right side logic.
+From 24 -> 17? No, 24 is closer to 7 or 1.
+Let's use 24 as the entry from the bottom left.
+8 -> 24.
+From 24 -> 17? Or 24 -> 1?
+If 24 -> 17, then 17 -> 9 -> 28...
+Let's try to fit the outliers 13, 22, 19.
+Cluster Top Left: 23, 16, 30, 27, 22, 13, 19, 20, 10, 15, 14.
+Connections:
+23-16
+16-27 (or 30)
+30-27
+27-22
+22-19
+19-20
+20-14
+14-15
+15-10
+10-23 (Close loop).
+Where does 13 fit? 22-13-3 is a good escape. Or 27-13-3.
+22 is very close to 13.
+Let's fix the Top Left loop segment:
+... -> 23 -> 10 -> 15 -> 14 -> 20 -> 19 -> 22 -> 27 -> 16 -> 30 -> 13 -> 3 -> ...
+This looks clean.
+
+Now from 3:
+3 -> 28 -> 2? Or 3 -> 2 -> 28? 2 is far right. 28 is central.
+3 -> 2 -> 21? (Down the right edge).
+2 -> 21 -> 5 -> 11 -> 29 -> 26 -> 4 -> 1 -> 25 -> 7 -> 18 -> 28 -> 9 -> 17 -> 24 -> 8 -> 12 -> 6.
+Now from 6, we need to close to 14 (start of the other chain was 23).
+Is 6 close to 14? Yes, 14 is the lowest point of the left cluster.
+Is 6 close to 23? No.
+So we must enter the left cluster at the bottom (14) and leave at the top (13/30/16).
+Let's trace:
+Start **6** -> **14** -> **15** -> **10** -> **23** -> **16** -> **30** -> **27** -> **22** -> **19** -> **20** (Dead end? No).
+From 20, jump to **17**? 20 and 17 are the closest bridge points between the two main blobs.
+So: ... **20** -> **17** -> **9** -> **28** -> **2** -> **3** -> **13** (Uh oh, missed 13 in the top left).
+Let's back up. 13 is between 30/27 and 3.
+So: ... **30** -> **27** -> **22** -> **13** -> **3** ... (Leaving 19/20 for later? No).
+Let's traverse the left cluster such that we end at 13.
+Start **6** -> **14** -> **15** -> **10** -> **23** -> **16** -> **30** -> **27** -> **19** -> **20** -> **22** -> **13**.
+(19-20-22 is a tight triangle).
+From **13** -> **3** -> **2** -> **28** -> **18** -> **21** -> **5** -> **11** -> **29** -> **26** -> **4** -> **1** -> **25** -> **7** -> **9** -> **17** -> **24** -> **8** -> **12** -> **6**.
+Let's check the connections:
+13 -> 3: Good.
+3 -> 2: Good.
+2 -> 28: Good.
+28 -> 18: Good.
+18 -> 21: Good.
+21 -> 5: Good.
+5 -> 11: Good.
+11 -> 29: Good.
+29 -> 26: Good.
+26 -> 4: Good.
+4 -> 1: Good.
+1 -> 25: Good.
+25 -> 7: Good.
+7 -> 9: Good (Gap is manageable).
+9 -> 17: Good.
+17 -> 24: Good.
+24 -> 8: Good.
+8 -> 12: Good.
+12 -> 6: Good.
+6 -> 14: Good.
+14 -> 15: Good.
+15 -> 10: Good.
+10 -> 23: Good.
+23 -> 16: Good.
+16 -> 30: Good.
+30 -> 27: Good.
+27 -> 19: Good? 27 is above 19. Yes.
+19 -> 20: Good.
+20 -> 22: Good.
+22 -> 13: Good.
+
+This path covers all points. Let's double check the 7->9->17 area.
+7 is near 25/1. 9 is above 7. 17 is left of 9.
+Is 7 -> 9 better, or 7 -> 24?
+If 7 -> 24, then 24 -> 17 -> 9 -> 28...
+Let's check the previous path segment: ... 25 -> 7 -> 24 -> 17 -> 9 -> 28 ...
+If we do 9 -> 28, then how do we get to 18?
+... 28 -> 18 -> 21 ...?
+Let's look at the center right again.
+Points: 28, 9, 18, 7, 24, 17.
+28 is top. 9 is middle. 18 is right. 7 is below 18. 24 is below 9. 17 is left of 24.
+Path: ... 2 -> 28 -> 18 -> 21 ... 25 -> 7 -> 9 -> 17 -> 24 ...
+From 7 to 9 is okay.
+From 9 to 17 is okay.
+From 17 to 24 is okay.
+From 24 to 8 is okay.
+This seems like the most logical non-crossing path.
+
+Final check of the sequence:
+6, 14, 15, 10, 23, 16, 30, 27, 19, 20, 22, 13, 3, 2, 28, 18, 21, 5, 11, 29, 26, 4, 1, 25, 7, 9, 17, 24, 8, 12.
+
+One small optimization check:
+At the top left: 27 -> 22 -> 19 -> 20 -> 13?
+20 is far from 13. 22 is close to 13.
+So the sequence ... 27 -> 19 -> 20 -> 22 -> 13 ... is physically possible but 20 to 22 is backtracking upwards.
+Let's look at the image. 22 is between 27 and 13. 19 is below 22. 20 is below 22 and right of 19.
+Better sub-tour: ... 27 -> 22 -> 13 ... Wait, where do 19, 20 go?
+Maybe 14 -> 20 -> 19 -> 22 -> 27 ...?
+Let's try: 6 -> 12 -> 8 -> 24 -> 17 -> 9 -> 28 -> 2 -> 18 -> 21 -> 5 -> 11 -> 29 -> 26 -> 4 -> 1 -> 25 -> 7.
+(Stuck at 7). 7 needs to connect to the bottom left or middle.
+Let's restart the bottom right mess.
+Bottom right cluster: 5, 21, 11, 29, 26, 4, 1, 25, 7, 24, 8, 12, 6.
+Cycle: 6-12-8-24-1-4-26-29-11-5-21-18-25-7 (Stuck).
+Try: 6-12-8-24-17-9-7-25-1-4-26-29-11-5-21-18-28-2-3-13-22-20-19-10-15-14 (back to 6).
+This leaves out 27, 30, 16, 23.
+Insert them near 13/22.
+... 13 -> 30 -> 16 -> 23 -> 10?
+13 is near 30. 30 is near 16. 16 is near 23. 23 is near 10.
+So: ... 13 -> 30 -> 16 -> 23 -> 10 -> 15 -> 14 ...
+What about 27? 30 is near 27. 27 is near 22.
+Sequence: ... 22 -> 27 -> 30 -> 16 -> 23 -> 10 ...
+What about 19, 20?
+Sequence: ... 3 -> 13 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 19 -> 20 -> 14 ...?
+10 to 19 is close. 19 to 20 is close. 20 to 14 is close.
+This looks like the winning sequence for the top left.
+
+Let's refine the "Bridge" area (9, 17, 24, 7).
+In the previous attempt: ... 24 -> 17 -> 9 -> 7 ...
+9 to 7 is a bit far. 17 to 9 is okay.
+Let's look at 24. It's near 17 and 1.
+Let's look at 17. Near 24 and 9.
+Let's look at 9. Near 17 and 28.
+Let's look at 7. Near 25 and 18.
+Route: ... 21 -> 18 -> 28 -> 9 -> 17 -> 24 -> 8 ...
+This skips 7, 25, 1, 4...
+We need to sweep the bottom right corner loop.
+... 21 -> 5 -> 11 -> 29 -> 26 -> 4 -> 1 -> 25 -> 7 -> 18 ...
+This handles the corner.
+Then from 18 -> 28 -> 2 -> 3 -> 13 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 19 -> 15 (oops) -> 20 -> 14 -> 6 -> 12 -> 8 -> 24 -> 17 -> 9 ...
+And 9 connects back to ... where?
+We started the loop at 21. We ended at 9.
+Is 9 close to 21? No.
+We need to connect 9 to the start.
+Let's flip the order.
+Start at 9.
+9 -> 17 -> 24 -> 8 -> 12 -> 6 -> 14 -> 15 -> 20 -> 19 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 13 -> 3 -> 2 -> 28 -> 18 -> 21 -> 5 -> 11 -> 29 -> 26 -> 4 -> 1 -> 25 -> 7.
+And 7 connects to 9.
+Let's check 7 -> 9. It's a reasonable jump in the middle.
+Let's check 15 -> 20. 15 is left, 20 is right. 15 -> 14 is better. 14 -> 20 is better.
+So: 6 -> 12 -> 8 -> 24 -> 17 -> 9 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 18 -> 28 -> 2 -> 3 -> 13 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 19 -> 15 -> 20 -> 14 (bad order).
+Let's fix the left cluster one more time.
+Entry point from 6 is 14.
+Exit point to 3 is 13.
+Path: 14 -> 15 -> 20 -> 19 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 13.
+Check steps:
+14 -> 15: Good.
+15 -> 20: Crosses 19? 15 is far left. 20 is inner right. 19 is between/above.
+Better: 14 -> 20 -> 19 -> 15 -> 10.
+Check: 14 -> 20 (up right). 20 -> 19 (up left). 19 -> 15 (left). 15 -> 10 (up). 10 -> 23 (up).
+This looks very clean.
+Then 23 -> 16 -> 30 -> 27 -> 22 -> 13.
+22 -> 13 is good.
+So left cluster path: 14, 20, 19, 15, 10, 23, 16, 30, 27, 22, 13.
+
+Now the right side. Entry from 13 is 3. Exit to 14 is via 6, 12, 8, 24...
+From 13 -> 3.
+3 -> 2.
+2 -> 28.
+28 -> 9.
+9 -> 17.
+17 -> 7? No, 17 -> 24 is better, but we need to do the far right loop.
+17 -> 18? No.
+Let's look at 9. 9 is central.
+Let's look at 28. 28 -> 18 is a good link.
+So: 3 -> 2 -> 28 -> 18 -> 21 -> 5 -> 11 -> 29 -> 26 -> 4 -> 1 -> 25 -> 7 -> 9 -> 17 -> 24 -> 8 -> 12 -> 6 -> 14.
+Check connections:
+28 -> 18: Good.
+18 -> 21: Good.
+...
+25 -> 7: Good.
+7 -> 9: Good.
+9 -> 17: Good.
+17 -> 24: Good.
+24 -> 8: Good.
+8 -> 12: Good.
+12 -> 6: Good.
+6 -> 14: Good.
+
+This covers all points:
+Left Cluster: 14, 20, 19, 15, 10, 23, 16, 30, 27, 22, 13 (11 points).
+Connector: 3 (1 point).
+Right Cluster: 2, 28, 18, 21, 5, 11, 29, 26, 4, 1, 25, 7, 9, 17, 24, 8, 12, 6 (18 points).
+Total: 30 points.
+
+Let me review the 15-19-20-14 area again visually.
+14 is below 15.
+20 is right of 14.
+19 is above 20.
+15 is left of 19.
+My proposed path: 14 -> 20 -> 19 -> 15 -> 10.
+Visually on the image:
+14 to 20 goes Up-Right.
+20 to 19 goes Left-Up.
+19 to 15 goes Left-Down.
+15 to 10 goes Up-Right.
+This seems zigzaggy but correct.
+Alternative: 14 -> 15 -> 19 -> 20 -> 22...
+14 to 15 (Up-Left).
+15 to 19 (Right-Up).
+19 to 20 (Right-Down).
+20 to 22 (Up).
+This avoids the 15-10 crossing if 15 goes to 19. But 15 to 10 is very close.
+Let's look at 10. 10 needs to connect to 23 and either 15 or 19.
+10 is closer to 19 than 15? Hard to tell. 10 is closer to 15 visually.
+So 15-10 is a strong link.
+If we do 14 -> 20 -> 19 -> 22 (skipping 15)... 15 is stranded.
+So 15 must be included.
+If 14 -> 15 -> 10 -> 23... then 19 and 20 must be visited on the way back down from 22.
+... 22 -> 19 -> 20 ... then from 20 jump to 17/9/24?
+If we exit the left cluster at 20, we need to enter the right cluster.
+20 is reasonably close to 17 or 9.
+If we exit at 20:
+Path Left: 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 13 -> 22 -> 19 -> 20.
+Path Bridge: 20 -> 17 -> 24 -> 8 -> 12 -> (Wait, 6 is start).
+So 20 -> 17 -> 9 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 18 -> 28 -> 2 -> 3 -> (Back to start?? No, 3 needs to connect to left).
+We connected 3 to 13. But here 13 is in the middle of the left chain.
+If we use 3-13 link, 13 must be an end of the left chain.
+My previous path ended at 13.
+Left chain: 14, 20, 19, 15, 10, 23, 16, 30, 27, 22, 13.
+This seems the most robust. The 14->20 link is good. 20->19 is good. 19->15 is the only slightly weird one (backtracking left), but 15 is an edge.
+Actually, 14 is closer to 15 than 20.
+Let's try: 14 -> 15 -> 19 -> 10? No, 19 is right of 15. 10 is above 15.
+15 -> 19 crossing 10-14? No.
+Let's trace: 15 is far left. 10 is above it. 14 is below right. 19 is above right.
+The convex hull here is 15-10-19-20-14.
+So loop should follow hull: 14 -> 15 -> 10 -> 19 -> 20...
+Wait, 10 -> 19 is okay. 19 -> 20 is okay.
+But we need to get to 23. 10 -> 23 is mandatory.
+So ... 15 -> 14 -> 20 -> 19 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 15?
+This closes the loop on the left.
+We need to break it to connect to the rest.
+Break at 22-27? Insert 13-3-...
+... 19 -> 22 -> 13 -> 3 -> 2 -> 28 -> ... -> 6 -> (back to left) ...
+If we come back to left at 14 (from 6).
+Then 14 -> 20 -> ... -> 27 -> 30 -> 16 -> 23 -> 10 -> 15 -> 14?
+Close, but 14 is start/end.
+Sequence: 6 -> 14 -> 20 -> 19 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 15 (dead end).
+Swap 10/15 logic.
+6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 19 -> 20.
+From 20, we need to bridge to the right cluster.
+20 is closest to 17 (or 9).
+Let's try 20 -> 17.
+17 -> 24 -> 8 -> 12 (path start was 6, so 12-6 closes bottom).
+So we need to go 20 -> 17 -> 24 -> 8 -> 12 -> 6. (This closes the bottom loop).
+But we haven't visited the big right chunk (3, 2, 28, 18, 5...).
+We need to insert that chunk.
+Where?
+Between 27 and 22? No.
+Between 19 and 20? No.
+Between 20 and 17? Yes.
+20 -> (Right Chunk) -> 17.
+Right Chunk entry/exit must be near 20 and 17.
+Points near 20: 9, 28, 3 (via 13?).
+Points near 17: 9, 24, 7.
+Let's try to insert the right chunk between 22 and 19?
+22 -> 13 -> 3 -> 2 -> 28 -> 18 -> 21 -> 5 -> 11 -> 29 -> 26 -> 4 -> 1 -> 25 -> 7 -> 9 -> 17 -> 20 -> 19 -> 27?
+No 19 is below 22. 27 is above 22.
+Let's re-examine 22/19/20/27.
+27 is top. 22 is below it. 19 is below 22. 20 is right of 19.
+Loop: ... 30 -> 27 -> 22 -> 13 -> 3 -> ... -> 9 -> 17 -> 20 -> 19 -> 10 -> 23 -> 16 -> 30.
+This leaves out 14, 15, 6, 12, 8, 24.
+Let's stitch in the bottom group.
+... 17 -> 24 -> 8 -> 12 -> 6 -> 14 -> 15 -> 10 ...
+This looks very promising.
+Let's trace this full loop:
+Start 30.
+30 -> 27.
+27 -> 22.
+22 -> 13.
+13 -> 3.
+3 -> 2.
+2 -> 28.
+28 -> 18.
+18 -> 21.
+21 -> 5.
+5 -> 11.
+11 -> 29.
+29 -> 26.
+26 -> 4.
+4 -> 1.
+1 -> 25.
+25 -> 7.
+7 -> 9.
+9 -> 17.
+17 -> 24.
+24 -> 8.
+8 -> 12.
+12 -> 6.
+6 -> 14.
+14 -> 20.
+20 -> 19.
+19 -> 15 (Is this jump okay? 19 to 15).
+15 -> 10.
+10 -> 23.
+23 -> 16.
+16 -> 30.
+
+Let's check the weak links:
+1. 19 -> 15. 19 is at (x,y), 15 is at (x-d, y+d). 10 is at (x-d, y-d). 20 is at (x+d, y).
+Actually, 19 is between 10 and 20. 15 is far left.
+Distance 19->15 is likely larger than 14->15.
+But 14 is connected to 6.
+If we do 6->14->20->19->10->15->23? No 15 is lower than 10.
+If we do 6->14->15->10->23? But we need to grab 19 and 20.
+Let's insert 19/20 between 10 and 22? No.
+Between 14 and ...?
+How about 6 -> 14 -> 15 -> 10 -> 19 -> 20 -> 17...?
+Is 10 close to 19? Yes.
+Is 20 close to 17? Yes.
+This changes the bridge point.
+New bridge: 20 -> 17.
+Let's re-verify the full path with this bridge.
+
+Sequence:
+... -> 12 -> 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 13 -> 19 -> 20 -> 17 -> 24 -> 8 -> 12...
+Wait, 22 -> 13 -> 19?
+13 is right of 22. 19 is below 22. 3 is right of 13.
+We need to go to the right cluster.
+Best exit from left cluster is 13 -> 3.
+So we must end left cluster at 13.
+Path ending at 13:
+14, 15, 10, 23, 16, 30, 27, 22, 19, 20... (stuck, 20 is far from 13).
+Actually 22 is the hub.
+19, 20 are a dead end pocket? No, 20 connects to 17.
+If 20 connects to 17 (Right Cluster), then 13 connects to 3 (Right Cluster).
+This creates two bridges. We only want two bridges to form a loop.
+Bridge 1: Left -> Right (13 -> 3).
+Bridge 2: Right -> Left (17 -> 20).
+This works perfectly.
+
+Let's trace the flow with these two bridges:
+**Left Cluster Traversal:**
+Enter at 20 (from 17).
+20 -> 19.
+19 -> 22? No, 22 -> 13 is the exit.
+We need 20 -> ... -> 13.
+20 -> 19 -> 22? Then what about 27, 30, 16, 23, 10, 15, 14, 6, 12, 8, 24...?
+Ah, 24, 8, 12, 6 are bottom. They are part of the "Right" cluster in terms of the loop flow or "Left"?
+6, 12, 8 are bottom left. 24 is bottom middle.
+If 20->17 is the bridge, then 24 is on the "Right" side of the bridge.
+Let's assume the loop is:
+Right Side -> 17 -> 20 -> Left Side -> 13 -> 3 -> Right Side.
+
+Path segment Left Side (20 to 13):
+20 -> 19 (Check).
+19 -> ?
+19 -> 10? (Check).
+10 -> 15? (Check).
+15 -> 14? (Check).
+14 -> 6? (Check).
+6 -> 12? (Check).
+12 -> 8? (Check).
+8 -> 24? (Wait, 24 is on the right side of the bridge 20-17).
+If 8 connects to 24, and 24 connects to 17, then 8 is on the Right Side of the bridge logic.
+So the bridge is 8 -> 24? Or 12 -> 8?
+Let's look at the gap between 6 and 14. It is small.
+Gap between 8 and 24 is medium.
+Gap between 20 and 17 is medium.
+Gap between 13 and 3 is medium.
+
+Let's try bridges: 13-3 and 8-24.
+Path: ... 3 -> ... -> 24 -> 8 -> 12 -> 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 19 -> 20 -> (stuck).
+20 is a dead end.
+
+Let's try bridges: 13-3 and 20-17.
+Left side points: 13, 22, 27, 30, 16, 23, 10, 15, 14, 6, 12, 8 (maybe?), 19, 20.
+Path from 20 to 13:
+20 -> 19 -> 22? (Skips top loop).
+20 -> 14 -> 6 -> 12 -> 8 -> ... (Stuck at 8, far from top).
+20 -> 19 -> 10 -> 15 -> 14 -> 6 -> 12 -> 8 -> 24 (crossed bridge?)
+If 24 is on the left side:
+... 8 -> 24 -> 17 (crossed bridge).
+So 17 is on the right.
+So we need to include 24 in the path from 20 to 13.
+20 -> 19 -> 10 -> 15 -> 14 -> 6 -> 12 -> 8 -> 24 -> (where to?)
+24 is near 1. 24 is near 17. 24 is near 7.
+24 is far from 23, 16...
+This implies 24 is part of the Right Cluster.
+So the split is between 8 and 24.
+Bridge: 8 -> 24.
+Bridge: 13 -> 3.
+Left Side: 8, 12, 6, 14, 15, 10, 23, 16, 30, 27, 22, 19, 20, 13??
+How to connect 8 to 13?
+8 -> 12 -> 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 19 -> 20 -> (dead end).
+Swap 19/20/22 area.
+... 27 -> 22 -> 20 -> 19 -> 13?
+19 is near 13? No.
+19 is near 10.
+... 22 -> 20 -> 19 -> 10 -> 15 -> 14 -> 6 -> 12 -> 8.
+This works!
+Let's check the start: ... 13.
+Is 13 connected to 22? Yes.
+So Left Path: 13 -> 22 -> 20 -> 19 -> 10 -> 23 -> 16 -> 30 -> 27 -> (gap)
+Wait, 27 must connect to 22 or 30.
+Path: 13 -> 22 -> 20 -> 19 -> 10 -> 15 -> 14 -> 6 -> 12 -> 8.
+(Where are 23, 16, 30, 27?)
+Insert them:
+... 10 -> 23 -> 16 -> 30 -> 27 -> 19? (27 to 19 is a jump).
+... 10 -> 23 -> 16 -> 30 -> 27 -> 22? (22 is start).
+Let's try: 13 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 19 -> 20 -> 15 (bad) -> 14 -> 6 -> 12 -> 8.
+Issue: 20 to 14 is better. 19 to 15 is better.
+Try: 13 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 15 -> 19 -> 20 -> 14 -> 6 -> 12 -> 8.
+Check 10->15: Good.
+Check 15->19: 15 is far left. 19 is mid-left. It's a bit of a backtrack but valid.
+Check 19->20: Good.
+Check 20->14: Good.
+Check 14->6: Good.
+Check 8->24 (Bridge).
+
+Now Right Side (24 to 3):
+24 -> 17 -> 9 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 18 -> 28 -> 2 -> 3.
+Check 24 -> 17: Good.
+Check 17 -> 9: Good.
+Check 9 -> 7: Good.
+Check 7 -> 25: Good.
+...
+Check 2 -> 3: Good.
+Check 3 -> 13 (Bridge).
+
+This looks like a complete and valid tour.
+Let's double check the 15-19-20-14 area again.
+Is 15->19 better or 15->14?
+15 is (let's say) at x=50. 14 is at x=70, y=down. 19 is at x=100, y=up.
+10 is at x=70, y=up.
+10->15 is a down-left diagonal.
+15->19 is a rightward traverse.
+19->20 is a small hop right-down.
+20->14 is a down-left diagonal.
+This forms a "Z" shape. It works.
+
+Is 10 -> 19 -> 20 -> 14 -> 15 -> 6... better?
+10->19 (good).
+19->20 (good).
+20->14 (good).
+14->15 (backtrack up-left).
+15->6 (long jump down).
+No, 14->6 is much better than 15->6.
+So 15 must be before 14 in the downward flow.
+10 -> 15 -> 19 -> 20 -> 14 -> 6?
+15 to 19 crosses the 14-10 line?
+10 is top left. 14 is bottom right (of this quad). 15 is bottom left. 19 is top right.
+Quad points: 10(TL), 19(TR), 15(BL), 14(BR).
+Standard traversal without crossing: TL -> BL -> BR -> TR? (10->15->14->19).
+Or TL -> TR -> BR -> BL? (10->19->14->15).
+My proposed: 10->15->19->20->14.
+15->19 is the diagonal. It crosses nothing because the center is empty?
+Actually 19 is quite far from 15.
+Let's check the image. 15 is labelled "15". 19 is labelled "19".
+15 is near the left edge. 19 is further in.
+Between them is... empty space.
+14 is below 19. 20 is right of 19.
+Wait, looking at coordinates:
+15 is far left.
+14 is below 15, slightly right.
+10 is above 15, slightly right.
+19 is right of 10.
+20 is below 19.
+So relative positions:
+10   19
+      20
+15
+   14
+Path: 10 -> 23...
+10 -> 15 (down left).
+15 -> 14 (down right).
+14 -> 20 (up right).
+20 -> 19 (up left).
+19 -> 22 (up).
+This is a "U" shape. No diagonals. No crossings.
+This is the correct path for the left pocket.
+Let's re-verify:
+... 16 -> 23 -> 10 -> 15 -> 14 -> 20 -> 19 -> 22 -> 27 -> 30 -> 13?
+No, 27 is top. 22 is below it.
+Sequence must flow 22 to 13?
+... 16 -> 23 -> 10 -> 15 -> 14 -> 20 -> 19 -> 22 -> 27 -> 30 -> 13?
+30 is right of 27? Yes.
+13 is below 30? Yes.
+Is 13 connected to 3? Yes.
+Is 27 connected to 22? Yes.
+So 22 -> 27 -> 30 -> 13 is good?
+22 is near 27. 27 near 30. 30 near 13.
+Yes.
+So: ... 10 -> 15 -> 14 -> 20 -> 19 -> 22 -> 27 -> 30 -> 13.
+Wait, where is 16? 23 -> 16 -> 30.
+So: 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 19 -> 20 -> 14 -> 15 (dead end).
+Reverse:
+... 13 -> 30 -> 16 -> 23 -> 10 -> 15 -> 14 -> 20 -> 19 -> 22.
+And 22 connects to 13?
+13 is right of 22. 22 is start, 13 is end. Loop closed?
+Left cluster needs to start at 8 (from bridge) and end at 13 (to bridge).
+Path: 8 -> 12 -> 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 22 -> 19 -> 20 -> (stuck).
+19/20 are dead ends if not traversed in the stream.
+Let's put 19/20 in the stream.
+... 22 -> 19 -> 20 -> 14? (22 to 19 is down).
+... 22 -> 19 -> 20 -> 14 -> 15 -> 10 -> 23 -> 16 -> 30 -> 27 -> 13?
+27 -> 13 is a jump? 27 and 13 are neighbors?
+Looking at image: 27 is near 22 and 30. 13 is near 30 and 22.
+Yes, 27-30-13-22 is a tight quadrilateral.
+We can do 30 -> 27 -> 22 -> 13.
+Or 27 -> 30 -> 13 -> 22.
+My stream: ... 30 -> 27 -> 13 (exit).
+This requires 22 to be visited earlier.
+... 19 -> 20 -> 22 -> ...?
+Let's try:
+8 -> 12 -> 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 19? (Long jump).
+16 -> 27?
+8 -> 12 -> 6 -> 14 -> 15 -> 20 -> 19 -> 22 -> 10? (22 to 10 jump).
+Let's go back to the "U" shape: 15-14-20-19-10.
+Wait, 19 to 10 is neighborly.
+Path: 8 -> 12 -> 6 -> 14 -> 20 -> 19 -> 10 -> 15 -> 23? (15 to 23 jump? No).
+15 is near 10. 10 is near 23.
+Path: 8 -> 12 -> 6 -> 14 -> 20 -> 19 -> 22 -> 27 -> 16 -> 23 -> 10 -> 15 -> (dead end).
+Path: 8 -> 12 -> 6 -> 14 -> 15 -> 10 -> 23 -> 16 -> 27 -> 30 -> 13 -> 22 -> 19 -> 20 (dead end).
+Swap 13/22.
+... 27 -> 30 -> 22 -> 19 -> 20 -> 13? (20 to 13 jump? No).
+Okay, look at 13. It connects to 3. It must be the end.
+It's near 30, 22.
+So preceding point must be 30 or 22.
+If 30: ... -> 22 -> 19 -> 20 -> 27 -> 16 -> 23 -> 10 -> 15 -> 14 -> 6 -> 12 -> 8?
+(Reverse flow to find logic).
+13 <- 30 <- 16 <- 23 <- 10 <- 15 <- 14 <- 6 <- 12 <- 8 <- 24 ...
+Where do 19, 20, 22, 27 fit?
+Between 14 and 10? No.
+Between 30 and 13? 30 <- 27 <- 22 <- 19 <- 20 <- (jump from where?).
+From 14? 14 -> 20 -> 19 -> 22 -> 27 -> 16 -> 23 -> 10 -> 15 -> (dead end).
+From 15? 15 -> 20? No.
+From 10? 10 -> 19 -> 20 -> 22 -> 27 -> 30 -> 16 -> 23 (dead end).
+Let's reconsider the cluster structure.
+10 is a hub (15, 23, 19).
+22 is a hub (19, 27, 13).
+14 is a hub (6, 15, 20).
+Path: 8-12-6-14-15-10-23-16-27-30-22-19-20-?
+We need to exit at 13. 22 is near 13.
+So ... 19 -> 20 -> (backtrack) -> 22 -> 13?
+20 -> 22? 20 is right below 22? No, 19 is. 20 is right of 19.
+Triangle 19-20-22.
+Enter at 19, go 19 -> 20 -> 22 -> 13.
+How to enter at 19? From 10.
+Path: ... 10 -> 19 -> 20 -> 22 -> 13.
+So preceding 10 must be ... 15?
+... 14 -> 15 -> 10 ...
+So: 8 -> 12 -> 6 -> 14 -> 15 -> 10 -> 19 -> 20 -> 22 -> 13.
+Where are 23, 16, 30, 27?
+Attached to 10? 10 -> 23 -> 16 -> 27 -> 30 -> (jump to where?)
+Attached to 22? 22 -> 27 -> 30 -> 16 -> 23 -> 10?
+Reverse flow: 13 <- 22 <- 27 <- 30 <- 16 <- 23 <- 10 <- 19 <- 20 <- 14 <- 15 <- 6 <- 12 <- 8.
+Check links:
+13-22: Yes.
+22-27: Yes.
+27-30: Yes.
+30-16: Yes.
+16-23: Yes.
+23-10: Yes.
+10-19: Yes.
+19-20: Yes.
+20-14: Yes.
+14-15: 14 is right of 15. 20 is right of 14.
+Sequence 20->14->15 seems linear leftward.
+15-6: Long jump down.
+Is 14-6 better? Yes.
+So 20->15->14->6?
+20 is right. 15 is left. 14 is middle.
+20 -> 14 -> 15 -> 6?
+14 to 15 is left. 15 to 6 is down-right (long).
+14 to 6 is straight down (short).
+So 15 must be a spur or start.
+... 10 -> 15 -> 14? 10 is top, 15 bot-left, 14 bot-right.
+10 -> 15 -> 14 -> 6. This works.
+Does 23 chain fit?
+... 23 -> 10 -> 19 -> 20?
+10 is left of 19. 23 is left of 10? No, 23 is top-left corner.
+23 -> 10 (down-right).
+10 -> 15 (down-left).
+15 -> 14 (right).
+14 -> 6 (down).
+This leaves 19/20 stranded.
+Alternative: 23 -> 16 -> 30 -> 27 -> 22 -> 19 -> 20 -> 14 -> 6 -> 12 -> 8.
+Where are 10, 15?
+... 23 -> 10 -> 15 -> (jump) -> 19?
+This 10/15/19/20/14 knot is tricky.
+Let's look at the "U" again. 23 -> 10 -> 19 -> 20 -> 14 -> 15 -> 6?
+14 to 15 is left. 15 to 6 is down-right. 14 to 6 is down.
+15->6 crosses 14? No. 15 is left of 14. 6 is below 15/14.
+6 is closer to 14.
+So 15 must connect to 14.
+Ending at 14->6 implies ... -> 15 -> 14 -> 6.
+Entering 15? From 10.
+Entering 10? From 23.
+Path: ... 22 -> 19 -> 20 -> 23 (jump?) No.
+Path: ... 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 19 -> 20 -> 15 -> 14 -> 6?
+20 to 15 is a crossing (19-15 diagonal vs 20-15 line).
+19 is above 20. 10 is above 15.
+10-15 is vertical-ish. 19-20 is vertical-ish.
+10-19 is horiz. 15-20 is horiz.
+Cycle 10-19-20-15-10 is a rectangle.
+Enter 10 (from 23). Exit 14 (to 6). 14 is near 15 and 20.
+Best path through rect to exit 14:
+23 -> 10 -> 19 -> 20 -> 15 -> 14?
+20 to 15 is the diagonal? No.
+15 is BL, 20 is BR (of the 15-14-20 triangle).
+14 is below 15/20? No.
+15 (left), 14 (right-down), 20 (right-up).
+Path 10 -> 15 -> 14 -> 20 -> 19?
+Then 19 -> 22 -> 27 -> 30 -> 16 -> 23 (already visited).
+We need to exit to 13.
+Path: 10 -> 15 -> 14 -> 6 -> 12 -> 8 -> 24 -> 17 -> 9 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 18 -> 28 -> 2 -> 3 -> 13.
+Now we are at 13. We need to go back to 10 to close the loop (via 23).
+13 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10.
+Wait, we missed 19, 20.
+Insert them between 13/22 and 10?
+13 -> 22 -> 19 -> 20 -> (jump) -> 23? No.
+13 -> 22 -> 27 -> 30 -> 16 -> 23 -> (jump) -> 19 -> 20 -> (jump) -> 10?
+23 to 19? 19 is near 10.
+23 -> 19 (skip 10). 19 -> 20. 20 -> ? -> 10?
+This is getting messy. The "U" shape 10->15->14->20->19 seems best locally.
+If we use that:
+... 23 -> 10 -> 15 -> 14 -> 20 -> 19 -> 22 -> 27 -> 30 -> 16 -> (stuck, 16 needs to go to 23).
+We need to linearize the top left blob.
+End points: 14 (to 6) and 13 (to 3).
+Path between 14 and 13 covering all TL points.
+14 - 15 - 10 - 23 - 16 - 30 - 27 - 19 - 20 - 22 - 13?
+27 -> 19 jump? 27 is (20,80), 19 is (20,60). 22 is (25,70).
+27 -> 22 -> 19 -> 20?
+27 (top) -> 22 (mid) -> 19 (left) -> 20 (right)?
+22 connects to 13.
+So 27 -> 19 -> 20 -> 22 -> 13.
+Is 27 close to 19? 22 is between them.
+Can we do 27 -> 22 -> 20 -> 19 -> 10?
+22 to 20? 22 is (25,70). 20 is (25,50). 19 is (15,60).
+22 -> 20 is down. 20 -> 19 is left-up.
+19 -> 10 (left-up). 10 -> 15 (down). 15 -> 14 (right).
+This works!
+Sequence: 13 -> 30 -> 16 -> 23 -> 27 (jump 23-27? 16 is between).
+... 23 -> 16 -> 27 -> 30 (dead end).
+Try: 13 <- 22 <- 20 <- 19 <- 10 <- 23 <- 16 <- 30 <- 27 <- (jump from where?)
+Need to connect 27 to 15/14 chain? No.
+Connect 27 to 10? No.
+Connect 27 to 22 (used).
+Connect 27 to 16.
+So chain ends at 27.
+13-22-20-19-10-15-14-6-12-8-24-17-9-7-25-1-4-26-29-11-5-21-18-28-2-3 -> (13).
+Where are 23, 16, 30, 27?
+Attached to 10?
+... 19 -> 10 -> 23 -> 16 -> 30 -> 27 -> (jump to where?).
+If 27 connects to 15? No.
+If 27 connects to 19? (Gap).
+What if we start the left chain at 13 and end at 6?
+13 -> 30 -> 16 -> 27 -> 22 -> 23? (Jump 22-23? No).
+22 -> 19 -> 20 -> 10 -> 23 -> (dead end).
+Let's assume the simplest spiral.
+3 -> 13 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 19 -> 20 -> 15 -> 14 -> 6.
+Check jumps:
+3-13: OK.
+13-22: OK.
+22-27: OK.
+27-30: OK.
+30-16: OK.
+16-23: OK.
+23-10: OK.
+10-19: OK.
+19-20: OK.
+20-15: Crosses 14? 20 is (25,50). 15 is (10,50). 14 is (15,40).
+20->15 is horizontal. 14 is below. No cross.
+15->14: OK.
+14->6: OK.
+This seems perfect.
+
+Full path:
+Start 1.
+1, 4, 26, 29, 11, 5, 21, 18, 28, 2, 3, 13, 22, 27, 30, 16, 23, 10, 19, 20, 15, 14, 6, 12, 8, 24, 17, 9, 7, 25.
+(25 connects to 1).
+Check 9->7. 9 is (50,50). 7 is (60,30). 25 is (65,35).
+9->17->24->8...
+Wait, where is 24? 24 is (50, 25).
+17 is (45, 35).
+9 is (50, 50).
+7 is (60, 30).
+Sequence: ... 9 -> 17 -> 24 -> 8.
+9 -> 17 (down-left).
+17 -> 24 (down-right).
+24 -> 8 (left).
+This skips 7, 25.
+My previous sequence was 9 -> 7 -> 25 -> 1 ...
+Is 9 close to 7?
+9 (50,50). 7 (60,30).
+17 (45,35).
+9 to 17 is closer than 9 to 7.
+But if we go 9 -> 17 -> 24, we are at bottom.
+Then 24 -> 7? 24 (50,25), 7 (60,30). Yes close.
+Then 7 -> 25 -> 1 -> 4 -> 26...
+So: 9 -> 17 -> 24 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 18 -> 28 -> 2 -> 3 -> 13 ...
+But where does 8, 12, 6 fit?
+Attached to 24?
+... 17 -> 24 -> 8 -> 12 -> 6 -> 14...
+This breaks the loop to the right (7, 25...).
+We need to branch at 24?
+24 connects to 8 (Left) and 7 (Right).
+It sits in the middle.
+Path: ... 6 -> 12 -> 8 -> 24 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 18 -> 28 -> 9 -> 17 -> (jump to where?)
+17 connects to 20 (Bridge).
+So: ... 9 -> 17 -> 20 -> 15 -> 14 -> 6.
+(This closes the loop!).
+Check the 17->20 bridge.
+17 (45,35). 20 (25,50).
+Distance ~25.
+Is there a better one?
+24->14? 24(50,25), 14(15,40). Far.
+8->14? 8(35,15), 14(15,40). Far.
+6->14? 6(5,15), 14(15,40). Close.
+So 6->14 is essential.
+So bottom loop is 24->8->12->6->14.
+This means we enter at 24 (from 7?) and exit at 14 (to 15/20).
+So: ... 7 -> 24 -> 8 -> 12 -> 6 -> 14 -> 15 -> 20 ...
+(Wait, 14->15->20. Then 20 -> 19 -> ... -> 13 -> 3 -> 2 -> ... -> 9 -> 17 -> (stuck).
+17 is a dead end.
+It must connect to something. 17 connects to 9.
+So ... 9 -> 17 -> (jump?)
+17 must connect to 20? Or 24?
+If 17 connects to 20, we have the bridge.
+If 17 connects to 24, we have the cluster.
+Let's try: ... 9 -> 28 -> 18 ... -> 7 -> 25 -> 1 -> ... -> 24 -> 8 -> 12 -> 6 -> 14 -> 15 -> 20 -> 19 -> ... -> 13 -> 3 -> 2 -> (jump to 9?).
+2 to 9 is far.
+3 to 9? Far.
+28 to 9 is close.
+So 3 -> 2 -> ... -> 18 -> 28 -> 9 -> 17 -> 20?
+17 (45,35) to 20 (25,50).
+28 (55, 65). 9 (50, 50).
+This works.
+Bridge 1: 3 -> 13.
+Bridge 2: 20 -> 17.
+This seems the only viable topology.
+
+Final check of point order with this topology:
+Start 17.
+17 -> 20.
+20 -> 19 (or 15? 20 is right of 19).
+20 -> 19 -> 22 -> 27 -> 30 -> 16 -> 23 -> 10 -> 15 -> 14 -> 6 -> 12 -> 8 -> 24 -> 7 -> 25 -> 1 -> 4 -> 26 -> 29 -> 11 -> 5 -> 21 -> 18 -> 28 -> 2 -> 3 -> 13 -> (jump to 22? No, 13 is end of left chain).
+We need 13 to connect to 22, 27, 30, 16, 23, 10, 19, 20...
+Ah, 13 connects to 3.
+So 13 is the exit from Left.
+So we must end Left traversal at 13.
+Start Left traversal at 20 (from 17).
+20 -> 15 -> 14 -> 6 -> 12 -> 8 -> 24 (Oops, 24 is Right side).
+So 8 must connect to 24 (Right side).
+Bridge 2 is 8 -> 24.
+Bridge 1 is 13 -> 3.
+Left Cluster: 8, 12, 6, 14, 15, 10, 23, 16, 30, 27, 22, 19, 20, 13??
+How to get 8 to 13?
+8->12->6->14->15->20->19->10->23->16->30->27->22->13.
+Check 15->20 again.
+15(10,50). 20(25,50).
+14(15,40).
+14 is between 15 and 20 in x, but lower y.
+15 -> 14 -> 20 is smooth "V".
+15 -> 20 jumps over 14?
+Image: 15 is top-left of the trio. 20 is top-right. 14 is bottom-center.
+So 15 -> 14 -> 20 is correct.
+So path: 8->12->6->(jump)->15->14->20...
+6->15? 6(5,15). 15(10,50). Far.
+6->14? 6(5,15). 14(15,40). Closer.
+So 6->14->15->10->23->16->30->27->22->19->20?
+19(15,60). 20(25,50).
+22(25,70).
+22->19->20->(dead end).
+Swap: 22->20->19->(dead end).
+We need to end at 13. 22 connects to 13.
+So ... -> 22 -> 13.
+Before 22? 27? 19? 20?
+... 27 -> 22.
+Before 27? 30.
+Before 30? 16.
+Before 16? 23.
+Before 23? 10.
+Before 10? 19.
+Before 19? 20.
+Before 20? 15.
+Before 15? 14.
+Before 14? 6.
+Before 6? 12.
+Before 12? 8.
+Check links:
+8-12-6-14-15-20-19-10-23-16-30-27-22-13.
+15-20: Jump over 14? No, 14 was before 15.
+14-15-20?
+14(15,40). 15(10,50). 20(25,50).
+14->15 (Up-Left). 15->20 (Right).
+This crosses 19? 19(15,60).
+15->20 is y=50 line. 19 is y=60. No cross.
+20->19 (Up-Left). Good.
+19->10 (Left-Up). Good.
+10->23. Good.
+This is the sequence!
+
+Left Cluster: 8, 12, 6, 14, 15, 20, 19, 10, 23, 16, 30, 27, 22, 13.
+Right Cluster: 3, 2, 28, 18, 21, 5, 11, 29, 26, 4, 1, 25, 7, 9, 17, 24.
+Bridge 1: 13 -> 3.
+Bridge 2: 24 -> 8.
+
+Full list starting at 1:
+1, 4, 26, 29, 11, 5, 21, 18, 28, 2, 3, 13, 22, 27, 30, 16, 23, 10, 19, 20, 15, 14, 6, 12, 8, 24, 17, 9, 7, 25.
+
+Let's double check 7, 9, 17, 24 area.
+My list: ... 25 -> 7 -> 9 -> 17 -> 24 -> 8.
+7 is (60,30). 9 is (50,50). 17 is (45,35). 24 is (50,25).
+7->9 (Up-Left).
+9->17 (Down-Left).
+17->24 (Down-Right).
+24->8 (Left).
+Does 9->17 cross 7->25?
+25 is (65,35). 7 is (60,30). 25->7 is Down-Left.
+9(50,50)->17(45,35).
+They are parallel-ish. No cross.
+Does 17->24 cross anything? Small segment. No.
+This seems correct.
+
+One alternate for 7/9/17/24:
+25 -> 7 -> 24 -> 17 -> 9 -> 28?
+24 is near 7. 7->24 is valid.
+24->17 valid.
+17->9 valid.
+9->28 valid.
+Then how to connect to 8?
+The bridge was 24->8.
+If we go 7->24, we must go 24->8 immediately or visit 17/9 later?
+If 24->8, then 9/17 are stranded.
+So 24 must be the last point of Right Cluster.
+So ... -> 9 -> 17 -> 24 -> 8.
+Or ... -> 17 -> 9 -> 24 -> 8?
+17 to 9 to 24? 9 is high. 24 is low.
+17 is between in height.
+17->9 (Up). 9->24 (Down).
+17->24 (Down). 9 is left out?
+Unless 28->9...
+... 18->28->9->17->24->8.
+This works perfectly.
+
+Final List:
+1, 25, 7, 9, 17, 24, 8, 12, 6, 14, 15, 20, 19, 10, 23, 16, 30, 27, 22, 13, 3, 2, 28, 18, 21, 5, 11, 29, 26, 4.
+
+Check 1->25: Good.
+Check 4->1: Good.
+Check 28->2: Good.
+Check 2->3: Good.
+Check 13->3: Good.
+Check 24->8: Good.
+
+Wait, check 14->15->20.
+14(15,40). 15(10,50). 20(25,50).
+14->15: Left-Up.
+15->20: Right.
+14->20: Right-Up.
+Triangle 14-15-20.
+Path 14->15->20 is the convex hull. Correct.
+
+One final check on 18->28->2->3.
+18(65,55). 28(55,65). 2(70,70). 3(50,85).
+18->28 (Up-Left).
+28->2 (Up-Right).
+2->3 (Up-Left).
+This zigs zags.
+Is 18->2->28->9 better?
+18->2 (Up).
+2->28 (Down-Left).
+28->9 (Down-Left).
+28->3? 28(55,65), 3(50,85).
+2->3 is (70,70)->(50,85). Dist ~25.
+28->3 is (55,65)->(50,85). Dist ~20.
+So 28 is closer to 3 than 2 is.
+But 2 is far right. 2 must connect to 28 or 3 or 18.
+If 2 connects to 3 and 18?
+... 21 -> 18 -> 2 -> 3 -> 13.
+Where is 28?
+... 21 -> 28 -> 18 -> 2 ...?
+21(80,45). 28(55,65). 18(65,55).
+21 is low-right. 18 is mid-right.
+21 -> 18 is good.
+18 -> 2 is good.
+2 -> 3 is good.
+Where is 28?
+28 is near 9, 18, 2.
+Maybe 3 -> 28 -> 9?
+3(50,85). 28(55,65).
+3 -> 28 is good.
+28 -> 9 is good.
+9 -> 17 ... -> 24 -> 8.
+So sequence: ... 18 -> 21 (no, 21->18) ...
+... 5 -> 21 -> 18 -> 2 -> 3 -> 28 -> 9 -> 17 -> 24 -> 8.
+Let's check 2->3 distance vs 2->28 distance.
+2(70,70). 3(50,85). d=sqrt(400+225)=25.
+2(70,70). 28(55,65). d=sqrt(225+25)=16.
+2 is closer to 28.
+3(50,85). 28(55,65). d=sqrt(25+400)=20.
+3(50,85). 13(30,75). d=sqrt(400+100)=22.
+So 28 is between 2 and 3? No, 28 is left of 2, below 3.
+Triangle 2-3-28.
+Path 2->28->3?
+2->28 (Left-Down).
+28->3 (Left-Up).
+Path 2->3->28?
+2->3 (Left-Up).
+3->28 (Right-Down). Backtrack?
+Yes, 3 is top. 28 is below.
+So 2->3->13 is better. 28 must be visited before.
+... 18 -> 21? 18(65,55). 21(80,45).
+... 21 -> 18 -> 28 -> 2 -> 3 -> 13.
+18->28 (Left-Up).
+28->2 (Right-Up).
+2->3 (Left-Up).
+This looks cleaner.
+Does 28 connect to 9?
+No, 28 is now in the upward stream.
+Who connects to 9?
+... 7 -> 9 -> 17 -> 24 ...
+Is 7 close to 9?
+7(60,30). 9(50,50). d=sqrt(100+400)=22.
+Is there a better neighbor for 9?
+28? 28(55,65). d=sqrt(25+225)=16.
+17? 17(45,35). d=sqrt(25+225)=16.
+So 9 is between 28 and 17.
+So flow should be 28 -> 9 -> 17.
+But we need 28 to connect to 2.
+Can we do 2 -> 3 -> 13? And 18 -> 21 ... -> 7 -> 25?
+What about 28?
+... 18 -> 28 -> 9 -> 17 ...?
+Then 2?
+2 is stranded.
+28 is the hub for 2?
+2 -> 28 -> 9?
+Then 3? 2 -> 3 -> 13?
+Who connects to 2? 18?
+18->2 (Up).
+2->28 (Down-Left).
+28->9 (Down-Left).
+What about 3?
+3 is near 2 and 13 and 28.
+If 2->28, 3 is stranded.
+2 must connect to 3.
+18 -> 28 -> 2 -> 3 -> 13?
+18(65,55). 28(55,65). d=14.
+28(55,65). 2(70,70). d=16.
+2(70,70). 3(50,85). d=25.
+Total 14+16+25 = 55.
+Alternative: 28->18->2->3?
+28(55,65). 18(65,55). d=14.
+18(65,55). 2(70,70). d=16.
+Total 14+16+25 = 55. Same.
+Visually 21->18->28->2->3 looks like a nice right-edge sweep.
+But where does 9 fit?
+9 is left of 28.
+We need to visit 9.
+If we go 21->18->28->2->3->13... 9 is skipped.
+We need to grab 9 from 28? Or 17?
+9 must attach to 17.
+... 7 -> 25 -> 1 -> ...
+We came from the bottom right (7).
+7 -> 9 -> 17 -> 24?
+Is 7->9 okay? d=22.
+Is there a better path?
+7->25->1->...->28->9->17->24?
+If we traverse the right loop CCW?
+8->24->17->9->28->2->3->13. (Good right side).
+... 18->21->5->11->29->26->4->1->25->7->...
+But 7 needs to connect to 18?
+7(60,30). 18(65,55). Far.
+25(65,35). 18(65,55). d=20.
+7 is near 24.
+Let's reverse the right loop.
+8->24->7->25->1->4->26->29->11->5->21->18->28->9->17 (Dead end).
+17 connects to 20? No, bridge is 13.
+17 connects to 24?
+We need to pass through 24.
+... -> 9 -> 17 -> 24 -> 8.
+So 9 must be reached from the loop.
+... 18 -> 28 -> 2 -> 3 (stuck).
+... 18 -> 2 -> 3 -> ... -> 9?
+3 to 9? Far.
+28 to 9 is the key.
+... 18 -> 2 -> 3 -> 13 (Bridge).
+Where is 28?
+... 18 -> 21 -> 5 ... 28 ...
+28 is top middle.
+21 -> 18 -> 28 -> 9 -> 17 -> 24 -> 8?
+Then 2, 3?
+28 -> 2 -> 3 -> 13.
+So 9 is skipped.
+How about 2 -> 28 -> 9?
+21 -> 18 -> 2 -> 28 -> 9 -> 17 -> 24 -> 8.
+Where is 3?
+Attached to 28? 3->28.
+Attached to 13? 3->13.
+So ... 2 -> 28 -> 3 -> 13?
+28(55,65). 3(50,85). d=20.
+28(55,65). 9(50,50). d=16.
+28 is the fork.
+From 2 to 28. Then to 3 or 9?
+If to 3, then 9 is stranded.
+If to 9, then 3 is stranded (unless 3 connects to 28).
+But path is linear.
+... 2 -> 3 -> 28 -> 9 -> 17 -> 24 -> 8.
+3(50,85). 28(55,65). d=20.
+28->9 d=16.
+This works!
+Is 2->3 ok? d=25.
+Is 18->2 ok? d=16.
+So: ... 21->18->2->3->28->9->17->24->8.
+And 28 connects to 3 and 9.
+This includes everyone.
+Wait, 3 must connect to 13.
+So ... 2 -> 28 -> 9 -> 17 -> ... -> 3 -> 13?
+No, 9 is down. 3 is up.
+Path must end at 13.
+So ... 9 -> 17 -> 24 -> 8 ... 3 -> 13?
+No, 3 is far from 8.
+3 is near 28.
+So ... 9 -> 28 -> 3 -> 13.
+Start of Right Chain at 8?
+8 -> 24 -> 17 -> 9 -> ... -> 28 -> 3 -> 13.
+Where is the big loop?
+8->24->17->9->7->25->1->4->26->29->11->5->21->18->2->28->3->13.
+Check 9->7. d=22.
+Check 18->2. d=16.
+Check 2->28. d=16.
+Check 28->3. d=20.
+Check 3->13. d=22.
+This works and covers all.
+
+Final Sequence:
+8, 24, 17, 9, 7, 25, 1, 4, 26, 29, 11, 5, 21, 18, 2, 28, 3, 13, 22, 27, 30, 16, 23, 10, 19, 20, 15, 14, 6, 12.
+(And 12 connects to 8).
+
+Let's do a final visual verify.
+28->3. 28 is (55,65). 3 is (50,85). 3 is straight up-left. Path crosses 2->28?
+2->28 is (70,70)->(55,65). Left-Down.
+18->2 is Up.
+No crossing.
+28->3 vs 2->3.
+2 is (70,70). 3 is (50,85). 2->3 cuts across 28.
+So 2->28->3 is better geometry.
+The list order 2, 28, 3 confirms this.
+
+Order starting at 1:
+1, 4, 26, 29, 11, 5, 21, 18, 2, 28, 3, 13, 22, 27, 30, 16, 23, 10, 19, 20, 15, 14, 6, 12, 8, 24, 17, 9, 7, 25.
+
+Seems perfect.
+
+Re-check 10, 19, 20, 15 area.
+10(20,75). 19(15,60). 20(25,50). 15(10,50).
+10 -> 19 (Down-Left).
+19 -> 20 (Down-Right).
+20 -> 15 (Left).
+15 -> 14 (Down-Right). 14(15,40).
+This is convex and non-crossing.
+Sequence 10, 19, 20, 15, 14.
+My list has: 10, 19, 20, 15, 14.
+Correct.
+
+Final output generation.
+
+Output format: 1, 4, 26, ...
+List:
+1, 4, 26, 29, 11, 5, 21, 18, 2, 28, 3, 13, 22, 27, 30, 16, 23, 10, 19, 20, 15, 14, 6, 12, 8, 24, 17, 9, 7, 25
+
+Wait, 28 connects to 2? 2 connects to 18?
+28(55,65). 2(70,70). 18(65,55).
+18 -> 2 (Up).
+2 -> 28 (Left).
+28 -> 3 (Up).
+28 -> 9 (Down).
+My list: 18, 2, 28, 3.
+This means 28 connects to 3. Correct.
+And 28 must connect to 2? Yes.
+What about 28 to 9?
+The list goes 17 -> 9 -> 7.
+So 9 connects to 7 and 17.
+Is 9 connected to 28? No.
+Is 9 close to 28? Yes, but maybe 7/17 are closer or necessary for loop?
+9(50,50). 17(45,35). 7(60,30).
+9->17 is good.
+9->7 is good.
+Is 9->28 needed?
+If 9->28, then 28 is a hub.
+In my list, 28 connects to 2 and 3.
+9 connects to 7 and 17.
+The gap between 28 and 9 is not crossed.
+The "neck" of the hourglass is 24-8 and 13-3.
+The right blob is split by 28-9?
+No, 9 is in the lower right lobe. 28 is in the upper right lobe.
+The path 28->3 goes up.
+The path 18->2->28 comes from right.
+The path 21->18 comes from bottom right.
+So the upper right is 21-18-2-28-3.
+The lower right is 24-17-9-7-25-1-4-26-29-11-5.
+How do they connect?
+5 -> 21. Good.
+So lower right -> upper right.
+This works.
+
+One detail: 5(80,40). 21(80,45).
+11(80,35)?
+Order: 11, 5, 21. Vertical line up. Good.
+
+Everything seems robust.
+
+Final check on 10, 15, 20, 19.
+15(10,50), 20(25,50), 19(15,60).
+15 -> 20 crosses nothing.
+20 -> 19 crosses nothing.
+19 -> 10 crosses nothing.
+10 -> 23 crosses nothing.
+15 -> 14 crosses nothing.
+All good.
+
+Final sequence starts at 1.
+1, 4, 26, 29, 11, 5, 21, 18, 2, 28, 3, 13, 22, 27, 30, 16, 23, 10, 19, 20, 15, 14, 6, 12, 8, 24, 17, 9, 7, 25

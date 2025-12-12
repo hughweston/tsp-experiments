@@ -1,0 +1,17 @@
+Based on spatial proximity, the points can be grouped into the following clusters:
+
+**Cluster 1:**
+Points in the top-left corner.
+*   6, 17, 10, 20
+
+**Cluster 2:**
+Points generally in the middle-left to bottom-left area.
+*   5, 2, 8, 7, 15, 3, 12, 19
+
+**Cluster 3:**
+Points in the bottom-center area.
+*   14, 16, 4
+
+**Cluster 4:**
+Points on the right side of the image.
+*   18, 1, 9, 11, 13

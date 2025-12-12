@@ -1,0 +1,21 @@
+Based on the spatial proximity of the points in the image, here is a reasonable clustering:
+
+**Cluster 1:**
+1, 6, 14, 15, 17, 20, 21, 23, 25
+*(This is the main central/left group of points).*
+
+**Cluster 2:**
+2, 8, 10
+*(These points form a small, lower-left group).*
+
+**Cluster 3:**
+3, 13, 16, 19, 22
+*(These points are spread across the upper-middle area).*
+
+**Cluster 4:**
+4, 7, 9, 11, 18
+*(These points form a distinct group in the lower-right area).*
+
+**Cluster 5:**
+5, 12, 24
+*(These points are isolated on the far right edge).*

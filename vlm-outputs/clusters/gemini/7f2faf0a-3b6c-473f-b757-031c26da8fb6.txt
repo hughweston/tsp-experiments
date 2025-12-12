@@ -1,0 +1,17 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1:**
+10, 7, 15, 12, 19, 18
+(These points form a loose group in the upper-right quadrant, though 18 and 19 are slightly separated, they are closer to this group than others.)
+
+**Cluster 2:**
+1, 2, 6, 8, 13
+(These points are located in the lower-right area. 13 is a bit of an outlier but closest to this group.)
+
+**Cluster 3:**
+3, 5, 20, 16, 17, 9, 4, 11
+(This is the largest central and lower-left group. Points 4 and 11 are somewhat bridging towards the center, but group well with the scattered set on the left.)
+
+**Cluster 4:**
+14
+(This point is an outlier in the far top-left corner and doesn't group closely with any other points.)

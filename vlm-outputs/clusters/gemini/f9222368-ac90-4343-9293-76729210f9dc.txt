@@ -1,0 +1,16 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1:** 1, 2, 6, 8, 11
+(These points are grouped on the far left side of the image.)
+
+**Cluster 2:** 5, 7
+(These two points form a small pair near the top-center.)
+
+**Cluster 3:** 3, 9, 12, 14
+(These points are clustered in the top-right quadrant.)
+
+**Cluster 4:** 10, 13, 15
+(These points form a tight group in the center/lower-center.)
+
+**Cluster 5:** 4
+(Point 4 is isolated at the bottom right, far away from other groups, making it a single-point cluster or an outlier.)

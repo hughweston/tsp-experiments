@@ -1,0 +1,16 @@
+Based on a visual analysis of the points to find the shortest path that forms a complete loop (a TSP tour), the optimal route connects nearest neighbors without crossing paths.
+
+Here is the step-by-step logic for the path:
+1.  Start at the bottom-left cluster. **Point 4** and **Point 3** are very close. Let's start at 4 and go to 3.
+2.  From **3**, the nearest next point is clearly **10**.
+3.  From **10**, the path naturally leads to the pair **1** and **2**. **1** is closer, so we go to 1, then to **2**.
+4.  From **2**, we look for the next closest point to continue the loop. Moving towards the right side of the image, the bridge point is **9**.
+5.  From **9**, we approach the top-right cluster. We need to visit them and come back down. The natural flow is to go up to **6**, then to the furthest point **8**.
+6.  From **8**, we need to loop back down. The next point on the return journey is **7**.
+7.  From **7**, we continue downwards to the isolated point **5**.
+8.  From **5**, to close the loop, we would return to the start (Point 4), completing the cycle.
+
+The sequence traces a clear perimeter around the set of points.
+
+**Tour Order:**
+4, 3, 10, 1, 2, 9, 6, 8, 7, 5

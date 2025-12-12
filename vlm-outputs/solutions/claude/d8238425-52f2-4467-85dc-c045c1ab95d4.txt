@@ -1,0 +1,54 @@
+I need to find the shortest tour that visits all 30 points exactly once and returns to the starting point.
+
+Let me first estimate the coordinates of each point from the image:
+
+1: (520, 295)
+2: (480, 190)
+3: (295, 230)
+4: (390, 65)
+5: (730, 250)
+6: (670, 230)
+7: (270, 410)
+8: (30, 80)
+9: (45, 410)
+10: (710, 190)
+11: (150, 370)
+12: (250, 230)
+13: (620, 385)
+14: (65, 220)
+15: (580, 150)
+16: (25, 350)
+17: (455, 75)
+18: (450, 145)
+19: (115, 35)
+20: (340, 110)
+21: (390, 275)
+22: (310, 355)
+23: (590, 80)
+24: (655, 175)
+25: (720, 190)
+26: (480, 390)
+27: (225, 385)
+28: (355, 175)
+29: (210, 275)
+30: (530, 80)
+
+Let me construct a tour by finding nearby points and creating a logical path:
+
+Starting from the top-left and working around:
+- 19 (top left) → 8 (nearby) → 14 → 16 → 9 → 11 → 27 → 7 → 22 → 26 → 13 → 1 → 21 → 3 → 12 → 29 → 28 → 2 → 18 → 15 → 24 → 10 → 25 → 6 → 5 → 23 → 30 → 17 → 4 → 20 → back to 19
+
+Let me refine this by checking geographical clusters:
+
+Top region: 19, 8, 4, 17, 30, 23, 20
+Right side: 24, 10, 25, 6, 5, 15
+Middle: 18, 2, 28, 3, 12, 21, 1
+Bottom: 13, 26, 22, 7, 27, 11, 9, 16
+Left: 14, 29
+
+Optimized tour following a roughly circular path:
+
+8 → 19 → 4 → 20 → 28 → 18 → 17 → 30 → 23 → 15 → 24 → 10 → 25 → 6 → 5 → 13 → 26 → 1 → 21 → 2 → 3 → 12 → 29 → 22 → 7 → 27 → 11 → 9 → 16 → 14 → 8
+
+**Final Answer:**
+8, 19, 4, 20, 28, 18, 17, 30, 23, 15, 24, 10, 25, 6, 5, 13, 26, 1, 21, 2, 3, 12, 29, 22, 7, 27, 11, 9, 16, 14

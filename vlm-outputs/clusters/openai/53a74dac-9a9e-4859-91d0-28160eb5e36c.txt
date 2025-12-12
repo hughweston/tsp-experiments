@@ -1,0 +1,6 @@
+Cluster 1: 1, 6, 7, 9, 21, 23, 24  
+Cluster 2: 3, 5, 10, 11, 13, 19, 20  
+Cluster 3: 2, 4, 17  
+Cluster 4: 8, 12, 14, 16, 18, 25  
+Cluster 5: 22  
+Cluster 6: 15

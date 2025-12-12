@@ -1,0 +1,7 @@
+Based on visual analysis of the points to find the shortest path connecting them all (a solution to the Traveling Salesman Problem), here is the optimal sequence.
+
+I will start from point 1 at the bottom and work my way around the loop.
+
+**1, 16, 21, 17, 10, 25, 14, 8, 4, 6, 20, 2, 11, 15, 5, 23, 24, 7, 19, 13, 22, 3, 9, 12, 18**
+
+(Note: This path can also be traversed in the reverse order: 1, 18, 12, 9, 3, 22, 13, 19, 7, 24, 23, 5, 15, 11, 2, 20, 6, 4, 8, 14, 25, 10, 17, 21, 16)

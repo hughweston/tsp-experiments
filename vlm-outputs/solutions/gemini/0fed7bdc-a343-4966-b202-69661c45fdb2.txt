@@ -1,0 +1,27 @@
+Based on visual inspection of the points to find the shortest path (minimal distance loop), here is the optimal tour:
+
+1.  **Start at a point, let's say 12 (top left).**
+2.  Move right to **7**.
+3.  Continue generally right to **15**.
+4.  Move slightly down and right to **3**.
+5.  Go down to the far right cluster, starting with **5**.
+6.  Move immediately next door to **2**.
+7.  Swing back left towards the middle to reach **13**.
+8.  Go straight down to **1**.
+9.  Move left to **8**.
+10. Move slightly up and left to **6**.
+11. Continue left to **9**.
+12. Move up to **4**.
+13. Now drop down to the bottom left area to **14**.
+14. Go left to the far corner **10**.
+15. Move up to **11**.
+16. Finally, from 11, the path naturally closes back to **12**.
+
+Following this logical "outer hull" and connecting the inner points efficiently:
+
+**Order:** 12, 7, 15, 3, 5, 2, 13, 1, 8, 6, 9, 4, 14, 10, 11
+
+(Note: The reverse order is also a valid solution representing the same path length: 11, 10, 14, 4, 9, 6, 8, 1, 13, 2, 5, 3, 15, 7, 12)
+
+**Final Answer:**
+12, 7, 15, 3, 5, 2, 13, 1, 8, 6, 9, 4, 14, 10, 11

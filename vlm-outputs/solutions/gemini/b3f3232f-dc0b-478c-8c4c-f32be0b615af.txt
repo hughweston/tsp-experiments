@@ -1,0 +1,18 @@
+Based on a visual analysis of the Traveling Salesman Problem (TSP) instance provided, here is the estimated shortest tour. I will start from point 15 on the far left and trace a logical path that minimizes distance by visiting nearest neighbors and avoiding crossing paths.
+
+**Path Strategy:**
+1.  Start at **15** (top left).
+2.  Move down to **14** and **25**.
+3.  Continue downwards to the cluster **6** and **16**.
+4.  Move right to the group **12**, **2**, **24**, **8**.
+5.  Head towards the center to pick up **13**.
+6.  Move right to **11** and **23**.
+7.  Swing down to **17**.
+8.  Move up to **20** and **1**.
+9.  Continue upwards to **9**, then **5**, **7**, and **21** (far right).
+10. Loop back left along the top: **3**, **19**, **18**.
+11. Drop down slightly to **22**, **10**, and **4**.
+12. This leads back towards the starting area near 15, completing the loop.
+
+**Tour:**
+15, 14, 25, 6, 16, 12, 2, 24, 8, 13, 11, 23, 17, 20, 1, 9, 5, 7, 21, 3, 19, 18, 22, 10, 4

@@ -1,0 +1,5 @@
+Based on visual analysis of the point distribution, I have constructed a route that minimizes the total distance traveled. This involves creating a continuous loop that connects nearest neighbors while avoiding large jumps or crossing paths.
+
+Here is the optimal tour sequence:
+
+**23, 24, 15, 9, 5, 22, 18, 19, 12, 21, 8, 13, 2, 7, 14, 16, 6, 20, 3, 1, 10, 17, 11, 25, 4**

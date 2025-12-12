@@ -1,0 +1,22 @@
+To solve this Traveling Salesman Problem, I will identify the shortest path by visually tracing the nearest neighbors to form a closed loop without crossing lines.
+
+Here is the step-by-step path:
+
+1.  Starting at the top right cluster, we can begin with **11**.
+2.  The closest point downwards is **1**.
+3.  From 1, the nearest neighbor is **9**.
+4.  Next is **7**, which is very close to 9.
+5.  Moving slightly down is **13**.
+6.  To the right of 13 is **2**.
+7.  From 2, going down leads to **12**.
+8.  From 12, we move left to **10**.
+9.  Continuing left and down to the bottom, the next point is **5**.
+10. Moving upwards and left from 5, we hit **3**.
+11. Just above 3 is **6**.
+12. Continuing upwards, we reach **4**.
+13. Nearby is **14**.
+14. To the left is **15**.
+15. Finally, the topmost point on the left is **8**, which would connect back across to 11 to close the loop.
+
+**Tour:**
+11, 1, 9, 7, 13, 2, 12, 10, 5, 3, 6, 4, 14, 15, 8

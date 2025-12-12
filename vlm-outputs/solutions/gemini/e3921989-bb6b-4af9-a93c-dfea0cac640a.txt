@@ -1,0 +1,23 @@
+Based on visual analysis of the points to find the shortest path connecting all cities in a single loop, here is the optimal tour order.
+
+The strategy is to trace the outer "convex hull" and then pick up the internal points in a logical sequence that minimizes backtracking.
+
+1.  Start at a distinctive point, like **13** (bottom left).
+2.  Move to its nearest neighbor **12**.
+3.  From there, move left and up to **3**.
+4.  Then up to the top-leftmost point **17**.
+5.  Move right to **15**.
+6.  Continue generally right/up to **5**.
+7.  Move right to **19**.
+8.  Then to the cluster in the top middle: **8** and then **11**.
+9.  Continue towards the top right cluster: **14** and **1**.
+10. Move to the far top right point **7**.
+11. Drop down to the far right side: **10** and then **9**.
+12. Move left towards the center-right group: **4**.
+13. Continue left to **18** and **6**.
+14. Now traverse the bottom row back towards the start: **16**.
+15. Then **20**.
+16. Finally **2**, which connects back to **13** to close the loop.
+
+**Tour:**
+13, 12, 3, 17, 15, 5, 19, 8, 11, 14, 1, 7, 10, 9, 4, 6, 18, 16, 20, 2

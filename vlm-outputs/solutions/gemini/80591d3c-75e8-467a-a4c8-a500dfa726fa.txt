@@ -1,0 +1,3 @@
+Based on a visual analysis of the points to determine the shortest path connecting them all in a single loop, here is the optimal tour:
+
+1, 5, 7, 6, 4, 2, 3, 10, 9, 8

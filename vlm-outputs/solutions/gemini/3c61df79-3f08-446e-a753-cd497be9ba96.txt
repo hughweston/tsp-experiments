@@ -1,0 +1,18 @@
+Based on a visual analysis of the proximity of the points to form the shortest closed loop (Traveling Salesman Problem tour), here is the sequence of points:
+
+**1, 4, 3, 21, 25, 16, 2, 19, 17, 7, 18, 13, 22, 6, 8, 20, 12, 15, 5, 10, 24, 9, 14, 23, 11**
+
+Here is the reasoning for the path:
+1.  Starting on the far left with **1**, move inwards to **4**.
+2.  Go up to **3**, then further up and left to **21**.
+3.  Cross over the top to **25**, then down to **16**.
+4.  From 16, go left to **2** and down to **19**, then **17**.
+5.  Continue downwards to **7** and the bottom-most point in that cluster, **18**.
+6.  Move up and right to **13**, then right to the central point **22**.
+7.  From 22, go up to **6**, then slightly down to **8**.
+8.  Jump up to the top right corner pair: **20** then **12**.
+9.  Come down to the cluster below: **15**, **5**, **10**.
+10. Move down to the pair **24** and **9**.
+11. Continue right/down to **14**, then further right to **23**.
+12. Go up to the far right point **11**.
+13. (The loop would then conceptually close by a long jump from 11 all the way back to 1, or potentially via another route if the cycle were drawn, but this linear order covers the clusters logically).

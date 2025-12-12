@@ -1,0 +1,29 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1 (Top Left):**
+7, 27, 8, 19
+*(These points form a loose group in the upper left quadrant.)*
+
+**Cluster 2 (Top Center-Right):**
+4, 11, 22, 30
+*(These four points are clustered closely together near the top middle.)*
+
+**Cluster 3 (Top Right Corner):**
+21, 20, 2, 5
+*(These points are grouped in the far top right.)*
+
+**Cluster 4 (Middle Left):**
+1, 15, 16, 24, 25, 28
+*(This group spans the left side, from the very bottom corner up to point 15.)*
+
+**Cluster 5 (Center):**
+18, 26
+*(These two points are isolated together in the central area.)*
+
+**Cluster 6 (Bottom Center):**
+12, 6, 13, 14
+*(These points form a line or group along the bottom middle.)*
+
+**Cluster 7 (Bottom Right):**
+9, 3, 17, 23, 10, 29
+*(This is a larger, looser group covering the bottom right quadrant.)*

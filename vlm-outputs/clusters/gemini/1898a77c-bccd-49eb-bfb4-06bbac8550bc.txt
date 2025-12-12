@@ -1,0 +1,25 @@
+Based on the spatial proximity of the points in the image, here is a reasonable clustering:
+
+**Cluster 1:**
+1, 9, 16, 7
+(This group is located in the upper-middle area.)
+
+**Cluster 2:**
+18, 13, 6, 24, 14, 11, 25
+(These points form a loose arc in the upper-right section.)
+
+**Cluster 3:**
+4, 21, 12
+(This is a small group in the middle-left area.)
+
+**Cluster 4:**
+5, 15, 23
+(These points are isolated in the far bottom-left corner.)
+
+**Cluster 5:**
+3, 2, 10
+(This is a tight vertical grouping in the lower-middle area.)
+
+**Cluster 6:**
+19, 8, 22, 17, 20
+(These points form a loose line along the bottom-right.)

@@ -1,0 +1,16 @@
+Based on the visual layout of the points, the optimal (shortest) tour connects neighboring points to form a single loop without crossing itself.
+
+Here is the step-by-step path:
+
+1.  Start at the bottom-left cluster: **13, 1, 4**
+2.  Move right to the bottom-right cluster: **7, 11**
+3.  Move up to the next point on the right edge: **6**
+4.  Continue upwards: **14**
+5.  Move up towards the top-right: **2, 9**
+6.  Go to the furthest top-right point: **5**
+7.  Now sweep back across to the far left point: **8**
+8.  Go down to the left-side cluster: **10, 3, 12, 15**
+9.  This leads back towards point 13 to close the loop.
+
+**Shortest Tour:**
+13, 1, 4, 7, 11, 6, 14, 2, 9, 5, 8, 10, 3, 12, 15

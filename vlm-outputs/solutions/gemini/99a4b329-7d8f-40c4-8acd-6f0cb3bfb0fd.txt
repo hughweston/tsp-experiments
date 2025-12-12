@@ -1,0 +1,8 @@
+Based on a visual analysis of the points to find the shortest path, here is the optimal tour. I will start from the leftmost point (point 7) and generally sweep through the points to minimize crossing paths.
+
+**Path Strategy:**
+Starting at the top left with **7**, move down to **14**, then further down to the cluster (**8, 29, 16**) before hitting the bottom left corner at **20**. From there, move right along the bottom edge points (**30, 6, 12, 2, 9**) and then up slightly to **27**. Continue to the middle section (**22, 4**), then sweep towards the upper right cluster (**13, 10, 28, 24, 11**). Then come down the far right side (**18, 1, 25, 26**) and loop back through the lower middle points (**19, 15, 23, 5**) before connecting upwards to **17, 3, 21** to close the loop back towards the start (though the list ends without repeating the start).
+
+**Ordered Tour:**
+
+7, 14, 8, 29, 16, 20, 30, 6, 12, 2, 9, 27, 22, 4, 13, 10, 28, 24, 11, 18, 1, 25, 26, 19, 15, 23, 5, 17, 3, 21

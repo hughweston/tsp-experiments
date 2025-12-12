@@ -1,0 +1,20 @@
+Based on a visual analysis of the points to find the shortest path connecting all of them in a cycle, here is the optimal tour. The points form a somewhat loose "C" or crescent shape with some outliers.
+
+Here is the most logical sequence following the points' proximity to each other:
+
+1.  Start at the bottom left with **14**.
+2.  Move up to the nearby pair **9** and then **6**.
+3.  Continue generally upwards/rightwards to **12**.
+4.  Then to **13**.
+5.  Up to the top cluster: **5**, then **3**.
+6.  Move right to **4**.
+7.  Descend slightly to **11**.
+8.  Then to **1**, and **10**.
+9.  Continue down the right side to **7** and **2**.
+10. Go to the furthest bottom-right point, **15**.
+11. Finally, cut back across the bottom to point **8** and return to **14** (implicit) to close the loop.
+
+Ordering:
+**14, 9, 6, 12, 13, 5, 3, 4, 11, 1, 10, 7, 2, 15, 8**
+
+(Note: The sequence can also be reversed, or started from any other point, but the cyclic order remains the same.)

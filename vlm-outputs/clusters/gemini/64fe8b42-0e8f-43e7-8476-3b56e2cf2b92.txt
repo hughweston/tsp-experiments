@@ -1,0 +1,18 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1 (Top Left):**
+22, 6, 23, 19
+
+**Cluster 2 (Bottom Left):**
+13, 24, 15
+
+**Cluster 3 (Center / Middle):**
+3, 18, 17, 14, 8, 21, 11, 25
+*(Note: 25 is a bit of an outlier at the top, but closest to this central/upper group. 3, 11, 8, 17 form a loose central band).*
+
+**Cluster 4 (Bottom Center):**
+10, 5, 4, 20
+
+**Cluster 5 (Top Right):**
+1, 16, 9, 2, 7, 12
+*(Points 1, 16, 9 form a tight group. 7 and 12 are below them. 2 is an outlier to the far right but closest to this group spatially).*

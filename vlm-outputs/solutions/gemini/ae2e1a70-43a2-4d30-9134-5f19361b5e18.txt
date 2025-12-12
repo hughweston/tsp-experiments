@@ -1,0 +1,18 @@
+Based on a visual analysis of the points to find the shortest path connecting them all in a single loop (Traveling Salesman Problem), here is the optimal route:
+
+1.  **Start at point 7** on the far left.
+2.  Move diagonally up to **point 6**.
+3.  Continue slightly up and right to **point 10**.
+4.  Go up and left to **point 2**.
+5.  Cross over to the top right to **point 1**.
+6.  Move down slightly to **point 4**.
+7.  Continue down and left to **point 9**.
+8.  Go left to **point 3**.
+9.  Travel down to **point 8**.
+10. Finally, go to the bottom-most **point 5**.
+11. (The path would then loop back to 7 to close the circuit).
+
+**Sequence:**
+7, 6, 10, 2, 1, 4, 9, 3, 8, 5
+
+*(Note: The reverse order 5, 8, 3, 9, 4, 1, 2, 10, 6, 7 is also a valid and equivalent answer.)*

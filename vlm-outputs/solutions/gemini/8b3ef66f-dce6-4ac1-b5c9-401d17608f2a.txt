@@ -1,0 +1,5 @@
+Based on a visual analysis of the points to minimize the total travel distance, here is the shortest tour:
+
+9, 1, 5, 3, 2, 7, 6, 10, 4, 8
+
+(This route can also be reversed: 8, 4, 10, 6, 7, 2, 3, 5, 1, 9)

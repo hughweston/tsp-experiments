@@ -1,0 +1,21 @@
+Based on the spatial proximity of the points in the image, here is a logical clustering:
+
+**Cluster 1 (Left):**
+9, 10, 18, 17, 5, 8
+*(These points are grouped on the left side of the image. Note: Point 8 is a bit of an outlier at the top, but is closer to the left group than the right.)*
+
+**Cluster 2 (Center/Bottom-Left):**
+1, 11, 15
+*(These form a loose group in the lower-middle-left region.)*
+
+**Cluster 3 (Bottom/Center):**
+2, 7, 13, 14
+*(These points are situated in the bottom-middle area.)*
+
+**Cluster 4 (Top Right):**
+4, 16, 19, 12, 3
+*(This is a distinct group in the upper-right quadrant.)*
+
+**Cluster 5 (Bottom Right):**
+6, 20
+*(These two points are isolated together in the far bottom-right corner.)*

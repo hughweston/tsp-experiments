@@ -1,0 +1,25 @@
+Based on the spatial arrangement of the points in the image, here are the clusters:
+
+**Cluster 1:** 1, 4, 6, 8, 10
+(These points are grouped on the left side of the image. Points 1 and 4 are at the top, while 6, 8, and 10 are slightly lower but vertically aligned in the same general left-hand column.)
+
+**Cluster 2:** 3, 9
+(These two points form a distinct pair at the top right of the image.)
+
+**Cluster 3:** 2, 7
+(These points are clustered together in the bottom right corner.)
+
+**Cluster 4:** 5
+(Point 5 is relatively isolated in the lower-middle section, distinct enough to be considered on its own or loosely associated with the left group, but spatially it stands somewhat apart.)
+
+**Alternative Grouping (3 Clusters):**
+If you prefer fewer, broader groups:
+
+**Cluster 1:** 1, 4, 6, 8, 10, 5
+(The entire left and lower-left side)
+
+**Cluster 2:** 3, 9
+(Top right)
+
+**Cluster 3:** 2, 7
+(Bottom right)
