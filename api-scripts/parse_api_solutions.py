@@ -4,6 +4,7 @@ Parse API output files and populate solutions JSON files.
 Works for Claude, OpenAI, and Gemini's outputs.
 """
 
+import csv
 import json
 import re
 import sys
@@ -34,6 +35,23 @@ def extract_tour(text):
     return []
 
 
+def load_problem_metadata():
+    """Load problem metadata from CSV to get expected point counts."""
+    metadata = {}
+    metadata_path = Path("problem_metadata.csv")
+
+    if not metadata_path.exists():
+        print(f"Warning: {metadata_path} not found, skipping validation")
+        return metadata
+
+    with open(metadata_path, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            metadata[row["problem_id"]] = int(row["num_points"])
+
+    return metadata
+
+
 def main():
     if len(sys.argv) != 3:
         print("Usage: python parse_api_outputs.py <output_dir> <json_file>")
@@ -48,6 +66,9 @@ def main():
     if not output_dir.exists():
         print(f"Error: Directory {output_dir} does not exist")
         return 1
+
+    # Load problem metadata for validation
+    metadata = load_problem_metadata()
 
     # Load existing JSON or create empty dict
     if json_path.exists():
@@ -89,11 +110,47 @@ def main():
         tour = extract_tour(text)
 
         if tour:
-            solutions[problem_id] = tour
-            updated_count += 1
-            print(f"✓ {problem_id}: {len(tour)} points")
+            # Validate tour length is a valid size (10, 15, 20, 25, or 30)
+            valid_sizes = {10, 15, 20, 25, 30}
+            if len(tour) not in valid_sizes:
+                print(
+                    f"✗ {problem_id}: Invalid size {len(tour)} (must be 10, 15, 20, 25, or 30) - leaving empty"
+                )
+                solutions[problem_id] = []
+                error_count += 1
+                continue
+
+            # Validate tour length against metadata
+            expected_points = metadata.get(problem_id)
+            if expected_points and len(tour) != expected_points:
+                print(
+                    f"✗ {problem_id}: Expected {expected_points} points but got {len(tour)} - leaving empty"
+                )
+                solutions[problem_id] = []
+                error_count += 1
+            else:
+                solutions[problem_id] = tour
+                updated_count += 1
+                print(f"✓ {problem_id}: {len(tour)} points")
         else:
             print(f"⚠ {problem_id}: Could not extract tour")
+            solutions[problem_id] = []
+
+    # Validate distribution before saving
+    from collections import Counter
+
+    size_counts = Counter()
+    for tour in solutions.values():
+        if tour:  # Only count non-empty solutions
+            size_counts[len(tour)] += 1
+
+    expected_distribution = {10: 16, 15: 16, 20: 16, 25: 16, 30: 8}
+    distribution_error = False
+
+    for size, expected_count in expected_distribution.items():
+        actual_count = size_counts.get(size, 0)
+        if actual_count != expected_count:
+            distribution_error = True
 
     # Save updated JSON with lists on single lines
     json_str = "{\n"
@@ -110,6 +167,27 @@ def main():
     if error_count > 0:
         print(f"⚠ Skipped {error_count} error files")
     print(f"✓ Saved to {json_path}")
+
+    # Print distribution error if needed
+    if distribution_error:
+        print("\n" + "=" * 70)
+        print("❌ ERROR: DISTRIBUTION MISMATCH ❌")
+        print("=" * 70)
+        print("\nExpected distribution:")
+        print("  10 points: 16 instances")
+        print("  15 points: 16 instances")
+        print("  20 points: 16 instances")
+        print("  25 points: 16 instances")
+        print("  30 points: 8 instances")
+        print("\nActual distribution:")
+        for size in [10, 15, 20, 25, 30]:
+            actual = size_counts.get(size, 0)
+            expected = expected_distribution[size]
+            status = "✓" if actual == expected else "✗"
+            print(f"  {status} {size} points: {actual} instances (expected {expected})")
+        print("\n" + "=" * 70)
+        print("Please manually review and fix the errors above!")
+        print("=" * 70 + "\n")
 
     return 0
 

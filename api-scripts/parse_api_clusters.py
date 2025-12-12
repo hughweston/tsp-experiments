@@ -6,6 +6,7 @@ Reads raw cluster text outputs from VLMs and extracts cluster assignments
 into a structured JSON format.
 """
 
+import csv
 import json
 import sys
 from pathlib import Path
@@ -122,6 +123,23 @@ def parse_cluster_file(cluster_file):
     return assignments if assignments else None
 
 
+def load_problem_metadata():
+    """Load problem metadata from CSV to get expected point counts."""
+    metadata = {}
+    metadata_path = Path("problem_metadata.csv")
+
+    if not metadata_path.exists():
+        print(f"Warning: {metadata_path} not found, skipping validation")
+        return metadata
+
+    with open(metadata_path, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            metadata[row["problem_id"]] = int(row["num_points"])
+
+    return metadata
+
+
 def main():
     if len(sys.argv) != 3:
         print(
@@ -138,6 +156,9 @@ def main():
     if not cluster_dir.exists():
         print(f"Error: Directory {cluster_dir} does not exist")
         return 1
+
+    # Load problem metadata for validation
+    metadata = load_problem_metadata()
 
     # Process all cluster text files
     txt_files = sorted(cluster_dir.glob("*.txt"))
@@ -164,12 +185,47 @@ def main():
             # Store empty dict for failed parses
             clusters[problem_id] = {}
         else:
-            clusters[problem_id] = assignments
-            num_clusters = len(set(assignments.values()))
-            print(
-                f"✓ {problem_id}: {len(assignments)} points in {num_clusters} clusters"
-            )
-            parsed_count += 1
+            # Validate number of points is a valid size (10, 15, 20, 25, or 30)
+            valid_sizes = {10, 15, 20, 25, 30}
+            if len(assignments) not in valid_sizes:
+                print(
+                    f"✗ {problem_id}: Invalid size {len(assignments)} (must be 10, 15, 20, 25, or 30) - leaving empty"
+                )
+                clusters[problem_id] = {}
+                error_count += 1
+                continue
+
+            # Validate number of points against metadata
+            expected_points = metadata.get(problem_id)
+            if expected_points and len(assignments) != expected_points:
+                print(
+                    f"✗ {problem_id}: Expected {expected_points} points but got {len(assignments)} - leaving empty"
+                )
+                clusters[problem_id] = {}
+                error_count += 1
+            else:
+                clusters[problem_id] = assignments
+                num_clusters = len(set(assignments.values()))
+                print(
+                    f"✓ {problem_id}: {len(assignments)} points in {num_clusters} clusters"
+                )
+                parsed_count += 1
+
+    # Validate distribution before saving
+    from collections import Counter
+
+    size_counts = Counter()
+    for cluster_assignments in clusters.values():
+        if cluster_assignments:  # Only count non-empty clusters
+            size_counts[len(cluster_assignments)] += 1
+
+    expected_distribution = {10: 16, 15: 16, 20: 16, 25: 16, 30: 8}
+    distribution_error = False
+
+    for size, expected_count in expected_distribution.items():
+        actual_count = size_counts.get(size, 0)
+        if actual_count != expected_count:
+            distribution_error = True
 
     # Save to JSON with compact format
     json_str = "{\n"
@@ -186,6 +242,27 @@ def main():
     if error_count > 0:
         print(f"⚠ Failed to parse {error_count} files")
     print(f"✓ Saved to {output_file}")
+
+    # Print distribution error if needed
+    if distribution_error:
+        print("\n" + "=" * 70)
+        print("❌ ERROR: DISTRIBUTION MISMATCH ❌")
+        print("=" * 70)
+        print("\nExpected distribution:")
+        print("  10 points: 16 instances")
+        print("  15 points: 16 instances")
+        print("  20 points: 16 instances")
+        print("  25 points: 16 instances")
+        print("  30 points: 8 instances")
+        print("\nActual distribution:")
+        for size in [10, 15, 20, 25, 30]:
+            actual = size_counts.get(size, 0)
+            expected = expected_distribution[size]
+            status = "✓" if actual == expected else "✗"
+            print(f"  {status} {size} points: {actual} instances (expected {expected})")
+        print("\n" + "=" * 70)
+        print("Please manually review and fix the errors above!")
+        print("=" * 70 + "\n")
 
     return 0
 
