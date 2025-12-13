@@ -6,22 +6,116 @@ Testing Vision-Language Models on Traveling Salesman Problems with randomized po
 
 Generate labeled TSP visualizations in PNG or SVG format and verify VLM solutions against optimal tours. Point labels are **randomized** so VLMs cannot rely on sequential patterns and must actually solve the spatial optimization problem.
 
-## Project Files
+## Project Structure
 
-**Generation & Verification:**
-- `create_labeled_tsps.py` - Generate labeled images for all TSP files in a directory
-- `verify_tsp_solution.py` - Verify VLM solutions against optimal tours
+**Analysis:** `analysis/` - See [METRICS.md](analysis/METRICS.md) for details
+- `analyze_all.py` - Complete analysis pipeline
+- `compare_models.py` - Multi-model comparison
+- `create_plots.py` - Generate visualizations
+- `heuristics/` - Clustering, hull adherence, crossings metrics
 
-## Quick Start
+**Preprocessing:** `preprocessing/` - See [DATA_PREP.md](preprocessing/DATA_PREP.md) for details
+- `add_missing_metadata.py` - Generate problem_metadata.csv
+- `calculate_human_baseline.py` - Human performance baselines
+
+**Data:**
+- `marupudi_data/` - Human performance data (tsp-singles.csv, tsp-trials-anonymized.json)
+- `problem_metadata.csv` - Problem classifications and optimal lengths
+- `optimal-tsps/` - TSP problems in optimal tour order
+- `vlm-inputs/` - Generated labeled PNGs and mappings
+- `vlm-outputs/` - VLM solutions and clusters (raw text + parsed JSON)
+- `results/` - Analysis outputs (auto-generated)
+
+**Tools:**
+- `create_labeled_tsps.py` - Generate labeled images
+- `verify_tsp_solution.py` - Verify VLM solutions
+- `api-scripts/` - Automated API calls and parsing
+
+## Quick Start - Analyze VLM Results
+
+**Note:** All commands should be run from the repository root directory.
+
+**Analyze a single model:**
 
 ```bash
-# Generate all labeled SVG images
-uv run python batch_plot_all.py --seed 42
+# Analyzes and creates results/claude_opus_4.5_solutions/
+uv run python analysis/analyze_all.py vlm-outputs/solutions/claude_opus_4.5_solutions.json \
+  --vlm-clusters vlm-outputs/clusters/claude_opus_4.5_clusters.json
+```
 
-# Generate a single file
-uv run python plot_tsp_svg_labels.py optimal-tsps/[filename] -o output.svg --seed 42
+This automatically:
+- ✓ Measures convex hull adherence, path crossings, and cluster deviance
+- ✓ Combines all metrics with problem metadata (clustered/disperse groups)
+- ✓ Saves results to `results/[model_name]/[model_name].csv`
+- ✓ Generates all visualizations in `results/[model_name]/visualizations/`
 
-# Verify a VLM solution
+**Compare multiple models:**
+
+```bash
+# Analyze each model (repeat for each)
+uv run python analysis/analyze_all.py vlm-outputs/solutions/[model]_solutions.json \
+  --vlm-clusters vlm-outputs/clusters/[model]_clusters.json
+
+# Generate cross-model comparisons
+uv run python analysis/compare_models.py
+```
+
+## Complete Workflow
+
+### 1. Generate labeled TSP images for VLMs
+```bash
+uv run python create_labeled_tsps.py --seed 42
+```
+
+### 2. Get VLM solutions
+
+**Option A: Automated API calls**
+```bash
+# Set API keys
+export GEMINI_API_KEY='your-gemini-key'
+export ANTHROPIC_API_KEY='your-claude-key'
+export OPENAI_API_KEY='your-openai-key'
+
+# Call APIs and save raw responses
+uv run python api-scripts/call_gemini_api.py    # → vlm-outputs/solutions/gemini/*.txt
+uv run python api-scripts/call_claude_api.py    # → vlm-outputs/solutions/claude/*.txt
+uv run python api-scripts/call_openai_api.py    # → vlm-outputs/solutions/openai/*.txt
+
+# Parse API text responses into JSON solution files
+uv run python api-scripts/parse_api_solutions.py vlm-outputs/solutions/claude vlm-outputs/solutions/claude_opus_4.5_solutions.json
+uv run python api-scripts/parse_api_solutions.py vlm-outputs/solutions/openai vlm-outputs/solutions/gpt_5.2_solutions.json
+uv run python api-scripts/parse_api_solutions.py vlm-outputs/solutions/gemini vlm-outputs/solutions/gemini_3_pro_solutions.json
+
+# Parse cluster outputs into JSON cluster files (if running clustering experiment)
+uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/claude vlm-outputs/clusters/claude_opus_4.5_clusters.json
+uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/openai vlm-outputs/clusters/openai_gpt_5.2_clusters.json
+uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/gemini vlm-outputs/clusters/gemini_3_pro_clusters.json
+```
+
+**Option B: Manual collection**
+Present images to your VLM and collect solutions in JSON format.
+
+Solution JSON format (keys match TSP filenames without extension):
+```json
+{
+  "0fed7bdc-a343-4966-b202-69661c45fdb2": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  "2549fb3d-39ec-4ed0-86af-bb0f2f473e68": [5, 3, 1, 4, 2, 6, 8, 7, 9, 10]
+}
+```
+
+### 3. Analyze VLM performance
+
+```bash
+uv run python analysis/analyze_all.py vlm-outputs/solutions/claude_opus_4.5_solutions.json \
+  --vlm-clusters vlm-outputs/clusters/claude_opus_4.5_clusters.json
+```
+
+See [analysis/METRICS.md](analysis/METRICS.md) for individual heuristic scripts and metric details.
+
+## Quick Start (Single Solutions)
+
+```bash
+# Verify a single VLM solution
 uv run python verify_tsp_solution.py \
   optimal-tsps/[filename] \
   vlm-inputs/[filename]_mapping.json \
@@ -58,6 +152,7 @@ uv run python verify_tsp_solution.py \
 - Starting point doesn't matter (tours are cycles)
 - **Do NOT** repeat first point: use `"1,2,3"` NOT `"1,2,3,1"`
 
+
 ## VLM Prompt Template
 
 ```
@@ -90,12 +185,7 @@ You can start from any point - the tour is a cycle so starting position doesn't 
 **verify_tsp_solution.py:**
 - `-q, --quiet` - Suppress detailed output (only return exit code)
 
-## Design Notes
+## Documentation
 
-**Image Output:** 800×500px, black circles (radius 5), white background, plain black text labels (no backgrounds). Supports PNG and SVG formats.
-
-**Label Positioning:** Fixed 20px distance with smart direction selection (tests 8 positions, avoids occlusion, ensures bounds).
-
-**Randomization:** Labels (1 to N) shuffled with reproducible seed to prevent VLMs from exploiting sequential patterns.
-
-**Verification:** Euclidean distance calculation, rotation-invariant comparison, exit code 0 for optimal / 1 for suboptimal.
+- [analysis/METRICS.md](analysis/METRICS.md) - Metric definitions, heuristic scripts, visualizations
+- [preprocessing/DATA_PREP.md](preprocessing/DATA_PREP.md) - Metadata generation, human baselines
