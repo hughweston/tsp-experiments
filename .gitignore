@@ -3,3 +3,6 @@ __pycache__/
 
 # Marupudi et al. data
 marupudi_data/
+
+.DS_Store
+vlm-tsp-final-paper.pdf
