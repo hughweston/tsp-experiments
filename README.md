@@ -76,17 +76,22 @@ export GEMINI_API_KEY='your-gemini-key'
 export ANTHROPIC_API_KEY='your-claude-key'
 export OPENAI_API_KEY='your-openai-key'
 
-# Call APIs and save raw responses
-uv run python api-scripts/call_gemini_api.py    # → vlm-outputs/solutions/gemini/*.txt
-uv run python api-scripts/call_claude_api.py    # → vlm-outputs/solutions/claude/*.txt
-uv run python api-scripts/call_openai_api.py    # → vlm-outputs/solutions/openai/*.txt
+# Call APIs for TSP solutions (--mode solution)
+uv run python api-scripts/call_gemini_api.py --mode solution    # → vlm-outputs/solutions/gemini/*.txt
+uv run python api-scripts/call_claude_api.py --mode solution    # → vlm-outputs/solutions/claude/*.txt
+uv run python api-scripts/call_openai_api.py --mode solution    # → vlm-outputs/solutions/openai/*.txt
 
 # Parse API text responses into JSON solution files
 uv run python api-scripts/parse_api_solutions.py vlm-outputs/solutions/claude vlm-outputs/solutions/claude_opus_4.5_solutions.json
 uv run python api-scripts/parse_api_solutions.py vlm-outputs/solutions/openai vlm-outputs/solutions/gpt_5.2_solutions.json
 uv run python api-scripts/parse_api_solutions.py vlm-outputs/solutions/gemini vlm-outputs/solutions/gemini_3_pro_solutions.json
 
-# Parse cluster outputs into JSON cluster files (if running clustering experiment)
+# Call APIs for clustering (--mode cluster)
+uv run python api-scripts/call_gemini_api.py --mode cluster    # → vlm-outputs/clusters/gemini/*.txt
+uv run python api-scripts/call_claude_api.py --mode cluster    # → vlm-outputs/clusters/claude/*.txt
+uv run python api-scripts/call_openai_api.py --mode cluster    # → vlm-outputs/clusters/openai/*.txt
+
+# Parse cluster outputs into JSON cluster files
 uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/claude vlm-outputs/clusters/claude_opus_4.5_clusters.json
 uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/openai vlm-outputs/clusters/openai_gpt_5.2_clusters.json
 uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/gemini vlm-outputs/clusters/gemini_3_pro_clusters.json
@@ -155,21 +160,56 @@ uv run python verify_tsp_solution.py \
 
 ## VLM Prompt Template
 
+### TSP Solution Prompt
+
 ```
-You are given an image showing a Traveling Salesman Problem (TSP) instance. The image contains:
-- Black dots representing cities/points
-- Each point is labeled with a unique integer (1 to N)
-- Labels are positioned adjacent to their corresponding points
+You are given an image showing a Traveling Salesman Problem (TSP) instance with labeled points (1 to N).
+The problem will have exactly 10, 15, 20, 25, or 30 points.
 
 Your task is to find the shortest tour that visits all points exactly once and returns to the starting point.
-
-Please provide your answer as a comma-separated list of the point labels in the order they should be visited.
-
-Format: List each point label once, in visit order. Do NOT repeat the first point at the end.
-Example: 1, 5, 3, 7, 2, 4, 6
-
 You can start from any point - the tour is a cycle so starting position doesn't affect the total distance.
+
+IMPORTANT: On your FINAL LINE, output ONLY the comma-separated list of point labels in visit order.
+- Include all N points exactly once (no repeats, no omissions)
+- Do NOT repeat the first point at the end
+- Use plain text only (no bold, no markdown)
+
+Example for 10 points: 1, 5, 3, 7, 2, 4, 6, 9, 8, 10
 ```
+
+### Clustering Prompt
+
+```
+You are given an image with labeled points (black dots with integer labels).
+The image contains exactly 10, 15, 20, 25, or 30 points.
+
+Group these points into clusters based on spatial proximity. Each point must belong to exactly one cluster.
+You must create at least 2 clusters (cannot group all points together).
+
+IMPORTANT: Format your answer exactly as shown below with plain text only (no bold, no markdown):
+Cluster 1: [comma-separated point labels]
+Cluster 2: [comma-separated point labels]
+...
+
+Include all N points exactly once (no repeats, no omissions).
+
+Example for 10 points:
+Cluster 1: 1, 5, 3
+Cluster 2: 7, 2, 4
+Cluster 3: 6, 9, 8, 10
+```
+
+## API Configuration
+
+All models use consistent settings for fair comparison:
+
+| Model | Thinking Level | Output Limit |
+|-------|---------------|--------------|
+| Claude Opus 4.5 | Extended thinking (50k budget) | 64000 (max) |
+| GPT-5.2 | Reasoning effort: high | 128000 (max) |
+| Gemini 3 Pro | Thinking level: high | 65356 (max) |
+
+The prompt includes explicit instruction for final-line format to ensure reliable parsing.
 
 ## Options
 
