@@ -93,7 +93,7 @@ uv run python api-scripts/call_openai_api.py --mode cluster    # → vlm-outputs
 
 # Parse cluster outputs into JSON cluster files
 uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/claude vlm-outputs/clusters/claude_opus_4.5_clusters.json
-uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/openai vlm-outputs/clusters/openai_gpt_5.2_clusters.json
+uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/openai vlm-outputs/clusters/gpt_5.2_clusters.json
 uv run python api-scripts/parse_api_clusters.py vlm-outputs/clusters/gemini vlm-outputs/clusters/gemini_3_pro_clusters.json
 ```
 
