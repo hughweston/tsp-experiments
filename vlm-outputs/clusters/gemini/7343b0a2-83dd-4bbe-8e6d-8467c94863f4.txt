@@ -1,21 +1,6 @@
-Based on the spatial proximity of the points in the image, here is a logical clustering:
+Based on the spatial proximity of the points in the image, here is one logical clustering:
 
-**Cluster 1 (Central-Left Group):**
-This group is situated in the middle-left area of the plot.
-*   5, 7, 14, 15, 16, 23, 25, 26
-
-**Cluster 2 (Central-Right Group):**
-This group is located to the right of Cluster 1, forming a separate density.
-*   2, 11, 20, 27
-
-**Cluster 3 (Bottom-Right Group):**
-These points are loosely gathered in the lower-right quadrant.
-*   10, 12, 17, 21, 22, 28
-
-**Cluster 4 (Top-Right Group):**
-These points are isolated in the far upper-right corner.
-*   1, 9, 29
-
-**Cluster 5 (Left & Sparse Outliers):**
-These points are spread out on the far left side and top, generally distant from the main central clusters.
-*   3, 4, 6, 8, 13, 18, 19, 24, 30
+Cluster 1: 30, 4, 24, 19, 6, 3, 8
+Cluster 2: 18, 13, 5, 14, 7, 23, 16, 26, 25, 15
+Cluster 3: 29, 1, 9, 2, 27, 20, 11, 21
+Cluster 4: 10, 28, 17, 12, 22

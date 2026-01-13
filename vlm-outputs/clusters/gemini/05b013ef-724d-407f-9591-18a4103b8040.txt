@@ -1,25 +1,7 @@
 Based on the spatial proximity of the points in the image, here is a logical clustering:
 
-**Cluster 1: Top Left**
-This group is located in the upper left quadrant of the image.
-1, 11, 15, 17, 23
-
-**Cluster 2: Bottom Left**
-This group is tightly clustered in the bottom left corner.
-2, 6, 24
-
-**Cluster 3: Center / Bottom Center**
-These points form a loose chain or group in the lower middle area.
-7, 9, 13, 18
-
-**Cluster 4: Top Center**
-These points are grouped together near the top middle.
-4, 5, 21
-
-**Cluster 5: Top Right**
-These points are situated in the upper right corner.
-10, 14, 16
-
-**Cluster 6: Bottom Right**
-This is a dense cluster in the lower right area.
-3, 8, 12, 19, 20, 22, 25
+Cluster 1: 1, 11, 15, 17, 23
+Cluster 2: 2, 6, 7, 9, 13, 18, 24
+Cluster 3: 4, 5, 21
+Cluster 4: 10, 14, 16
+Cluster 5: 3, 8, 12, 19, 20, 22, 25

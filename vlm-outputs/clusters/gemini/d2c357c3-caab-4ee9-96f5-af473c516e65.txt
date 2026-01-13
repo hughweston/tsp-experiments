@@ -1,13 +1,8 @@
-Based on the spatial arrangement of the points in the image, here is a logical clustering:
+Based on the spatial arrangement of the points in the image, here are the clusters:
 
-**Cluster 1:** This group occupies the upper region of the image.
-Cluster 1: 2, 4, 7, 10, 11, 13, 14, 15, 18, 19
-
-**Cluster 2:** This group is located in the bottom-left area.
-Cluster 2: 1, 9, 20
-
-**Cluster 3:** This is a small, tighter pairing in the lower-middle area.
-Cluster 3: 12, 16
-
-**Cluster 4:** These are isolated or outlier points that don't fit tightly with the main groups but can form their own sparse group or individual clusters. Based on general proximity:
-Cluster 4: 3, 5, 6, 8, 17
+Cluster 1: 11, 7, 13, 10, 15, 19, 2, 18, 14, 4
+Cluster 2: 6, 5, 3
+Cluster 3: 1, 9, 20
+Cluster 4: 12, 16
+Cluster 5: 17
+Cluster 6: 8

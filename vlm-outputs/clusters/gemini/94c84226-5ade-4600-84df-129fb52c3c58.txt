@@ -1,15 +1,6 @@
 Based on the spatial proximity of the points in the image, here is a logical clustering:
 
-**Cluster 1: Left-side group**
-These points are situated on the left side of the image, generally moving downwards.
-*   6, 9, 14
-
-**Cluster 2: Upper Arc**
-These points form a loose arc across the top and upper-middle section.
-*   3, 4, 5, 11, 13, 12, 8, 1, 10
-
-**Cluster 3: Bottom Right group**
-These points are clustered distinctly in the lower right corner.
-*   7, 2, 15
-
-*(Note: Depending on how strict the clustering is, Point 8 could arguably be its own cluster or grouped with the left side, but it sits somewhat centrally. Point 14 is quite isolated at the bottom but aligns vertically with the left group. The grouping above represents the most distinct visual separations.)*
+Cluster 1: 3, 4, 5, 13
+Cluster 2: 1, 10, 11
+Cluster 3: 2, 7, 15
+Cluster 4: 6, 8, 9, 12, 14

@@ -1,10 +1,5 @@
-Based on the spatial proximity of the points in the image, here is a logical clustering:
+Based on the spatial proximity of the points in the image, here are the clusters:
 
-**Cluster 1:** 2, 5, 6, 7
-*These points are all located on the left side of the image. Point 2 is a bit further away, but 5, 6, and 7 form a distinct chain leading towards it.*
-
-**Cluster 2:** 3, 4
-*These two points are vertically aligned and sit in the middle of the image, separated from the groups on the left and right.*
-
-**Cluster 3:** 1, 8, 9, 10
-*These points are clustered on the right side of the image. 1, 8, and 9 are quite close to each other, and 10 is the outlier at the bottom right but still closest to this group.*
+Cluster 1: 2, 5, 6, 7
+Cluster 2: 3, 4
+Cluster 3: 1, 8, 9, 10

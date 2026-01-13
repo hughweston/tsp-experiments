@@ -1,4 +1,5 @@
-Cluster 1: 1, 6, 8, 9, 10, 11, 12  
-Cluster 2: 4, 7, 13  
-Cluster 3: 2, 14, 15  
-Cluster 4: 3, 5
+Cluster 1: 1, 6, 9, 10, 11
+Cluster 2: 8, 12
+Cluster 3: 4, 7, 13
+Cluster 4: 2, 14, 15
+Cluster 5: 3, 5

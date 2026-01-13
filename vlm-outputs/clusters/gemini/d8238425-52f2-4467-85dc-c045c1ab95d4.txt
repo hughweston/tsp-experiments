@@ -1,17 +1,7 @@
 Based on the spatial proximity of the points in the image, here is a logical clustering:
 
-**Cluster 1: Top-Left Group**
-This small group is isolated in the upper-left corner.
-*   8, 19
-
-**Cluster 2: Central-Upper Group**
-This is a large, fairly dense cluster in the top-middle area.
-*   4, 12, 3, 20, 17, 30, 23, 15, 18, 28, 2, 21, 1
-
-**Cluster 3: Right-Side Group**
-These points form a distinct cluster on the far right side of the image.
-*   24, 10, 25, 6, 5
-
-**Cluster 4: Bottom-Left/Lower Group**
-These points are scattered across the lower portion of the image, generally separated from the upper clusters by a gap.
-*   14, 29, 16, 9, 11, 27, 22, 7, 26, 13
+Cluster 1: 8, 19
+Cluster 2: 4, 15, 17, 18, 20, 23, 30
+Cluster 3: 5, 6, 10, 24, 25
+Cluster 4: 1, 2, 3, 12, 14, 21, 28, 29
+Cluster 5: 7, 9, 11, 13, 16, 22, 26, 27

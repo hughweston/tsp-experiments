@@ -1,13 +1,6 @@
 Based on the spatial proximity of the points in the image, here is a logical clustering:
 
-**Cluster 1 (Top Left):**
-15, 23, 24, 1, 21, 9
-
-**Cluster 2 (Top Right):**
-25, 16, 18, 12, 14, 8, 22
-
-**Cluster 3 (Bottom Left):**
-10, 13, 20, 11, 19, 6, 7
-
-**Cluster 4 (Bottom Center/Right):**
-4, 17, 3, 5, 2
+Cluster 1: 1, 9, 15, 21, 23, 24
+Cluster 2: 8, 12, 14, 16, 18, 22, 25
+Cluster 3: 6, 7
+Cluster 4: 2, 3, 4, 5, 10, 11, 13, 19, 20, 17

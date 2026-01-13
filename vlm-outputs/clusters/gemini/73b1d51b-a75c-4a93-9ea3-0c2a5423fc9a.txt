@@ -1,16 +1,6 @@
 Based on the spatial proximity of the points in the image, here is a logical clustering:
 
-**Cluster 1:** 9, 7
-These two points are located in the bottom-left area and are relatively close to each other compared to the rest.
-
-**Cluster 2:** 10
-Point 10 is isolated in the top-left corner, far from other groups.
-
-**Cluster 3:** 3, 1, 2, 8
-This group forms a loose chain in the center-top region. Points 3 and 1 are close, and 2 and 8 are nearby in the upper section.
-
-**Cluster 4:** 4, 5
-These two points are located in the bottom-right corner.
-
-**Cluster 5:** 6
-Point 6 is isolated on the far right edge.
+Cluster 1: 9, 7
+Cluster 2: 10, 2, 8
+Cluster 3: 3, 1
+Cluster 4: 6, 4, 5

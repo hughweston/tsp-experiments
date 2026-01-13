@@ -1,32 +1,6 @@
-I need to analyze the spatial positions of the labeled points and group them into clusters based on proximity.
-
-Let me identify the approximate positions of each point:
-
-- Points 23, 1: Upper left area
-- Points 11, 17: Left side, middle-upper
-- Points 6, 24, 2: Left side, lower area
-- Point 15: Center-left, upper-middle
-- Points 18, 13, 7, 9: Center area, middle-lower
-- Points 21, 4, 5: Center-right, upper area
-- Point 3: Center-right, middle
-- Points 16, 10, 14: Upper right area
-- Points 22, 19, 8, 20: Right side, middle-lower
-- Points 12, 25: Center-right, lower-middle
-
-Let me group these by spatial proximity:
-
-**Left cluster:** Points 1, 23, 11, 17, 6, 24, 2, 15 - these are all on the left side of the image
-
-**Center cluster:** Points 18, 13, 7, 9 - these form a group in the center-lower area
-
-**Center-right/upper cluster:** Points 21, 4, 5, 3 - these are in the center-right middle area
-
-**Right-upper cluster:** Points 16, 10, 14 - these are in the upper right corner
-
-**Right-lower cluster:** Points 22, 19, 8, 20, 12, 25 - these are in the right side, lower-middle area
-
-Cluster 1: 1, 23, 11, 17, 6, 24, 2, 15
-Cluster 2: 18, 13, 7, 9
-Cluster 3: 21, 4, 5, 3
-Cluster 4: 16, 10, 14
-Cluster 5: 22, 19, 8, 20, 12, 25
+Cluster 1: 23, 1, 11, 17, 15
+Cluster 2: 6, 24, 2
+Cluster 3: 18, 13, 9, 7
+Cluster 4: 4, 21, 5, 3
+Cluster 5: 16, 10, 14
+Cluster 6: 22, 19, 8, 20, 12, 25

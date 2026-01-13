@@ -1,21 +1,7 @@
-Based on the spatial distribution of the points in the image, here is a logical grouping into clusters:
+Based on the spatial proximity of the points in the image, here are the clusters:
 
-**Cluster 1 (Bottom Left):**
-These points form a distinct line in the bottom left corner.
-*   19, 7, 4
-
-**Cluster 2 (Bottom Center):**
-A small, isolated pair below the central region.
-*   25, 1
-
-**Cluster 3 (Top Left & Center):**
-This group spans the upper left area, curving towards the top center.
-*   10, 16, 22, 17, 2, 5
-
-**Cluster 4 (Right Side):**
-These points form a vertical-ish line or curve on the far right.
-*   6, 11, 8, 15, 3
-
-**Cluster 5 (Bottom Right / Central Curve):**
-This large group forms a long, sweeping curve in the bottom right quadrant.
-*   24, 23, 21, 12, 20, 14, 18, 13, 9
+Cluster 1: 19, 7, 4
+Cluster 2: 25, 1
+Cluster 3: 24, 23, 20, 21, 12, 18, 14, 13, 9
+Cluster 4: 16, 22, 17, 2, 5, 10
+Cluster 5: 6, 11, 8, 15, 3

@@ -1,13 +1,6 @@
-Based on the spatial proximity of the points in the image, here is a logical clustering:
+Based on the spatial proximity of the points in the image, here is a reasonable clustering:
 
-**Cluster 1:** 1, 6, 8, 9, 10, 11, 12
-(This group forms an arc at the top of the image. Point 12 is a bit of an outlier but is closer to this upper arc than any other group.)
-
-**Cluster 2:** 4, 7, 13
-(These points are grouped on the left side, distinct from the upper arc.)
-
-**Cluster 3:** 2, 14, 15
-(These points form a loose group in the lower-middle section.)
-
-**Cluster 4:** 3, 5
-(These two points are isolated in the bottom right corner.)
+Cluster 1: 1, 6, 8, 9, 10, 11, 12
+Cluster 2: 4, 7, 13
+Cluster 3: 2, 14, 15
+Cluster 4: 3, 5

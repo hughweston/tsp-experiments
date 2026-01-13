@@ -1,45 +1,4 @@
-I need to analyze the spatial positions of the labeled points and group them into clusters based on proximity.
-
-Let me map out the approximate positions of each point:
-
-**Upper region:**
-- 23, 15 (top center)
-- 17, 3 (top right)
-- 14 (upper middle)
-
-**Left side:**
-- 16, 21 (upper left)
-- 20, 7 (middle left)
-- 11 (lower left)
-- 1 (lower left)
-
-**Center region:**
-- 9, 5 (middle center-left)
-- 25, 22 (middle center)
-- 19, 12 (middle center)
-- 8 (lower center)
-
-**Right side:**
-- 13, 18 (right side)
-- 4, 24 (middle right)
-- 6, 10 (lower right)
-- 2 (lower center-right)
-
-Let me identify natural clusters:
-
-**Cluster 1 - Left side group:** Points 16, 21, 20, 7, 11, 1
-These form a vertical chain on the left side of the image.
-
-**Cluster 2 - Center group:** Points 9, 5, 25, 22, 19, 12, 8
-These are clustered in the central area.
-
-**Cluster 3 - Top/Upper right group:** Points 23, 15, 14, 3, 17
-These are in the upper portion of the image.
-
-**Cluster 4 - Right side group:** Points 4, 13, 18, 24, 6, 10, 2
-These form a group on the right side extending downward.
-
-Cluster 1: 16, 21, 20, 7, 11, 1
-Cluster 2: 9, 5, 25, 22, 19, 12, 8
-Cluster 3: 23, 15, 14, 3, 17
-Cluster 4: 4, 13, 18, 24, 6, 10, 2
+Cluster 1: 11, 7, 20, 16, 21, 1
+Cluster 2: 25, 22, 9, 5, 19, 12
+Cluster 3: 23, 15, 14
+Cluster 4: 3, 17, 13, 18, 4, 24, 6, 10, 2, 8

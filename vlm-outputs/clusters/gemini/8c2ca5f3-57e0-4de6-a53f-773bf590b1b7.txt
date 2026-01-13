@@ -1,17 +1,7 @@
-Based on the spatial proximity of the points in the image, here is a logical clustering:
-
-**Cluster 1 (Left Group):**
-This group forms a loose cluster on the left side of the image.
-Points: 1, 6, 7, 10, 18, 20, 21, 27, 28, 29
-
-**Cluster 2 (Top-Middle Group):**
-These points are situated in the upper central area.
-Points: 2, 13, 14, 15, 25, 26, 30
-
-**Cluster 3 (Bottom-Middle Group):**
-These points are gathered in the lower central region.
-Points: 3, 4, 5, 8, 9, 11, 12, 16
-
-**Cluster 4 (Right Group):**
-These points are spread out on the far right side.
-Points: 17, 19, 22, 23, 24
+Cluster 1: 6, 10, 27, 28, 29
+Cluster 2: 1, 7, 21
+Cluster 3: 18, 20
+Cluster 4: 2, 8, 13, 25, 26, 30
+Cluster 5: 3, 4, 5, 9, 11, 12, 16
+Cluster 6: 14, 15, 19
+Cluster 7: 17, 22, 23, 24

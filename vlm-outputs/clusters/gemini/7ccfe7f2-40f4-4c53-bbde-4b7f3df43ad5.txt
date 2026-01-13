@@ -1,22 +1,4 @@
-Based on the spatial proximity of the points in the image, here is a logical clustering:
-
-**Cluster 1:** 4, 5, 11, 12, 14, 8
-This group is located in the upper portion of the image. Points 4, 5, 11, and 12 form a core, with 14 and 8 extending to the right.
-
-**Cluster 2:** 1, 15
-These two points sit in the middle-left area, relatively isolated from the clusters above and below them.
-
-**Cluster 3:** 3, 6, 9
-This is a clear group on the far left side, forming a small line or curve.
-
-**Cluster 4:** 7, 10, 2, 13
-This group occupies the lower and lower-right portion of the image. Points 7 and 10 are at the bottom, 2 is in the bottom-right corner, and 13 is somewhat central but closer to this lower group than the upper one.
-
-*(Alternative grouping: Point 13 could arguably be its own cluster or grouped with 1, but spatially it feels like a bridge between the lower points and the center. Point 1 could also be grouped with the upper cluster, but it sits quite far down.)*
-
-Here is the final grouping based on the most distinct separations:
-
-Cluster 1: 4, 5, 8, 11, 12, 14
-Cluster 2: 1, 15
-Cluster 3: 3, 6, 9
-Cluster 4: 2, 7, 10, 13
+Cluster 1: 12, 4, 11, 5, 14, 8
+Cluster 2: 15, 1
+Cluster 3: 6, 9, 3, 7
+Cluster 4: 13, 10, 2

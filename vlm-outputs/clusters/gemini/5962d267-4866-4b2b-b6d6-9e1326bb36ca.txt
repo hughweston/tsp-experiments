@@ -1,16 +1,5 @@
-Based on the spatial proximity of the points in the image, here is a logical clustering:
-
-**Cluster 1:** 8, 11, 14
-(These points are grouped in the top-right corner.)
-
-**Cluster 2:** 9, 6
-(These two points are isolated on the far right side.)
-
-**Cluster 3:** 7, 15
-(These two points are very close to each other near the top-center.)
-
-**Cluster 4:** 1, 4, 5, 2, 13, 10
-(This is a looser group forming a band across the middle-left area. Points 10, 13, and 2 form a tight line, and 1, 4, 5 are nearby.)
-
-**Cluster 5:** 12, 3
-(These two points are located in the bottom-left area.)
+Cluster 1: 1, 2, 4, 10, 12, 13
+Cluster 2: 3
+Cluster 3: 5, 7, 15
+Cluster 4: 8, 11, 14
+Cluster 5: 6, 9

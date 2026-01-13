@@ -1,17 +1,4 @@
-Based on the spatial proximity of the points in the image, here is a logical grouping into clusters:
-
-**Cluster 1: Left-side group**
-These points are clustered relatively closely together on the left half of the image.
-*   16, 21, 20, 7, 11, 9, 5, 25, 1, 22, 19, 12
-
-**Cluster 2: Top-center group**
-These points form a loose cluster near the top center.
-*   23, 14, 15
-
-**Cluster 3: Right-side group**
-These points are distributed on the right side of the image.
-*   3, 17, 13, 18, 4, 24
-
-**Cluster 4: Bottom-center group**
-These points form a distinct line or curve at the bottom.
-*   8, 2, 10, 6
+Cluster 1: 1, 2, 8, 10, 11, 22
+Cluster 2: 3, 4, 6, 13, 17, 18, 24
+Cluster 3: 5, 7, 9, 12, 16, 19, 20, 21, 25
+Cluster 4: 14, 15, 23

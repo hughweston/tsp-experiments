@@ -1,17 +1,6 @@
-Based on the spatial proximity of the points in the image, here is a logical clustering:
+Based on the spatial arrangement of the points in the image, here is a logical clustering:
 
-**Cluster 1 (Top Left):**
-This group forms a dense cluster in the upper left quadrant of the image.
-Points: 10, 13, 14, 15, 16, 19, 20, 22, 23, 27, 30
-
-**Cluster 2 (Center/Right):**
-These points are loosely scattered across the upper-middle and center-right area.
-Points: 2, 3, 9, 18, 28
-
-**Cluster 3 (Bottom Right):**
-This is a larger grouping in the lower right, though it could potentially be split further, they form a cohesive "island" compared to the other groups.
-Points: 1, 4, 5, 7, 11, 17, 21, 24, 25, 26, 29
-
-**Cluster 4 (Bottom Left):**
-These three points are isolated at the very bottom left.
-Points: 6, 8, 12
+Cluster 1: 10, 13, 14, 15, 16, 19, 20, 22, 23, 27, 30
+Cluster 2: 2, 3, 9, 18, 28
+Cluster 3: 1, 4, 5, 7, 11, 17, 21, 24, 25, 26, 29
+Cluster 4: 6, 8, 12

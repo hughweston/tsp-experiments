@@ -1,34 +1,7 @@
 Based on the spatial proximity of the points in the image, here is a logical clustering:
 
-**Cluster 1:** 4, 7, 10, 15
-(These points are grouped in the bottom-left corner.)
-
-**Cluster 2:** 3, 11, 13
-(These points are clustered in the lower-middle section.)
-
-**Cluster 3:** 1, 8, 12, 14
-(These points form a group on the right side, extending from the middle to the bottom.)
-
-**Cluster 4:** 5, 6, 9
-(These points are located in the upper portion of the image. Note: Point 2 is somewhat isolated in the middle-left but is closest to the upper group or the central area. It could be its own cluster or grouped with the upper points. Let's group it with the upper set or leave it separate. Given the distances, 2 is quite far from 6 but closer to 12. However, visually, the top three (5, 6, 9) feel distinct. Let's look again. Point 2 is fairly isolated. Let's group the top distinct ones.)
-
-**Refined Clustering:**
-
-**Cluster 1:** 4, 7, 10, 15
-(Bottom-left group)
-
-**Cluster 2:** 2, 6, 5, 9
-(Upper and upper-left group. While 2 is a bit lower, it belongs to the upper half more than the bottom half.)
-
-**Cluster 3:** 3, 11, 13
-(Bottom-center group)
-
-**Cluster 4:** 1, 8, 12, 14
-(Right-side group. 12 connects the center to the right, but is closest to 8 and 1.)
-
-Here is the final grouping:
-
 Cluster 1: 4, 7, 10, 15
-Cluster 2: 3, 11, 13
-Cluster 3: 1, 8, 12, 14
-Cluster 4: 2, 5, 6, 9
+Cluster 2: 2, 6
+Cluster 3: 3, 11, 13, 12
+Cluster 4: 5, 9
+Cluster 5: 1, 8, 14
